@@ -23,6 +23,13 @@ const targetPrefix: Record<ModerationReport["targetKind"], string> = {
   conversation: "Conversation",
 };
 
+function getReportThumbnail(row: ModerationReport) {
+  const seed = encodeURIComponent(`${row.targetLabel}-${row.id}`);
+  return row.targetKind === "user"
+    ? `https://i.pravatar.cc/96?u=${seed}`
+    : `https://picsum.photos/seed/${seed}/96/96`;
+}
+
 type ReportsTableProps = {
   rows: ModerationReport[];
   reviewItems: ReviewItem[];
@@ -74,12 +81,10 @@ export function ReportsTable({ rows, reviewItems, members, onReview, onClose }: 
                 </td>
                 <td>
                   <div className="reports-table__target">
-                    <div
+                    <img
                       className="reports-table__thumb"
-                      style={{
-                        background: `linear-gradient(135deg, hsl(${row.thumbnailHue} 45% 72%), hsl(${row.thumbnailHue} 35% 55%))`,
-                      }}
-                      aria-hidden
+                      src={getReportThumbnail(row)}
+                      alt={`${row.targetLabel} thumbnail`}
                     />
                     <div>
                       <strong>{row.type}</strong>
@@ -104,7 +109,7 @@ export function ReportsTable({ rows, reviewItems, members, onReview, onClose }: 
                   <div className="reports-table__actions">
                     <button
                       type="button"
-                      className="reports-action reports-action--open"
+                      className="reports-action-link"
                       onClick={() => handleOpen(row)}
                     >
                       Open
@@ -118,7 +123,7 @@ export function ReportsTable({ rows, reviewItems, members, onReview, onClose }: 
                     </button>
                     <button
                       type="button"
-                      className="reports-action reports-action--close"
+                      className="reports-action-link reports-action-link--danger"
                       onClick={() => onClose(row.id)}
                     >
                       Close

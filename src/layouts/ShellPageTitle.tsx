@@ -10,6 +10,8 @@ const titles: { match: RegExp; title: string }[] = [
   { match: /^\/users\/[^/]+\/?$/, title: "SWAP IT — User Details" },
   { match: /^\/users\/?$/, title: "SWAP IT — User Management" },
   { match: /^\/settings\/?$/, title: "SWAP IT — Settings" },
+  { match: /^\/subscriptions\/plans\/?$/, title: "SWAP IT — Plans Management" },
+  { match: /^\/subscriptions\/?$/, title: "SWAP IT — Subscription Overview" },
 ];
 
 export function ShellPageTitle() {

@@ -9,6 +9,7 @@ export type ReportKpi = {
   hint: string;
   hintTone: "positive" | "negative" | "neutral";
   icon: "shield" | "flag" | "timer" | "leaf";
+  iconBg: string;
   alert?: boolean;
 };
 

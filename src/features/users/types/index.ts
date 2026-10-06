@@ -6,6 +6,7 @@ export type User = {
   name: string;
   email: string;
   role: UserRole;
+  avatarUrl?: string;
 };
 
 export type AccountStatus = "active" | "restricted" | "banned";
@@ -37,4 +38,5 @@ export type UserKpi = {
   hintTone: "positive" | "negative" | "neutral";
   alert?: boolean;
   icon: "members" | "trust" | "restrict" | "flag";
+  iconBg: string;
 };

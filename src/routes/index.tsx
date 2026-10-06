@@ -10,6 +10,8 @@ import { ItemDetailPage } from "@/features/item-detail/pages/ItemDetailPage";
 import { ItemsReviewPage } from "@/features/items-review/pages/ItemsReviewPage";
 import { ReportsPage } from "@/features/reports/pages/ReportsPage";
 import { SettingsPage } from "@/features/settings/pages/SettingsPage";
+import { PlansManagementPage } from "@/features/subscriptions/pages/PlansManagementPage";
+import { SubscriptionsOverviewPage } from "@/features/subscriptions/pages/SubscriptionsOverviewPage";
 import { ProtectedRoute } from "@/routes/ProtectedRoute";
 
 export function AppRouter() {
@@ -32,6 +34,8 @@ export function AppRouter() {
             <Route path="products" element={<Navigate to="/items-review" replace />} />
             <Route path="reports" element={<ReportsPage />} />
             <Route path="settings" element={<SettingsPage />} />
+            <Route path="subscriptions/plans" element={<PlansManagementPage />} />
+            <Route path="subscriptions" element={<SubscriptionsOverviewPage />} />
           </Route>
         </Route>
 

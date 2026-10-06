@@ -1,3 +1,7 @@
+import {
+  ReportTabClockIcon,
+  ReportTabFlagIcon,
+} from "@/features/reports/components/ReportGlyphs";
 import type { ReportFilterTab } from "@/features/reports/types";
 
 type ReportToolbarProps = {
@@ -25,17 +29,23 @@ export function ReportToolbar({
           className={activeTab === "all" ? "reports-tab reports-tab--active" : "reports-tab"}
           onClick={() => onTabChange("all")}
         >
-          All {counts.all}
+          <span className="reports-tab__label">All</span>
+          <span className="reports-tab__count">{counts.all}</span>
         </button>
         <button
           type="button"
           role="tab"
           aria-selected={activeTab === "high"}
-          className={activeTab === "high" ? "reports-tab reports-tab--active" : "reports-tab"}
+          className={
+            activeTab === "high"
+              ? "reports-tab reports-tab--active reports-tab--high"
+              : "reports-tab reports-tab--high-idle"
+          }
           onClick={() => onTabChange("high")}
         >
-          <span className="reports-tab__flag" aria-hidden />
-          High priority {counts.high}
+          <ReportTabFlagIcon className="reports-tab__icon" />
+          <span className="reports-tab__label">High priority</span>
+          <span className="reports-tab__count">{counts.high}</span>
         </button>
         <button
           type="button"
@@ -46,8 +56,9 @@ export function ReportToolbar({
           }
           onClick={() => onTabChange("under_review")}
         >
-          <span className="reports-tab__clock" aria-hidden />
-          Under review {counts.under_review}
+          <ReportTabClockIcon className="reports-tab__icon" />
+          <span className="reports-tab__label">Under review</span>
+          <span className="reports-tab__count">{counts.under_review}</span>
         </button>
       </div>
 

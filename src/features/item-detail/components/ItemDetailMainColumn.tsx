@@ -64,29 +64,58 @@ export function ItemDetailMainColumn({ detail }: ItemDetailMainColumnProps) {
 
       <section className="item-detail-card item-detail-owner">
         <div className="item-detail-owner__head">
-          <h2>Owner account &amp; reliability record</h2>
-          <a href="#owner">View owner profile</a>
+          <h2>
+            <svg viewBox="0 0 16 16" aria-hidden>
+              <path
+                d="M8 1.5 2.5 3.8v4.1c0 3.1 2.1 5.9 5.5 7.1 3.4-1.2 5.5-4 5.5-7.1V3.8L8 1.5Z"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.25"
+              />
+              <path
+                d="m5.7 8.1 1.5 1.5 3.2-3.2"
+                fill="none"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="1.25"
+              />
+            </svg>
+            Owner account &amp; reliability record
+          </h2>
+          <a href="#owner">
+            View owner profile <span aria-hidden>→</span>
+          </a>
         </div>
         <div className="item-detail-owner__body">
-          <div className="item-detail-owner__avatar" aria-hidden>
-            {detail.owner.name.charAt(0)}
-          </div>
-          <div>
-            <strong>{detail.owner.name}</strong>
-            <span>
-              {detail.owner.handle} • {detail.owner.memberSince}
-            </span>
-            <span className="item-detail-owner__badge">{detail.owner.badge}</span>
+          <img
+            className="item-detail-owner__avatar"
+            src={`https://i.pravatar.cc/80?u=${encodeURIComponent(detail.owner.handle)}`}
+            alt=""
+          />
+          <div className="item-detail-owner__identity">
+            <div className="item-detail-owner__name">
+              <strong>{detail.owner.name}</strong>
+              <span>{detail.owner.handle}</span>
+            </div>
+            <p>
+              {detail.owner.badge} <i aria-hidden>•</i> {detail.owner.memberSince}
+            </p>
           </div>
           <div className="item-detail-owner__stats">
-            <div>
+            <div className="item-detail-owner__stat item-detail-owner__stat--trust">
               <span>Trust score</span>
               <strong>{detail.owner.trustScore}</strong>
               <small>{detail.owner.swapsLabel}</small>
             </div>
-            <div>
+            <div className="item-detail-owner__stat">
               <span>Infractions</span>
               <strong>{detail.owner.infractions}</strong>
+              <small>
+                {detail.owner.infractions.startsWith("0")
+                  ? "Clean disciplinary history"
+                  : "Review account history"}
+              </small>
             </div>
           </div>
         </div>

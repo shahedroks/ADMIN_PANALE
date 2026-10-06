@@ -6,6 +6,7 @@ const MOCK_USER: User = {
   name: "Sara Miller",
   email: "admin@swapit.io",
   role: "admin",
+  avatarUrl: "https://i.pravatar.cc/96?u=sara-miller-swap-admin",
 };
 
 export async function login(

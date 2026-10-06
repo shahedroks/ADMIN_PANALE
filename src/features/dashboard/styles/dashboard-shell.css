@@ -83,6 +83,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  width: 100%;
   padding: 8px 16px;
   border-radius: 9999px;
   font-weight: 600;
@@ -103,6 +104,77 @@
 .dash-sidebar__link--active {
   background: #acf847;
   color: #102000;
+}
+
+.dash-sidebar__link--parent-active {
+  background: rgba(172, 248, 71, 0.18);
+  color: #beedd9;
+}
+
+.dash-sidebar__group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dash-sidebar__link-text {
+  flex: 1;
+}
+
+.dash-sidebar__badge {
+  margin-left: auto;
+  padding: 2px 6px;
+  border-radius: 9999px;
+  background: rgba(16, 32, 0, 0.12);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #457000;
+}
+
+.dash-sidebar__link--active .dash-sidebar__badge {
+  background: rgba(16, 32, 0, 0.08);
+  color: #102000;
+}
+
+.dash-sidebar__sublink {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 12px;
+  padding: 8px 12px 8px 36px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #79a694;
+  text-decoration: none;
+}
+
+.dash-sidebar__sublink:hover {
+  color: #beedd9;
+}
+
+.dash-sidebar__sublink--active,
+.dash-sidebar__sublink--active:hover {
+  background: #acf847;
+  color: #102000;
+  font-weight: 600;
+  border-radius: 9999px;
+}
+
+.dash-sidebar__sublink-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: #c0c8c3;
+  flex-shrink: 0;
+  transition: background 0.2s ease;
+}
+
+.dash-sidebar__sublink--active .dash-sidebar__sublink-dot {
+  background: #234e40;
 }
 
 .dash-sidebar__logout {
@@ -158,42 +230,135 @@
   gap: 24px;
 }
 
+.dash-topbar__notify-wrap {
+  position: relative;
+}
+
 .dash-topbar__bell {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px;
+  width: 40px;
+  height: 40px;
+  padding: 0;
   border: none;
-  background: transparent;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  border-radius: 9999px;
   color: #414845;
   cursor: pointer;
 }
 
+.dash-topbar__bell:hover {
+  color: #00241a;
+}
+
 .dash-topbar__bell-dot {
   position: absolute;
-  top: 4px;
-  right: 4px;
+  top: 8px;
+  right: 9px;
   width: 8px;
   height: 8px;
-  background: #acf847;
+  background: #ba1a1a;
+  border: 2px solid #ffffff;
   border-radius: 9999px;
+}
+
+.dash-topbar__notify-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  width: min(320px, calc(100vw - 48px));
+  padding: 12px 0;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  z-index: 20;
+}
+
+.dash-topbar__notify-head {
+  margin: 0 0 8px;
+  padding: 0 16px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.55px;
+  text-transform: uppercase;
+  color: #414845;
+}
+
+.dash-topbar__notify-panel ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dash-topbar__notify-panel li button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dash-topbar__notify-panel li button:hover {
+  background: #f8f9ff;
+}
+
+.dash-topbar__notify-panel strong {
+  font-size: 12px;
+  color: #00241a;
+}
+
+.dash-topbar__notify-panel span {
+  font-size: 11px;
+  color: #717974;
+  line-height: 1.35;
+}
+
+.dash-topbar__notify-panel time {
+  font-size: 10px;
+  font-weight: 600;
+  color: #9aa39e;
 }
 
 .dash-topbar__profile {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 4px 4px 4px 16px;
+  padding: 4px 4px 4px 12px;
   background: #ffffff;
   border-radius: 9999px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.dash-topbar__profile-text strong {
-  font-weight: 600;
+.dash-topbar__profile-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+  min-width: 0;
+}
+
+.dash-topbar__profile-name {
+  font-weight: 700;
   font-size: 11px;
+  line-height: 14px;
   color: #121c2a;
+  white-space: nowrap;
+}
+
+.dash-topbar__profile-role {
+  font-weight: 600;
+  font-size: 10px;
+  line-height: 12px;
+  color: #717974;
   white-space: nowrap;
 }
 
@@ -201,12 +366,8 @@
   width: 32px;
   height: 32px;
   border-radius: 9999px;
-  display: grid;
-  place-items: center;
-  font-weight: 700;
-  font-size: 13px;
-  color: #ffffff;
-  background: linear-gradient(135deg, #0d3b2e, #00241a);
+  object-fit: cover;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
 @media (max-width: 1100px) {

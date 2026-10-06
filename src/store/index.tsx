@@ -22,10 +22,17 @@ type AppContextValue = AppState & {
 
 const AppContext = createContext<AppContextValue | null>(null);
 
+const DEFAULT_ADMIN_AVATAR = "https://i.pravatar.cc/96?u=sara-miller-swap-admin";
+
 function readStoredUser(): User | null {
   try {
     const raw = sessionStorage.getItem(SESSION_KEY);
-    return raw ? (JSON.parse(raw) as User) : null;
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as User;
+    if (!parsed.avatarUrl) {
+      return { ...parsed, avatarUrl: DEFAULT_ADMIN_AVATAR };
+    }
+    return parsed;
   } catch {
     return null;
   }

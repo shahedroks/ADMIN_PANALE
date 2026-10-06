@@ -1,9 +1,9 @@
 import type { UserActionLogEntry, UserListedItem, UserReportEntry } from "@/features/user-detail/types";
 
 export const marcusProfileBase = {
-  bio: "Long-time circular economy advocate focused on audio gear and film photography. Known for fast responses and careful packaging during local swaps.",
+  bio: "Passionate vintage audio enthusiast and circular swap advocate based in Williamsburg, Brooklyn. Verified member since Jan 2023 with 34 successful swaps.",
   tags: ["Verified cycler", "Top responder", "Brooklyn, NY"],
-  joined: "Jan 14, 2023",
+  joined: "Member since Jan 14, 2023",
   ipAddress: "198.51.100.42",
   reports: [
     {

@@ -20,6 +20,15 @@ import {
   swapperMembers as initialMembers,
 } from "@/features/users/data/usersManagementData";
 import type { SwapperMember } from "@/features/users/types";
+import {
+  adminMembers as initialAdminTeam,
+  type AdminMember,
+} from "@/features/settings/data/settingsData";
+import {
+  plansSummaryKpis as initialPlanKpis,
+  subscriptionPlans as initialSubscriptionPlans,
+  type SubscriptionPlan,
+} from "@/features/subscriptions/data/plansManagementData";
 
 export type ToastTone = "success" | "info" | "error";
 
@@ -37,16 +46,25 @@ export type UserRestrictionSettings = {
   note: string;
 };
 
+export type SubscriptionPlanUpdate = Pick<
+  SubscriptionPlan,
+  "listingUnlimited" | "photosPerListing" | "searchRadiusMiles" | "featureGates" | "cadence"
+>;
+
 type DemoStoreValue = {
   reports: ModerationReport[];
   reviewItems: ReviewItem[];
   members: SwapperMember[];
+  adminTeam: AdminMember[];
+  subscriptionPlans: SubscriptionPlan[];
+  subscriptionPlanKpis: typeof initialPlanKpis;
   toasts: DemoToast[];
   userSettings: Record<string, UserRestrictionSettings>;
   userActionLogs: Record<string, UserActionLogEntry[]>;
   reportCounts: ReturnType<typeof computeReportCounts>;
   userCounts: ReturnType<typeof computeUserCounts>;
   reviewTabCounts: ReturnType<typeof computeReviewTabCounts>;
+  planCounts: ReturnType<typeof computePlanCounts>;
   dismissToast: (id: string) => void;
   pushToast: (message: string, tone?: ToastTone) => void;
   setReportStatus: (id: string, status: ModerationReport["status"]) => void;
@@ -66,6 +84,7 @@ type DemoStoreValue = {
   exportReportsCsv: () => void;
   exportMembersCsv: () => void;
   refreshDashboard: () => void;
+  updateSubscriptionPlan: (id: string, patch: SubscriptionPlanUpdate) => void;
 };
 
 const DemoContext = createContext<DemoStoreValue | null>(null);
@@ -80,6 +99,25 @@ function cloneReports(): ModerationReport[] {
 
 function cloneMembers(): SwapperMember[] {
   return initialMembers.map((m) => ({ ...m }));
+}
+
+function cloneSubscriptionPlans(): SubscriptionPlan[] {
+  return initialSubscriptionPlans.map((p) => ({
+    ...p,
+    featureGates: p.featureGates.map((g) => ({ ...g })),
+  }));
+}
+
+function cloneAdminTeam(): AdminMember[] {
+  return initialAdminTeam.map((m) => ({ ...m }));
+}
+
+function computePlanCounts(plans: SubscriptionPlan[]) {
+  return {
+    all: plans.length,
+    active: plans.filter((p) => p.status === "active").length,
+    draft: plans.filter((p) => p.status === "draft").length,
+  };
 }
 
 function computeReportCounts(reports: ModerationReport[]) {
@@ -112,6 +150,10 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   const [reports, setReports] = useState<ModerationReport[]>(cloneReports);
   const [reviewItems, setReviewItems] = useState<ReviewItem[]>(cloneReviewItems);
   const [members, setMembers] = useState<SwapperMember[]>(cloneMembers);
+  const [adminTeam] = useState<AdminMember[]>(cloneAdminTeam);
+  const [subscriptionPlans, setSubscriptionPlans] = useState<SubscriptionPlan[]>(
+    cloneSubscriptionPlans,
+  );
   const [toasts, setToasts] = useState<DemoToast[]>([]);
   const [userSettings, setUserSettings] = useState<Record<string, UserRestrictionSettings>>({});
   const [userActionLogs, setUserActionLogs] = useState<Record<string, UserActionLogEntry[]>>(
@@ -353,6 +395,26 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     pushToast("Dashboard metrics refreshed (demo sync).", "info");
   }, [pushToast]);
 
+  const updateSubscriptionPlan = useCallback(
+    (id: string, patch: SubscriptionPlanUpdate) => {
+      let savedName = "Plan";
+      setSubscriptionPlans((prev) => {
+        savedName = prev.find((p) => p.id === id)?.name ?? "Plan";
+        return prev.map((p) =>
+          p.id === id
+            ? {
+                ...p,
+                ...patch,
+                featureGates: patch.featureGates.map((g) => ({ ...g })),
+              }
+            : p,
+        );
+      });
+      pushToast(`${savedName} configuration saved.`);
+    },
+    [pushToast],
+  );
+
   const exportMembersCsv = useCallback(() => {
     const header = "id,name,handle,email,status,trust,swaps,reports\n";
     const rows = members
@@ -374,18 +436,23 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   const reportCounts = useMemo(() => computeReportCounts(reports), [reports]);
   const userCounts = useMemo(() => computeUserCounts(members), [members]);
   const reviewTabCounts = useMemo(() => computeReviewTabCounts(reviewItems), [reviewItems]);
+  const planCounts = useMemo(() => computePlanCounts(subscriptionPlans), [subscriptionPlans]);
 
   const value = useMemo<DemoStoreValue>(
     () => ({
       reports,
       reviewItems,
       members,
+      adminTeam,
+      subscriptionPlans,
+      subscriptionPlanKpis: initialPlanKpis,
       toasts,
       userSettings,
       userActionLogs,
       reportCounts,
       userCounts,
       reviewTabCounts,
+      planCounts,
       dismissToast,
       pushToast,
       setReportStatus,
@@ -405,17 +472,21 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       exportReportsCsv,
       exportMembersCsv,
       refreshDashboard,
+      updateSubscriptionPlan,
     }),
     [
       reports,
       reviewItems,
       members,
+      adminTeam,
+      subscriptionPlans,
       toasts,
       userSettings,
       userActionLogs,
       reportCounts,
       userCounts,
       reviewTabCounts,
+      planCounts,
       dismissToast,
       pushToast,
       setReportStatus,
@@ -435,6 +506,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       exportReportsCsv,
       exportMembersCsv,
       refreshDashboard,
+      updateSubscriptionPlan,
     ],
   );
 

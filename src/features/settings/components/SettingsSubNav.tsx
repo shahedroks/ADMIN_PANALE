@@ -1,46 +1,57 @@
+import { SettingsImpactLeafIcon, SettingsNavIcon } from "@/features/settings/components/SettingsNavIcon";
 import { settingsNav, type SettingsSectionId } from "@/features/settings/data/settingsData";
 
 type SettingsSubNavProps = {
   active: SettingsSectionId;
   onSelect: (id: SettingsSectionId) => void;
+  adminTeamCount?: number;
 };
 
-export function SettingsSubNav({ active, onSelect }: SettingsSubNavProps) {
+export function SettingsSubNav({ active, onSelect, adminTeamCount }: SettingsSubNavProps) {
   return (
     <aside className="settings-subnav">
       <p className="settings-subnav__kicker">Configuration deck</p>
       <nav aria-label="Settings sections">
-        {settingsNav.map((item) => (
-          <button
-            key={item.id}
-            type="button"
-            className={
-              active === item.id ? "settings-subnav__item is-active" : "settings-subnav__item"
-            }
-            onClick={() => onSelect(item.id)}
-          >
-            <span>
-              <strong>{item.label}</strong>
-              {"sub" in item && item.sub && <small>{item.sub}</small>}
-            </span>
-            {"badge" in item && item.badge && (
-              <span className="settings-subnav__badge">{item.badge}</span>
-            )}
-            {item.id === "notifications" && <span className="settings-subnav__chev">›</span>}
-            {"icon" in item && item.icon === "lock" && (
-              <svg className="settings-subnav__lock" width="12" height="14" viewBox="0 0 12 14" aria-hidden>
-                <rect x="2" y="6" width="8" height="7" rx="1" stroke="currentColor" fill="none" />
-                <path d="M4 6V4a2 2 0 014 0v2" stroke="currentColor" fill="none" />
-              </svg>
-            )}
-          </button>
-        ))}
+        {settingsNav.map((item) => {
+          const isActive = active === item.id;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              className={
+                isActive ? "settings-subnav__item is-active" : "settings-subnav__item"
+              }
+              onClick={() => onSelect(item.id)}
+            >
+              <span className="settings-subnav__main">
+                <SettingsNavIcon id={item.icon} active={isActive} />
+                <span className="settings-subnav__copy">
+                  <strong>{item.label}</strong>
+                  {"sub" in item && item.sub && <small>{item.sub}</small>}
+                </span>
+              </span>
+              <span className="settings-subnav__aside">
+                {item.id === "team" && adminTeamCount != null && (
+                  <span className="settings-subnav__badge">{adminTeamCount}</span>
+                )}
+                {"showLiveDotWhenActive" in item &&
+                  item.showLiveDotWhenActive &&
+                  isActive && <span className="settings-subnav__live-dot" aria-hidden />}
+              </span>
+            </button>
+          );
+        })}
       </nav>
 
-      <div className="settings-co2">
-        <p>CO₂ emissions impact</p>
+      <div className="settings-impact">
+        <div className="settings-impact__title">
+          <SettingsImpactLeafIcon />
+          <p>Circulate impact</p>
+        </div>
         <strong>14,280 kg</strong>
-        <span>Offset fuel saved via circular swaps this quarter.</span>
+        <span>
+          Carbon offset facilitated through verified peer-to-peer handoffs this cycle.
+        </span>
       </div>
     </aside>
   );

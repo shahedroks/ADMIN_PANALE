@@ -1,15 +1,31 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAppStore } from "@/store";
 
-const navItems = [
-  { to: "/dashboard", label: "Dashboard Overview", icon: "grid" as const, end: true },
-  { to: "/reports", label: "Reports & Review", icon: "flag" as const },
-  { to: "/items-review", label: "Items Review", icon: "review" as const },
-  { to: "/users", label: "User Management", icon: "users" as const },
-  { to: "/settings", label: "Settings", icon: "settings" as const },
+type NavIconId = "grid" | "flag" | "review" | "users" | "settings" | "subscription";
+
+const navItems: {
+  to: string;
+  label: string;
+  icon: NavIconId;
+  end?: boolean;
+  badge?: string;
+  subLinks?: { to: string; label: string }[];
+}[] = [
+  { to: "/dashboard", label: "Dashboard Overview", icon: "grid", end: true },
+  { to: "/reports", label: "Reports & Review", icon: "flag" },
+  { to: "/items-review", label: "Items Review", icon: "review" },
+  { to: "/users", label: "User Management", icon: "users" },
+  {
+    to: "/subscriptions",
+    label: "Subscriptions",
+    icon: "subscription",
+    badge: "SUITE",
+    subLinks: [{ to: "/subscriptions/plans", label: "Plans Management" }],
+  },
+  { to: "/settings", label: "Settings", icon: "settings" },
 ];
 
-function NavIcon({ type }: { type: (typeof navItems)[number]["icon"] }) {
+function NavIcon({ type }: { type: NavIconId }) {
   const stroke = "currentColor";
   switch (type) {
     case "grid":
@@ -30,12 +46,7 @@ function NavIcon({ type }: { type: (typeof navItems)[number]["icon"] }) {
     case "review":
       return (
         <svg width="14" height="13" viewBox="0 0 14 13" aria-hidden>
-          <path
-            d="M1 2h12v8H4l-2 2V2z"
-            stroke={stroke}
-            fill="none"
-            strokeWidth="1.2"
-          />
+          <path d="M1 2h12v8H4l-2 2V2z" stroke={stroke} fill="none" strokeWidth="1.2" />
           <path d="M4 5h6M4 7h4" stroke={stroke} strokeWidth="1.1" />
         </svg>
       );
@@ -58,6 +69,14 @@ function NavIcon({ type }: { type: (typeof navItems)[number]["icon"] }) {
           />
         </svg>
       );
+    case "subscription":
+      return (
+        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden>
+          <rect x="1.5" y="3" width="11" height="8" rx="1.5" stroke={stroke} fill="none" strokeWidth="1.2" />
+          <path d="M1.5 6h11" stroke={stroke} strokeWidth="1.2" />
+          <path d="M4 9h3" stroke={stroke} strokeWidth="1.2" strokeLinecap="round" />
+        </svg>
+      );
   }
 }
 
@@ -75,8 +94,19 @@ function BrandIcon() {
   );
 }
 
+function subscriptionMainClass(pathname: string, hasSub: boolean) {
+  if (!hasSub) return "";
+  if (!pathname.startsWith("/subscriptions")) return "";
+  const onOverview =
+    pathname === "/subscriptions" || pathname === "/subscriptions/";
+  if (onOverview) return "dash-sidebar__link--active";
+  return "dash-sidebar__link--parent-active";
+}
+
 export function DashboardSidebar() {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const onSubscriptions = pathname.startsWith("/subscriptions");
   const { logout } = useAppStore();
 
   function handleLogout() {
@@ -96,17 +126,52 @@ export function DashboardSidebar() {
         </div>
         <nav className="dash-sidebar__nav" aria-label="Main">
           {navItems.map((item) => (
-            <NavLink
+            <div
               key={item.to}
-              to={item.to}
-              end={item.end}
-              className={({ isActive }) =>
-                isActive ? "dash-sidebar__link dash-sidebar__link--active" : "dash-sidebar__link"
+              className={
+                item.subLinks && onSubscriptions
+                  ? "dash-sidebar__group dash-sidebar__group--expanded"
+                  : "dash-sidebar__group"
               }
             >
-              <NavIcon type={item.icon} />
-              {item.label}
-            </NavLink>
+              <NavLink
+                to={item.to}
+                end={item.subLinks ? true : item.end}
+                className={({ isActive }) => {
+                  const subClass = subscriptionMainClass(pathname, Boolean(item.subLinks));
+                  if (subClass) return `dash-sidebar__link ${subClass}`;
+                  return isActive
+                    ? "dash-sidebar__link dash-sidebar__link--active"
+                    : "dash-sidebar__link";
+                }}
+              >
+                <NavIcon type={item.icon} />
+                <span className="dash-sidebar__link-text">{item.label}</span>
+                {item.badge && <span className="dash-sidebar__badge">{item.badge}</span>}
+              </NavLink>
+              {item.subLinks && onSubscriptions
+                ? item.subLinks.map((sub) => {
+                    const subActive =
+                      pathname === sub.to || pathname.startsWith(`${sub.to}/`);
+                    return (
+                      <NavLink
+                        key={sub.to}
+                        to={sub.to}
+                        end
+                        aria-current={subActive ? "page" : undefined}
+                        className={
+                          subActive
+                            ? "dash-sidebar__sublink dash-sidebar__sublink--active"
+                            : "dash-sidebar__sublink"
+                        }
+                      >
+                        <span className="dash-sidebar__sublink-dot" aria-hidden />
+                        {sub.label}
+                      </NavLink>
+                    );
+                  })
+                : null}
+            </div>
           ))}
         </nav>
       </div>

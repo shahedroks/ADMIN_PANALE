@@ -27,12 +27,12 @@ function TrustDots({ count, trust }: { count: number; trust: SwapperMember["trus
     trust === "low" ? "users-trust--low" : trust === "review" ? "users-trust--review" : "users-trust--good";
   return (
     <div className={`users-trust ${tone}`}>
-      <span className="users-trust__dots">
+      <span className="users-trust__label">{trustLabel[trust]}</span>
+      <span className="users-trust__dots" aria-hidden>
         {Array.from({ length: 5 }, (_, i) => (
           <i key={i} className={i < count ? "on" : undefined} />
         ))}
       </span>
-      <span>{trustLabel[trust]}</span>
     </div>
   );
 }
@@ -110,33 +110,60 @@ export function UsersManagementTable({
                 <td className="users-table__muted">{row.lastActive}</td>
                 <td>
                   <div className="users-table__actions">
-                    <Link to={`/users/${row.id}`} className="users-table__profile-link">
+                    <Link
+                      to={`/users/${row.id}`}
+                      className="users-table__action-link users-table__action-link--profile"
+                    >
                       Profile
                     </Link>
                     {row.status === "banned" ? (
                       <>
-                        <button type="button" onClick={() => onLift(row.id)}>
+                        <button
+                          type="button"
+                          className="users-table__action-link users-table__action-link--restrict"
+                          onClick={() => onLift(row.id)}
+                        >
                           Lift restriction
                         </button>
-                        <button type="button" className="danger" onClick={() => onDelete(row.id)}>
+                        <button
+                          type="button"
+                          className="users-table__action-link users-table__action-link--danger"
+                          onClick={() => onDelete(row.id)}
+                        >
                           Delete
                         </button>
                       </>
                     ) : row.status === "restricted" ? (
                       <>
-                        <button type="button" onClick={() => onLift(row.id)}>
+                        <button
+                          type="button"
+                          className="users-table__action-link users-table__action-link--restrict"
+                          onClick={() => onLift(row.id)}
+                        >
                           Lift restriction
                         </button>
-                        <button type="button" className="danger" onClick={() => onBan(row.id)}>
+                        <button
+                          type="button"
+                          className="users-table__action-link users-table__action-link--danger"
+                          onClick={() => onBan(row.id)}
+                        >
                           Ban
                         </button>
                       </>
                     ) : (
                       <>
-                        <button type="button" onClick={() => onRestrict(row.id)}>
+                        <button
+                          type="button"
+                          className="users-table__action-link users-table__action-link--restrict"
+                          onClick={() => onRestrict(row.id)}
+                        >
                           Restrict
                         </button>
-                        <button type="button" onClick={() => onBan(row.id)}>
+                        <button
+                          type="button"
+                          className="users-table__action-link users-table__action-link--danger"
+                          onClick={() => onBan(row.id)}
+                        >
                           Ban
                         </button>
                       </>

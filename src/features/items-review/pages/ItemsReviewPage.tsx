@@ -114,6 +114,14 @@ export function ItemsReviewPage() {
             className="items-review-filters"
             onClick={() => pushToast("Advanced filters panel (demo).", "info")}
           >
+            <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden>
+              <path
+                d="M1 3h12M3 7h8M5 11h4"
+                stroke="currentColor"
+                strokeWidth="1.3"
+                strokeLinecap="round"
+              />
+            </svg>
             Filters
           </button>
           <button
@@ -122,7 +130,15 @@ export function ItemsReviewPage() {
             aria-label="Refresh"
             onClick={() => pushToast("Review queue synced with marketplace feed.", "info")}
           >
-            ↻
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden>
+              <path
+                d="M13 3v4H9M3 13V9h4M12.5 6A5.5 5.5 0 103 8.5"
+                stroke="currentColor"
+                fill="none"
+                strokeWidth="1.3"
+                strokeLinecap="round"
+              />
+            </svg>
           </button>
         </div>
       </header>
@@ -131,11 +147,11 @@ export function ItemsReviewPage() {
         <div className="items-review-tabs" role="tablist">
           {(
             [
-              ["all", `All items (${reviewTabCounts.all})`],
-              ["awaiting", `Awaiting review (${reviewTabCounts.awaiting})`],
-              ["reviewed", `Reviewed (${reviewTabCounts.reviewed})`],
+              ["all", "All items", reviewTabCounts.all],
+              ["awaiting", "Awaiting review", reviewTabCounts.awaiting],
+              ["reviewed", "Reviewed", reviewTabCounts.reviewed],
             ] as const
-          ).map(([key, label]) => (
+          ).map(([key, label, count]) => (
             <button
               key={key}
               type="button"
@@ -147,7 +163,8 @@ export function ItemsReviewPage() {
                 setPage(1);
               }}
             >
-              {label}
+              <span className="items-review-tab__label">{label}</span>
+              <span className="items-review-tab__count">{count}</span>
             </button>
           ))}
         </div>

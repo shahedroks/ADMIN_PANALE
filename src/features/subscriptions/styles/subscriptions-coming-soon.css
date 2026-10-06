@@ -1,0 +1,48 @@
+.subscriptions-coming-soon {
+  max-width: 720px;
+  gap: 16px;
+}
+
+.subscriptions-coming-soon__crumb {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #717974;
+}
+
+.subscriptions-coming-soon__card {
+  padding: 40px 32px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  text-align: center;
+}
+
+.subscriptions-coming-soon__badge {
+  display: inline-block;
+  margin-bottom: 12px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  background: #eff4ff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #304f00;
+}
+
+.subscriptions-coming-soon h1 {
+  margin: 0 0 8px;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: #121c2a;
+}
+
+.subscriptions-coming-soon__card > p {
+  margin: 0 auto;
+  max-width: 420px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #414845;
+}

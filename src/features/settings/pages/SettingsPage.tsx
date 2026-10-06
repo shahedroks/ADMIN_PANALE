@@ -1,26 +1,21 @@
 import { useEffect, useState } from "react";
-import {
-  SettingsGeneralPanel,
-  SettingsNotificationsPanel,
-} from "@/features/settings/components/SettingsGeneralPanel";
+import { SettingsGeneralPanel } from "@/features/settings/components/SettingsGeneralPanel";
 import { SettingsSecurityPanel } from "@/features/settings/components/SettingsSecurityPanel";
 import { SettingsSubNav } from "@/features/settings/components/SettingsSubNav";
 import { SettingsTeamTable } from "@/features/settings/components/SettingsTeamTable";
-import {
-  adminMembers,
-  type SettingsSectionId,
-} from "@/features/settings/data/settingsData";
+import { type SettingsSectionId } from "@/features/settings/data/settingsData";
+import { useDemoStore } from "@/store/demoStore";
 import "@/features/dashboard/styles/dashboard.css";
 import "@/features/settings/styles/settings-page.css";
 
 const sectionAnchors: Record<SettingsSectionId, string> = {
   general: "settings-general",
   team: "settings-team",
-  notifications: "settings-notifications",
   security: "settings-security",
 };
 
 export function SettingsPage() {
+  const { adminTeam } = useDemoStore();
   const [active, setActive] = useState<SettingsSectionId>("general");
 
   useEffect(() => {
@@ -47,12 +42,11 @@ export function SettingsPage() {
       </header>
 
       <div className="settings-layout">
-        <SettingsSubNav active={active} onSelect={setActive} />
+        <SettingsSubNav active={active} onSelect={setActive} adminTeamCount={adminTeam.length} />
 
         <div className="settings-workspace">
           <SettingsGeneralPanel />
-          <SettingsTeamTable members={adminMembers} />
-          <SettingsNotificationsPanel />
+          <SettingsTeamTable members={adminTeam} />
           <SettingsSecurityPanel />
         </div>
       </div>

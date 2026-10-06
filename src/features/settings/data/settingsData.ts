@@ -3,7 +3,7 @@ export type AdminMember = {
   name: string;
   email: string;
   role: string;
-  roleVariant: "super" | "moderator" | "support";
+  roleVariant: "super" | "moderator" | "support" | "automated";
   department: string;
   lastActive: string;
 };
@@ -54,13 +54,29 @@ export const adminMembers: AdminMember[] = [
     department: "Trust Operations",
     lastActive: "3d ago",
   },
+  {
+    id: "6",
+    name: "Bot Moderator",
+    email: "bot.moderator@swapit.io",
+    role: "Automated Engine",
+    roleVariant: "automated",
+    department: "Review Automation",
+    lastActive: "Always on",
+  },
 ];
 
+export type SettingsNavIconId = "general" | "team" | "security";
+
 export const settingsNav = [
-  { id: "general", label: "General", sub: "Profile & overview" },
-  { id: "team", label: "Team & Roles", badge: "5" },
-  { id: "notifications", label: "Notifications" },
-  { id: "security", label: "Security", icon: "lock" as const },
+  {
+    id: "general",
+    label: "General",
+    sub: "Profile & overview",
+    icon: "general" as const,
+    showLiveDotWhenActive: true,
+  },
+  { id: "team", label: "Team & Roles", icon: "team" as const },
+  { id: "security", label: "Security", icon: "security" as const },
 ] as const;
 
 export type SettingsSectionId = (typeof settingsNav)[number]["id"];

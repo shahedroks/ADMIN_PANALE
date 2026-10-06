@@ -8,6 +8,7 @@ export const userKpis: UserKpi[] = [
     hint: "+142 this week",
     hintTone: "positive",
     icon: "members",
+    iconBg: "#eff4ff",
   },
   {
     id: "trust",
@@ -16,6 +17,7 @@ export const userKpis: UserKpi[] = [
     hint: "Peer-attested",
     hintTone: "positive",
     icon: "trust",
+    iconBg: "#eff4ff",
   },
   {
     id: "restrict",
@@ -24,6 +26,7 @@ export const userKpis: UserKpi[] = [
     hint: "Under moderation",
     hintTone: "neutral",
     icon: "restrict",
+    iconBg: "#e6eeff",
   },
   {
     id: "flag",
@@ -33,6 +36,7 @@ export const userKpis: UserKpi[] = [
     hintTone: "negative",
     alert: true,
     icon: "flag",
+    iconBg: "rgba(255, 218, 214, 0.55)",
   },
 ];
 

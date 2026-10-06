@@ -8,8 +8,11 @@ export type DashboardMetric = {
   deltaTone: "positive" | "negative" | "neutral";
   status: MetricStatus;
   statusLabel: string;
-  note?: string;
+  footnote: string;
+  progressPercent: number;
+  progressColor: string;
   icon: "chat" | "flag" | "box" | "users";
+  iconBg: string;
 };
 
 export type ActivityPoint = {
@@ -27,7 +30,11 @@ export const dashboardMetrics: DashboardMetric[] = [
     deltaTone: "positive",
     status: "stable",
     statusLabel: "Stable",
+    footnote: "vs previous 7 days",
+    progressPercent: 72,
+    progressColor: "#acf847",
     icon: "chat",
+    iconBg: "rgba(172, 248, 71, 0.3)",
   },
   {
     id: "reports",
@@ -37,8 +44,11 @@ export const dashboardMetrics: DashboardMetric[] = [
     deltaTone: "negative",
     status: "review",
     statusLabel: "Needs review",
-    note: "Requires manual audit",
+    footnote: "Requires manual audit",
+    progressPercent: 48,
+    progressColor: "#ba1a1a",
     icon: "flag",
+    iconBg: "rgba(255, 218, 214, 0.4)",
   },
   {
     id: "items",
@@ -48,8 +58,11 @@ export const dashboardMetrics: DashboardMetric[] = [
     deltaTone: "positive",
     status: "stable",
     statusLabel: "Stable",
-    note: "Circulating inventory",
+    footnote: "Circulating inventory",
+    progressPercent: 84,
+    progressColor: "#0d3b2e",
     icon: "box",
+    iconBg: "rgba(190, 237, 217, 0.4)",
   },
   {
     id: "users",
@@ -59,8 +72,11 @@ export const dashboardMetrics: DashboardMetric[] = [
     deltaTone: "positive",
     status: "stable",
     statusLabel: "Stable",
-    note: "30-day verified active",
+    footnote: "30-day verified active",
+    progressPercent: 91,
+    progressColor: "#416900",
     icon: "users",
+    iconBg: "#e6eeff",
   },
 ];
 

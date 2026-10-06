@@ -8,6 +8,7 @@ export const reportKpis: ReportKpi[] = [
     hint: "↓ 14% vs yesterday",
     hintTone: "positive",
     icon: "shield",
+    iconBg: "#e6eeff",
   },
   {
     id: "urgency",
@@ -16,6 +17,7 @@ export const reportKpis: ReportKpi[] = [
     hint: "! Action required <2h",
     hintTone: "negative",
     icon: "flag",
+    iconBg: "rgba(255, 218, 214, 0.55)",
     alert: true,
   },
   {
@@ -25,6 +27,7 @@ export const reportKpis: ReportKpi[] = [
     hint: "94% SLA met",
     hintTone: "positive",
     icon: "timer",
+    iconBg: "#eff4ff",
   },
   {
     id: "clean",
@@ -33,6 +36,7 @@ export const reportKpis: ReportKpi[] = [
     hint: "4,120 transactions",
     hintTone: "neutral",
     icon: "leaf",
+    iconBg: "rgba(172, 248, 71, 0.35)",
   },
 ];
 

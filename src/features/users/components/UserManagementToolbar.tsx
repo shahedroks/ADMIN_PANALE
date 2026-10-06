@@ -25,9 +25,9 @@ export function UserManagementToolbar({
   return (
     <div className="users-toolbar">
       <div className="users-toolbar__search">
-        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden>
-          <circle cx="7" cy="7" r="5" stroke="#717974" fill="none" strokeWidth="1.2" />
-          <path d="M11 11l3 3" stroke="#717974" strokeWidth="1.2" />
+        <svg width="15" height="15" viewBox="0 0 16 16" aria-hidden>
+          <circle cx="7" cy="7" r="5" stroke="#414845" fill="none" strokeWidth="1.2" />
+          <path d="M11 11l3 3" stroke="#414845" strokeWidth="1.2" />
         </svg>
         <input
           type="search"
@@ -44,11 +44,20 @@ export function UserManagementToolbar({
             type="button"
             role="tab"
             aria-selected={activeTab === tab.id}
-            className={activeTab === tab.id ? "users-tab users-tab--active" : "users-tab"}
+            className={
+              activeTab === tab.id
+                ? tab.id === "all"
+                  ? "users-tab users-tab--active-all"
+                  : "users-tab users-tab--active"
+                : "users-tab"
+            }
             onClick={() => onTabChange(tab.id)}
           >
-            {tab.label}
-            <span>{tab.count.toLocaleString()}</span>
+            {activeTab === tab.id && tab.id !== "all" && (
+              <span className="users-tab__dot" aria-hidden />
+            )}
+            <span className="users-tab__label">{tab.label}</span>
+            <span className="users-tab__count">{tab.count.toLocaleString()}</span>
           </button>
         ))}
       </div>
