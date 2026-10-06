@@ -1,0 +1,25 @@
+src/
+├── features/
+│   ├── auth/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── services/
+│   │   ├── hooks/
+│   │   └── types/
+│   │
+│   ├── users/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── services/
+│   │   └── types/
+│   │
+│   ├── orders/
+│   ├── products/
+│   └── reports/
+│
+├── components/
+├── layouts/
+├── routes/
+├── store/
+├── utils/
+└── main.tsx

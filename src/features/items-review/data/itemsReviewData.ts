@@ -1,0 +1,190 @@
+import type { ReviewItem } from "@/features/items-review/types";
+
+export const tabCounts = {
+  all: 42,
+  awaiting: 18,
+  reviewed: 24,
+};
+
+export const PAGE_SIZE = 4;
+
+const baseItems: ReviewItem[] = [
+  {
+    id: "SW-9821",
+    title: "Custom Mechanical Keyboard (Lubed Gateron Yellows)",
+    category: "Electronics",
+    imageSeed: "keyboard",
+    listedHoursAgo: 36,
+    status: "awaiting",
+    userType: "Trusted user",
+    userName: "Elena V.",
+    userVerified: true,
+    flagKind: "report",
+    flagTitle: "Report reason",
+    flagMessage:
+      'Potential off-platform payment. Description mentions "DM for Zelle" outside escrow.',
+    condition: "Good",
+    estimatedValue: "~$220",
+    location: "Austin, TX",
+    selected: true,
+  },
+  {
+    id: "SW-9814",
+    title: "Variegated Monstera Albo Cutting + Terra Cotta",
+    category: "Flora & Garden",
+    imageSeed: "monstera",
+    listedHoursAgo: 34,
+    status: "awaiting",
+    userType: "New user",
+    userName: "Sam K.",
+    userVerified: false,
+    userRating: 4.2,
+    flagKind: "automated",
+    flagTitle: "Automated flag",
+    flagMessage:
+      "Duplicate listing detected. Same photos used in listing #SW-9702 (removed).",
+    condition: "Healthy",
+    estimatedValue: "~$180",
+    location: "Portland, OR",
+  },
+  {
+    id: "SW-9803",
+    title: "Olympus OM-1 Camera Kit",
+    category: "Photography",
+    imageSeed: "camera",
+    listedHoursAgo: 32,
+    status: "awaiting",
+    userType: "Trusted user",
+    userName: "Marcus L.",
+    userVerified: true,
+    flagKind: "trust",
+    flagTitle: "Trust warning",
+    flagMessage:
+      "Suspected stock photo. Reverse image match score 92% on commercial catalog.",
+    condition: "Very good",
+    estimatedValue: "~$340",
+    location: "Chicago, IL",
+    selected: true,
+  },
+  {
+    id: "SW-9795",
+    title: "Coffee Grinder & Kettle Set",
+    category: "Home & Kitchen",
+    imageSeed: "coffee",
+    listedHoursAgo: 30,
+    status: "awaiting",
+    userType: "Trusted user",
+    userName: "Nina P.",
+    userVerified: true,
+    flagKind: "policy",
+    flagTitle: "Policy tag flag",
+    flagMessage:
+      "Wishlist criteria includes prohibited trade items (retail gift cards).",
+    condition: "Like new",
+    estimatedValue: "~$95",
+    location: "Brooklyn, NY",
+  },
+];
+
+const catalog: Omit<ReviewItem, "id" | "imageSeed" | "status">[] = [
+  {
+    title: "Vintage Denim Jacket",
+    category: "Fashion",
+    listedHoursAgo: 14,
+    userType: "Trusted user",
+    userName: "Jordan A.",
+    userVerified: true,
+    flagKind: "automated",
+    flagTitle: "Automated flag",
+    flagMessage: "Price anomaly vs category median.",
+    condition: "Good",
+    estimatedValue: "~$60",
+    location: "Denver, CO",
+  },
+  {
+    title: "Mid-Century Bookshelf Unit",
+    category: "Furniture",
+    listedHoursAgo: 15,
+    userType: "Trusted user",
+    userName: "Alex M.",
+    userVerified: true,
+    flagKind: "report",
+    flagTitle: "Report reason",
+    flagMessage: "Buyer reported item condition mismatch after swap meetup.",
+    condition: "Fair",
+    estimatedValue: "~$120",
+    location: "Oakland, CA",
+  },
+  {
+    title: "Designer Sneakers (Limited)",
+    category: "Fashion",
+    listedHoursAgo: 16,
+    userType: "New user",
+    userName: "Taylor R.",
+    userVerified: false,
+    flagKind: "report",
+    flagTitle: "Report reason",
+    flagMessage: "Counterfeit authenticity claim under peer review.",
+    condition: "New",
+    estimatedValue: "~$280",
+    location: "Miami, FL",
+  },
+  {
+    title: "Vintage Vinyl Turntable",
+    category: "Audio",
+    listedHoursAgo: 17,
+    userType: "Trusted user",
+    userName: "Marcus Chen",
+    userVerified: true,
+    flagKind: "report",
+    flagTitle: "Report reason",
+    flagMessage: "Off-platform payment language flagged by NLP moderation.",
+    condition: "Very good",
+    estimatedValue: "~$410",
+    location: "Brooklyn, NY",
+  },
+  {
+    title: "Board Game Bundle",
+    category: "Games",
+    listedHoursAgo: 18,
+    userType: "Trusted user",
+    userName: "Chris T.",
+    userVerified: true,
+    flagKind: "report",
+    flagTitle: "Report reason",
+    flagMessage: "Resolved — listing updated.",
+    condition: "Good",
+    estimatedValue: "~$45",
+    location: "Seattle, WA",
+  },
+  {
+    title: "Electric Guitar + Amp",
+    category: "Music",
+    listedHoursAgo: 19,
+    userType: "Trusted user",
+    userName: "Priya N.",
+    userVerified: true,
+    flagKind: "automated",
+    flagTitle: "Automated flag",
+    flagMessage: "Shipping zone restriction conflict detected.",
+    condition: "Good",
+    estimatedValue: "~$520",
+    location: "Austin, TX",
+  },
+];
+
+export const reviewItems: ReviewItem[] = [...baseItems];
+
+let seed = 9789;
+while (reviewItems.length < tabCounts.all) {
+  const index = reviewItems.length - baseItems.length;
+  const template = catalog[index % catalog.length];
+  const cycle = Math.floor(index / catalog.length);
+  reviewItems.push({
+    ...template,
+    id: `SW-${seed--}`,
+    imageSeed: `${template.category.toLowerCase().replace(/\s/g, "-")}-${seed}`,
+    listedHoursAgo: Math.min(28, template.listedHoursAgo + cycle * 2),
+    status: reviewItems.length < tabCounts.awaiting ? "awaiting" : "reviewed",
+  });
+}
