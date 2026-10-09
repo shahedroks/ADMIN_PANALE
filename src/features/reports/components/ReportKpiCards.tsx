@@ -1,17 +1,23 @@
 import {
-  ReportKpiFlagIcon,
   ReportKpiLeafIcon,
   ReportKpiShieldIcon,
   ReportKpiTimerIcon,
 } from "@/features/reports/components/ReportGlyphs";
 import type { ReportKpi } from "@/features/reports/types";
+import containerImage from "../../../../doc/Container.png";
 
 function KpiIcon({ type }: { type: ReportKpi["icon"] }) {
   switch (type) {
     case "shield":
       return <ReportKpiShieldIcon className="reports-kpi__glyph" />;
     case "flag":
-      return <ReportKpiFlagIcon className="reports-kpi__glyph reports-kpi__glyph--flag" />;
+      return (
+        <img
+          src={containerImage}
+          alt=""
+          className="reports-kpi__glyph reports-kpi__glyph--flag"
+        />
+      );
     case "timer":
       return <ReportKpiTimerIcon className="reports-kpi__glyph" />;
     case "leaf":
