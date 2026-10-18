@@ -109,8 +109,8 @@ export function DashboardSidebar() {
   const onSubscriptions = pathname.startsWith("/subscriptions");
   const { logout } = useAppStore();
 
-  function handleLogout() {
-    logout();
+  async function handleLogout() {
+    await logout();
     navigate("/login", { replace: true });
   }
 

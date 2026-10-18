@@ -2,29 +2,32 @@ import { useMemo, useState } from "react";
 import { ItemReviewCard } from "@/features/items-review/components/ItemReviewCard";
 import { PAGE_SIZE } from "@/features/items-review/data/itemsReviewData";
 import type { ItemFilterTab, SortOption } from "@/features/items-review/types";
+import { useReviewItems } from "@/hooks/useFirestoreAdminData";
 import { useDemoStore } from "@/store/demoStore";
 import "@/features/dashboard/styles/dashboard.css";
 import "@/features/items-review/styles/items-review.css";
 
 export function ItemsReviewPage() {
-  const {
-    reviewItems,
-    reviewTabCounts,
-    hideReviewItem,
-    requestEditReviewItem,
-    batchApproveSafeItems,
-    pushToast,
-  } = useDemoStore();
+  const { items: reviewItems, reload, moderate, batchApprove, loading, error } =
+    useReviewItems();
+  const { pushToast } = useDemoStore();
 
   const visibleItems = useMemo(() => reviewItems.filter((i) => !i.hidden), [reviewItems]);
+
+  const reviewTabCounts = useMemo(
+    () => ({
+      all: visibleItems.length,
+      awaiting: visibleItems.filter((i) => i.status === "awaiting").length,
+      reviewed: visibleItems.filter((i) => i.status === "reviewed").length,
+    }),
+    [visibleItems],
+  );
 
   const [tab, setTab] = useState<ItemFilterTab>("awaiting");
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<SortOption>("oldest");
   const [page, setPage] = useState(1);
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(
-    () => new Set(visibleItems.filter((i) => i.selected).map((i) => i.id)),
-  );
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const filtered = useMemo(() => {
     let list = visibleItems;
@@ -68,17 +71,24 @@ export function ItemsReviewPage() {
     });
   }
 
-  function handleBatchApprove() {
+  async function handleBatchApprove() {
     const safeIds = [...selectedIds].filter((id) => {
       const item = reviewItems.find((i) => i.id === id);
       return item && item.status === "awaiting" && item.flagKind !== "report";
     });
-    batchApproveSafeItems(safeIds);
+    try {
+      await batchApprove(safeIds);
+      pushToast(`Approved ${safeIds.length} item(s) via Firebase.`, "success");
+    } catch (e) {
+      pushToast(e instanceof Error ? e.message : "Batch approve failed.", "error");
+    }
     setSelectedIds(new Set());
   }
 
   return (
     <div className="dash-page items-review-page">
+      {loading && <p className="items-review-loading">Loading review queue…</p>}
+      {error && <p className="items-review-error">{error}</p>}
       <header className="items-review-header">
         <div className="items-review-header__title">
           <div className="items-review-header__row">
@@ -112,7 +122,7 @@ export function ItemsReviewPage() {
           <button
             type="button"
             className="items-review-filters"
-            onClick={() => pushToast("Advanced filters panel (demo).", "info")}
+            onClick={() => pushToast("Advanced filters use the search bar for now.", "info")}
           >
             <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden>
               <path
@@ -128,7 +138,7 @@ export function ItemsReviewPage() {
             type="button"
             className="items-review-refresh"
             aria-label="Refresh"
-            onClick={() => pushToast("Review queue synced with marketplace feed.", "info")}
+            onClick={() => void reload()}
           >
             <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden>
               <path
@@ -189,12 +199,13 @@ export function ItemsReviewPage() {
             selected={selectedIds.has(item.id)}
             onToggleSelect={() => toggleSelect(item.id)}
             onRequestEdit={() =>
-              requestEditReviewItem(
+              void moderate(
                 item.id,
+                "request_edit",
                 "Please update listing copy to stay within SWAP IT escrow rules.",
               )
             }
-            onHide={() => hideReviewItem(item.id)}
+            onHide={() => void moderate(item.id, "hide")}
           />
         ))}
       </div>
@@ -232,7 +243,7 @@ export function ItemsReviewPage() {
             ›
           </button>
         </div>
-        <button type="button" className="items-review-batch" onClick={handleBatchApprove}>
+        <button type="button" className="items-review-batch" onClick={() => void handleBatchApprove()}>
           ✓ Approve all safe items (batch)
         </button>
       </footer>

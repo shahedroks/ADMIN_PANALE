@@ -2,62 +2,85 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
 } from "react";
+import { onAuthStateChanged } from "firebase/auth";
 import type { User } from "@/features/users/types";
-
-const SESSION_KEY = "swapit_demo_session";
+import { auth } from "@/lib/firebase";
+import { resolveAdminUser } from "@/features/auth/utils/resolveAdminUser";
+import { logoutFromFirebase } from "@/features/auth/services/authService";
 
 type AppState = {
   user: User | null;
   isAuthenticated: boolean;
+  authReady: boolean;
+  authError: string | null;
 };
 
 type AppContextValue = AppState & {
   login: (user: User) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
+  clearAuthError: () => void;
 };
 
 const AppContext = createContext<AppContextValue | null>(null);
 
-const DEFAULT_ADMIN_AVATAR = "https://i.pravatar.cc/96?u=sara-miller-swap-admin";
-
-function readStoredUser(): User | null {
-  try {
-    const raw = sessionStorage.getItem(SESSION_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as User;
-    if (!parsed.avatarUrl) {
-      return { ...parsed, avatarUrl: DEFAULT_ADMIN_AVATAR };
-    }
-    return parsed;
-  } catch {
-    return null;
-  }
-}
-
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(() => readStoredUser());
+  const [user, setUser] = useState<User | null>(null);
+  const [authReady, setAuthReady] = useState(false);
+  const [authError, setAuthError] = useState<string | null>(null);
+
+  useEffect(() => {
+    return onAuthStateChanged(auth, async (firebaseUser) => {
+      if (!firebaseUser) {
+        setUser(null);
+        setAuthReady(true);
+        return;
+      }
+
+      try {
+        const appUser = await resolveAdminUser(firebaseUser);
+        setUser(appUser);
+        setAuthError(null);
+      } catch (error) {
+        setUser(null);
+        setAuthError(
+          error instanceof Error
+            ? error.message
+            : "You do not have admin access.",
+        );
+      } finally {
+        setAuthReady(true);
+      }
+    });
+  }, []);
 
   const login = useCallback((next: User) => {
     setUser(next);
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify(next));
+    setAuthError(null);
   }, []);
-  const logout = useCallback(() => {
+
+  const logout = useCallback(async () => {
+    await logoutFromFirebase();
     setUser(null);
-    sessionStorage.removeItem(SESSION_KEY);
   }, []);
+
+  const clearAuthError = useCallback(() => setAuthError(null), []);
 
   const value = useMemo<AppContextValue>(
     () => ({
       user,
       isAuthenticated: user !== null,
+      authReady,
+      authError,
       login,
       logout,
+      clearAuthError,
     }),
-    [user, login, logout],
+    [user, authReady, authError, login, logout, clearAuthError],
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

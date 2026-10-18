@@ -1,32 +1,41 @@
+import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import type { LoginCredentials, AuthSession } from "@/features/auth/types";
 import type { User } from "@/features/users/types";
-
-const MOCK_USER: User = {
-  id: "1",
-  name: "Sara Miller",
-  email: "admin@swapit.io",
-  role: "admin",
-  avatarUrl: "https://i.pravatar.cc/96?u=sara-miller-swap-admin",
-};
+import { auth } from "@/lib/firebase";
+import { firebaseAuthErrorMessage } from "@/features/auth/utils/firebaseAuthErrors";
+import { resolveAdminUser } from "@/features/auth/utils/resolveAdminUser";
 
 export async function login(
   credentials: LoginCredentials,
 ): Promise<{ user: User; session: AuthSession }> {
-  await delay(400);
-
   if (!credentials.email || !credentials.password) {
     throw new Error("Email and password are required.");
   }
 
-  return {
-    user: { ...MOCK_USER, email: credentials.email },
-    session: {
-      token: "mock-token",
-      expiresAt: new Date(Date.now() + 86400000).toISOString(),
-    },
-  };
+  try {
+    const credential = await signInWithEmailAndPassword(
+      auth,
+      credentials.email.trim(),
+      credentials.password,
+    );
+    const user = await resolveAdminUser(credential.user);
+    const token = await credential.user.getIdToken();
+
+    return {
+      user,
+      session: {
+        token,
+        expiresAt: new Date(Date.now() + 3600000).toISOString(),
+      },
+    };
+  } catch (error) {
+    if (error instanceof Error && error.message.includes("admin access")) {
+      throw error;
+    }
+    throw new Error(firebaseAuthErrorMessage(error));
+  }
 }
 
-function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+export async function logoutFromFirebase(): Promise<void> {
+  await signOut(auth);
 }

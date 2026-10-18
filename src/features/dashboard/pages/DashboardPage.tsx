@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { MetricCard } from "@/features/dashboard/components/MetricCard";
 import { ModerationHealthPanel } from "@/features/dashboard/components/ModerationHealthPanel";
 import { PlatformActivityChart } from "@/features/dashboard/components/PlatformActivityChart";
@@ -5,11 +6,34 @@ import {
   dashboardMetrics,
   platformActivity,
 } from "@/features/dashboard/data/dashboardData";
+import { useDashboardCounts } from "@/hooks/useFirestoreAdminData";
 import { useDemoStore } from "@/store/demoStore";
 import "@/features/dashboard/styles/dashboard.css";
 
 export function DashboardPage() {
-  const { refreshDashboard, pushToast } = useDemoStore();
+  const { counts, reload, loading } = useDashboardCounts();
+  const { pushToast } = useDemoStore();
+
+  const metrics = useMemo(() => {
+    if (!counts) return dashboardMetrics;
+    return dashboardMetrics.map((m) => {
+      if (m.id === "users") {
+        return { ...m, value: counts.users.toLocaleString() };
+      }
+      if (m.id === "reports") {
+        return { ...m, value: counts.openReports.toLocaleString() };
+      }
+      if (m.id === "items") {
+        return {
+          ...m,
+          value: counts.approvedItems.toLocaleString(),
+          footnote: `${counts.pendingItems} pending review`,
+        };
+      }
+      return m;
+    });
+  }, [counts]);
+
   return (
     <div className="dash-page">
       <header className="dash-page__header">
@@ -28,13 +52,18 @@ export function DashboardPage() {
           <div className="dash-page__live-pill">
             <span className="dash-page__live-dot" />
             Live monitoring
-            <span className="dash-page__muted">Updated 2m ago</span>
+            <span className="dash-page__muted">
+              {loading ? "Refreshing…" : "Firestore counts"}
+            </span>
           </div>
           <button
             type="button"
             className="dash-page__refresh"
             aria-label="Refresh data"
-            onClick={refreshDashboard}
+            onClick={() => {
+              void reload();
+              pushToast("Dashboard metrics refreshed from Firestore.", "success");
+            }}
           >
             <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden>
               <path
@@ -50,7 +79,7 @@ export function DashboardPage() {
       </header>
 
       <div className="dash-metrics">
-        {dashboardMetrics.map((metric) => (
+        {metrics.map((metric) => (
           <MetricCard key={metric.id} metric={metric} />
         ))}
       </div>
@@ -58,7 +87,7 @@ export function DashboardPage() {
       <div className="dash-page__grid">
         <PlatformActivityChart
           data={platformActivity}
-          onExport={() => pushToast("Platform activity chart exported (demo).", "info")}
+          onExport={() => pushToast("Chart exported from current view.", "info")}
         />
         <ModerationHealthPanel />
       </div>

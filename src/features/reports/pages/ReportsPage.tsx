@@ -5,20 +5,23 @@ import { ReportsTable } from "@/features/reports/components/ReportsTable";
 import { ReportToolbar } from "@/features/reports/components/ReportToolbar";
 import { PAGE_SIZE, reportKpis } from "@/features/reports/data/reportsData";
 import type { ReportFilterTab } from "@/features/reports/types";
+import { useModerationReports } from "@/hooks/useFirestoreAdminData";
 import { useDemoStore } from "@/store/demoStore";
 import "@/features/dashboard/styles/dashboard.css";
 import "@/features/reports/styles/reports-page.css";
 
 export function ReportsPage() {
-  const {
-    reports,
-    reportCounts,
-    reviewItems,
-    members,
-    reviewReport,
-    closeReport,
-    pushToast,
-  } = useDemoStore();
+  const { reports, setReportStatus, loading } = useModerationReports();
+  const { pushToast } = useDemoStore();
+
+  const reportCounts = useMemo(
+    () => ({
+      all: reports.length,
+      high: reports.filter((r) => r.priority === "high").length,
+      under_review: reports.filter((r) => r.status === "under_review").length,
+    }),
+    [reports],
+  );
 
   const [activeTab, setActiveTab] = useState<ReportFilterTab>("all");
   const [search, setSearch] = useState("");
@@ -39,8 +42,7 @@ export function ReportsPage() {
         (r) =>
           r.id.includes(q) ||
           r.type.toLowerCase().includes(q) ||
-          r.targetLabel.toLowerCase().includes(q) ||
-          r.flow.toLowerCase().includes(q),
+          r.targetLabel.toLowerCase().includes(q),
       );
     }
 
@@ -49,73 +51,38 @@ export function ReportsPage() {
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
-
   const pageRows = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
-  const paginationTotal = filtered.length;
-
-  function handleTabChange(tab: ReportFilterTab) {
-    setActiveTab(tab);
-    setPage(1);
-  }
-
-  function handleSearchChange(value: string) {
-    setSearch(value);
-    setPage(1);
-  }
 
   return (
     <div className="dash-page reports-page">
-      <header className="reports-page__header">
-        <div>
-          <p className="reports-page__eyebrow">
-            <span className="reports-page__live" />
-            Moderation deck • Live stream
-          </p>
-          <h1>Reports &amp; Review</h1>
-          <p className="reports-page__subtitle">
-            Track reports and take the right action across the peer exchange network.
-          </p>
-        </div>
-        <button
-          type="button"
-          className="reports-page__rules"
-          onClick={() => pushToast("Community policy handbook opened (demo).", "info")}
-        >
-          <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden>
-            <path
-              d="M2 3h10v2H2V3zM3 7h8v2H3V7zM5 11h4v2H5v-2z"
-              fill="currentColor"
-            />
-          </svg>
-          View Rules
-        </button>
-      </header>
-
+      {loading && <p>Loading reports…</p>}
       <ReportKpiCards items={reportKpis} />
-
       <ReportToolbar
         activeTab={activeTab}
-        onTabChange={handleTabChange}
+        onTabChange={setActiveTab}
         counts={reportCounts}
         search={search}
-        onSearchChange={handleSearchChange}
+        onSearchChange={setSearch}
       />
-
-      <section className="reports-table-card">
-        <ReportsTable
-          rows={pageRows}
-          reviewItems={reviewItems}
-          members={members}
-          onReview={reviewReport}
-          onClose={closeReport}
-        />
-        <ReportsPagination
-          page={safePage}
-          pageSize={PAGE_SIZE}
-          total={paginationTotal}
-          onPageChange={setPage}
-        />
-      </section>
+      <ReportsTable
+        rows={pageRows}
+        reviewItems={[]}
+        members={[]}
+        onReview={(id) => {
+          void setReportStatus(id, "under_review");
+          pushToast("Report marked under review.", "success");
+        }}
+        onClose={(id) => {
+          void setReportStatus(id, "closed");
+          pushToast("Report closed.", "success");
+        }}
+      />
+      <ReportsPagination
+        page={safePage}
+        pageSize={PAGE_SIZE}
+        total={filtered.length}
+        onPageChange={setPage}
+      />
     </div>
   );
 }

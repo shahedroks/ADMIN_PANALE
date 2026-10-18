@@ -5,10 +5,10 @@ import { UsersManagementTable } from "@/features/users/components/UsersManagemen
 import { UserWorkflowCards } from "@/features/users/components/UserWorkflowCards";
 import {
   PAGE_SIZE,
-  userFilterCounts,
   userKpis,
 } from "@/features/users/data/usersManagementData";
 import type { UserFilterTab } from "@/features/users/types";
+import { useSwapperMembers } from "@/hooks/useFirestoreAdminData";
 import { useDemoStore } from "@/store/demoStore";
 import "@/features/dashboard/styles/dashboard.css";
 import "@/features/users/styles/users-page.css";
@@ -19,10 +19,31 @@ export function UsersPage() {
     restrictMember,
     banMember,
     liftMemberRestriction,
-    deleteMember,
-    exportMembersCsv,
-    pushToast,
-  } = useDemoStore();
+    loading,
+    error,
+    reload,
+  } = useSwapperMembers();
+  const { pushToast } = useDemoStore();
+
+  const exportMembersCsv = () => {
+    const header = "id,name,email,status\n";
+    const body = members
+      .map((m) => `${m.id},${m.name},${m.email},${m.status}`)
+      .join("\n");
+    const blob = new Blob([header + body], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "swappers.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const deleteMember = async (id: string) => {
+    const { callDeleteUser } = await import("@/lib/callableFunctions");
+    await callDeleteUser({ userId: id });
+    await reload();
+  };
 
   const [search, setSearch] = useState("");
   const [tab, setTab] = useState<UserFilterTab>("active");
@@ -54,10 +75,18 @@ export function UsersPage() {
 
   const start = filtered.length === 0 ? 0 : (safePage - 1) * PAGE_SIZE + 1;
   const end = Math.min(safePage * PAGE_SIZE, filtered.length);
-  const displayTotal = tab === "all" && !search ? userFilterCounts.all : filtered.length;
+  const displayTotal = filtered.length;
+  const liveCounts = {
+    all: members.length,
+    active: members.filter((u) => u.status === "active").length,
+    restricted: members.filter((u) => u.status === "restricted").length,
+    banned: members.filter((u) => u.status === "banned").length,
+  };
 
   return (
     <div className="dash-page users-page">
+      {loading && <p>Loading users…</p>}
+      {error && <p>{error}</p>}
       <header className="users-page__header">
         <div>
           <p className="users-page__eyebrow">Community governance • Real-time directory</p>
@@ -114,7 +143,7 @@ export function UsersPage() {
           setTab(t);
           setPage(1);
         }}
-        counts={userFilterCounts}
+        counts={liveCounts}
       />
 
       <section className="users-table-card">

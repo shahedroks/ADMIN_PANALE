@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { ItemDetail } from "@/features/item-detail/types";
+import { callModerateItem } from "@/lib/callableFunctions";
 import { useDemoStore } from "@/store/demoStore";
 
 type ItemDetailAdjudicationPanelProps = {
@@ -11,10 +12,29 @@ export function ItemDetailAdjudicationPanel({
   detail,
   itemRouteId,
 }: ItemDetailAdjudicationPanelProps) {
-  const { approveReviewItem, hideReviewItem, requestEditReviewItem, pushToast } = useDemoStore();
+  const { pushToast } = useDemoStore();
   const [editNote, setEditNote] = useState(detail.suggestedEditNote);
   const [auditNote, setAuditNote] = useState("");
   const [notifyOwner, setNotifyOwner] = useState(true);
+  const [busy, setBusy] = useState(false);
+
+  async function runModeration(
+    action: "approve" | "hide" | "reject" | "request_edit",
+    note?: string,
+  ) {
+    setBusy(true);
+    try {
+      await callModerateItem({ itemId: itemRouteId, action, note });
+      pushToast("Moderation action saved to Firebase.", "success");
+    } catch (e) {
+      pushToast(
+        e instanceof Error ? e.message : "Moderation failed. Deploy functions & rules?",
+        "error",
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
 
   return (
     <aside className="item-detail-side">
@@ -30,7 +50,8 @@ export function ItemDetailAdjudicationPanel({
         <button
           type="button"
           className="item-detail-btn item-detail-btn--suggest"
-          onClick={() => requestEditReviewItem(itemRouteId, editNote)}
+          disabled={busy}
+          onClick={() => void runModeration("request_edit", editNote)}
         >
           Request edit from owner
         </button>
@@ -45,7 +66,8 @@ export function ItemDetailAdjudicationPanel({
         <button
           type="button"
           className="item-detail-btn item-detail-btn--approve"
-          onClick={() => approveReviewItem(itemRouteId)}
+          disabled={busy}
+          onClick={() => void runModeration("approve", auditNote || undefined)}
         >
           <svg viewBox="0 0 18 18" aria-hidden>
             <circle
@@ -70,7 +92,8 @@ export function ItemDetailAdjudicationPanel({
         <button
           type="button"
           className="item-detail-btn item-detail-btn--hide"
-          onClick={() => hideReviewItem(itemRouteId)}
+          disabled={busy}
+          onClick={() => void runModeration("hide", auditNote || undefined)}
         >
           <svg viewBox="0 0 18 18" aria-hidden>
             <path

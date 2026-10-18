@@ -1,6 +1,7 @@
 import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLogin } from "@/features/auth/hooks/useLogin";
+import { useAppStore } from "@/store";
 
 function MailIcon() {
   return (
@@ -105,6 +106,7 @@ function SecureLockIcon() {
 export function LoginForm() {
   const navigate = useNavigate();
   const { submit, loading, error } = useLogin();
+  const { authError, clearAuthError } = useAppStore();
   const [email, setEmail] = useState("admin@swapit.io");
   const [password, setPassword] = useState("CircularEco2024!");
   const [showPassword, setShowPassword] = useState(false);
@@ -112,6 +114,7 @@ export function LoginForm() {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    clearAuthError();
     try {
       await submit({ email, password });
       navigate("/dashboard", { replace: true });
@@ -135,7 +138,9 @@ export function LoginForm() {
         </header>
 
         <form className="login-form-panel__form" onSubmit={handleSubmit}>
-          {error && <p className="login-form-panel__error">{error}</p>}
+          {(error || authError) && (
+            <p className="login-form-panel__error">{error ?? authError}</p>
+          )}
 
           <div className="login-field login-reveal login-reveal--2">
             <label htmlFor="admin-email">Email Address</label>
