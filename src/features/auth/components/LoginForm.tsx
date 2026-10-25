@@ -69,7 +69,7 @@ function RestrictedIcon() {
     <svg width="18" height="20" viewBox="0 0 18 20" fill="none" aria-hidden>
       <path
         d="M9 1L2 4v5c0 4.2 2.55 8.13 6 9.5 3.45-1.37 6-5.3 6-9.5V4L9 1z"
-        fill="#00241A"
+        fill="var(--swapit-primary-dark)"
       />
     </svg>
   );
@@ -92,10 +92,10 @@ function ArrowRightIcon() {
 function SecureLockIcon() {
   return (
     <svg width="16" height="21" viewBox="0 0 16 21" fill="none" aria-hidden>
-      <rect x="2" y="9" width="12" height="10" rx="2" fill="#00241A" />
+      <rect x="2" y="9" width="12" height="10" rx="2" fill="var(--swapit-primary-dark)" />
       <path
         d="M5 9V6a3 3 0 016 0v3"
-        stroke="#00241A"
+        stroke="var(--swapit-primary-dark)"
         strokeWidth="2"
         strokeLinecap="round"
       />
@@ -108,7 +108,7 @@ export function LoginForm() {
   const { submit, loading, error } = useLogin();
   const { authError, clearAuthError } = useAppStore();
   const [email, setEmail] = useState("admin@swapit.io");
-  const [password, setPassword] = useState("CircularEco2024!");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(true);
 

@@ -1,14 +1,27 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   SettingsDownloadIcon,
   SettingsPhoneIcon,
 } from "@/features/settings/components/SettingsNavIcon";
-import { useDemoStore } from "@/store/demoStore";
+import type { AppSettings } from "@/services/firestore/appSettingsFirestoreService";
+import { useAppSettings } from "@/hooks/useAppSettings";
+import { useToast } from "@/store/toastStore";
 
-export function SettingsSecurityPanel() {
-  const { pushToast } = useDemoStore();
+type SettingsSecurityPanelProps = {
+  settings: AppSettings | null;
+};
+
+export function SettingsSecurityPanel({ settings }: SettingsSecurityPanelProps) {
+  const { pushToast } = useToast();
+  const { save } = useAppSettings();
   const [enforce2fa, setEnforce2fa] = useState(true);
   const [sessionTimeout, setSessionTimeout] = useState("30");
+
+  useEffect(() => {
+    if (!settings) return;
+    setEnforce2fa(settings.enforceTwoFactor);
+    setSessionTimeout(String(settings.sessionTimeoutMinutes));
+  }, [settings]);
 
   return (
     <section className="settings-panel" id="settings-security">
@@ -24,7 +37,7 @@ export function SettingsSecurityPanel() {
         <button
           type="button"
           className="settings-download"
-          onClick={() => pushToast("Security audit log download started (demo).", "info")}
+          onClick={() => pushToast("Audit log export will be available in a future release.", "info")}
         >
           <SettingsDownloadIcon />
           Download Security Audit Log
@@ -47,8 +60,11 @@ export function SettingsSecurityPanel() {
               type="checkbox"
               checked={enforce2fa}
               onChange={(e) => {
-                setEnforce2fa(e.target.checked);
-                pushToast(`2FA enforcement ${e.target.checked ? "enabled" : "disabled"}.`);
+                const next = e.target.checked;
+                setEnforce2fa(next);
+                void save({ enforceTwoFactor: next }).then(() =>
+                  pushToast(`2FA enforcement ${next ? "enabled" : "disabled"}.`),
+                );
               }}
             />
             <span className="settings-toggle__track" />
@@ -66,28 +82,17 @@ export function SettingsSecurityPanel() {
               className="settings-security-card__select"
               value={sessionTimeout}
               onChange={(e) => {
+                const minutes = Number.parseInt(e.target.value, 10);
                 setSessionTimeout(e.target.value);
-                pushToast(`Session timeout set to ${e.target.value} minutes.`);
+                void save({ sessionTimeoutMinutes: minutes }).then(() =>
+                  pushToast(`Session timeout set to ${minutes} minutes.`),
+                );
               }}
             >
               <option value="15">15 minutes of inactivity</option>
               <option value="30">30 minutes of inactivity</option>
               <option value="60">60 minutes of inactivity</option>
             </select>
-          </div>
-          <div className="settings-security-card">
-            <strong className="settings-security-card__title">Root Password Health</strong>
-            <div className="settings-strength">
-              <span style={{ width: "85%" }} />
-            </div>
-            <p className="settings-strength__label">Strong</p>
-            <button
-              type="button"
-              className="settings-btn settings-btn--outline"
-              onClick={() => pushToast("Password reset email sent to root admin (demo).", "info")}
-            >
-              Change master password
-            </button>
           </div>
         </div>
       </div>

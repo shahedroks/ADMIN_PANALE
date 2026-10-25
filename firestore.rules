@@ -2,17 +2,277 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /users/{userId} {
-      allow read: if request.auth != null && request.auth.uid == userId;
 
-      allow create: if request.auth != null
-        && request.auth.uid == userId
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function uid() {
+      return request.auth.uid;
+    }
+
+    function authEmailLower() {
+      return request.auth.token.email != null
+        ? request.auth.token.email.lower()
+        : '';
+    }
+
+    function isBootstrapAdmin() {
+      return uid() == 'cvPl7RFBpsNIXXSBLBeNQxcm3Hk2'
+        || uid() == 'FyG56sMWMgYI5RZ8W3Iws2RsxMO2'
+        || authEmailLower() == 'admin@swapit.io';
+    }
+
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(uid()));
+    }
+
+    function userExists() {
+      return isSignedIn() && userDoc().data != null;
+    }
+
+    function userRole() {
+      return userExists() ? userDoc().data.role : '';
+    }
+
+    function isAppUser() {
+      return userRole() == 'user';
+    }
+
+    function isAdminPanel() {
+      return isBootstrapAdmin()
+        || userRole() in ['admin', 'manager', 'viewer'];
+    }
+
+    function isAdminOrManager() {
+      return isBootstrapAdmin()
+        || userRole() in ['admin', 'manager'];
+    }
+
+    function accountActive() {
+      return !userExists()
+        || !('accountStatus' in userDoc().data)
+        || userDoc().data.accountStatus == 'active';
+    }
+
+    function notBanned() {
+      return !userExists()
+        || !('accountStatus' in userDoc().data)
+        || userDoc().data.accountStatus != 'banned';
+    }
+
+    function listingsAllowed() {
+      return notBanned()
+        && accountActive()
+        && (
+          !('restriction' in userDoc().data)
+          || !('allowListings' in userDoc().data.restriction)
+          || userDoc().data.restriction.allowListings == true
+        );
+    }
+
+    function itemData() {
+      return resource.data;
+    }
+
+    function itemReadable() {
+      return itemData().status == 'approved'
+        || (isSignedIn() && itemData().ownerId == uid())
+        || isAdminPanel();
+    }
+
+    function itemCreateValid() {
+      return request.resource.data.ownerId == uid()
+        && request.resource.data.status == 'pending'
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0;
+    }
+
+    function itemOwnerUpdateValid() {
+      return resource.data.ownerId == uid()
+        && request.resource.data.ownerId == resource.data.ownerId
+        && request.resource.data.status == resource.data.status
+        && listingsAllowed();
+    }
+
+    function authEmailMatchesProfile() {
+      return isSignedIn()
+        && authEmailLower() != ''
+        && resource.data.get('email', '').lower() == authEmailLower();
+    }
+
+    function adminUserModerationPatchValid() {
+      return isAdminOrManager()
+        && request.resource.data.role == resource.data.role
+        && request.resource.data.get('accountStatus', 'active') in [
+          'active', 'restricted', 'banned'
+        ]
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'accountStatus', 'restriction', 'banNote', 'updatedAt',
+          'restrictedBy', 'restrictedAt', 'bannedBy', 'bannedAt',
+          'liftedBy', 'liftedAt', 'deletedAt', 'deletedBy'
+        ]);
+    }
+
+    match /users/{userId} {
+      allow read: if isSignedIn() && (
+        uid() == userId
+        || authEmailMatchesProfile()
+        || isAdminPanel()
+        || (
+          resource.data.role == 'user'
+          && resource.data.get('accountStatus', 'active') == 'active'
+        )
+      );
+
+      allow create: if isSignedIn()
+        && uid() == userId
         && request.resource.data.role == 'user'
         && request.resource.data.email is string;
 
-      allow update: if request.auth != null
-        && request.auth.uid == userId
-        && request.resource.data.role == resource.data.role;
+      allow update: if isSignedIn() && (
+        (
+          uid() == userId
+          && request.resource.data.role == resource.data.role
+          && request.resource.data.get('accountStatus', 'active')
+              == resource.data.get('accountStatus', 'active')
+          && !request.resource.data.diff(resource.data).affectedKeys()
+              .hasAny(['restriction', 'reportCount', 'swapCount', 'trustLevel'])
+        )
+        || adminUserModerationPatchValid()
+      );
+
+      allow delete: if false;
+
+      match /savedItems/{itemId} {
+        allow read: if isSignedIn() && uid() == userId;
+        allow create, update: if isSignedIn()
+          && uid() == userId
+          && request.resource.data.itemId == itemId;
+        allow delete: if isSignedIn() && uid() == userId;
+      }
+
+      match /notifications/{notificationId} {
+        allow read, write: if isSignedIn() && uid() == userId;
+      }
+    }
+
+    function adminModerationPatchValid() {
+      return isAdminOrManager()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'status', 'moderationNote', 'flagKind', 'flagTitle', 'flagMessage',
+          'updatedAt', 'moderatedBy', 'moderatedAt'
+        ])
+        && request.resource.data.status in [
+          'approved', 'hidden', 'rejected', 'pending'
+        ];
+    }
+
+    function adminItemCreateValid() {
+      return isAdminOrManager()
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.status in ['approved', 'pending'];
+    }
+
+    match /categories/{categoryId} {
+      allow read: if isSignedIn();
+      allow write: if isAdminOrManager();
+    }
+
+    match /items/{itemId} {
+      allow read: if isSignedIn() && itemReadable();
+      allow create: if isSignedIn() && (
+        (isAppUser() && listingsAllowed() && itemCreateValid())
+        || adminItemCreateValid()
+      );
+      allow update: if isSignedIn() && (
+        (isAppUser() && itemOwnerUpdateValid())
+        || adminModerationPatchValid()
+      );
+      allow delete: if false;
+    }
+
+    match /swapOffers/{offerId} {
+      allow read: if isSignedIn() && (
+        resource.data.fromUserId == uid()
+        || resource.data.toUserId == uid()
+        || isAdminPanel()
+      );
+      allow create: if isSignedIn() && isAppUser() && notBanned()
+        && request.resource.data.fromUserId == uid()
+        && request.resource.data.status == 'pending';
+      allow update: if isSignedIn() && isAppUser() && notBanned()
+        && (
+          resource.data.fromUserId == uid()
+          || resource.data.toUserId == uid()
+        )
+        && request.resource.data.status in [
+          'pending', 'accepted', 'declined', 'cancelled', 'completed'
+        ];
+      allow delete: if false;
+    }
+
+    match /chats/{chatId} {
+      allow read: if isSignedIn() && (
+        uid() in resource.data.memberIds
+        || isAdminPanel()
+      );
+      allow create: if isSignedIn() && isAppUser()
+        && uid() in request.resource.data.memberIds;
+      allow update: if isSignedIn()
+        && uid() in resource.data.memberIds;
+
+      match /messages/{messageId} {
+        allow read: if isSignedIn()
+          && uid() in get(/databases/$(database)/documents/chats/$(chatId)).data.memberIds;
+        allow create: if isSignedIn() && isAppUser() && notBanned()
+          && request.resource.data.senderId == uid()
+          && uid() in get(/databases/$(database)/documents/chats/$(chatId)).data.memberIds;
+        allow update, delete: if false;
+      }
+    }
+
+    match /reports/{reportId} {
+      allow read: if isSignedIn() && (
+        resource.data.reporterId == uid() || isAdminPanel()
+      );
+      allow create: if isSignedIn() && notBanned()
+        && request.resource.data.reporterId == uid()
+        && request.resource.data.status == 'open';
+      allow update, delete: if false;
+    }
+
+    match /settings/{docId} {
+      allow read: if isSignedIn();
+      allow write: if isAdminOrManager();
+    }
+
+    match /subscriptions/{subUid} {
+      allow read: if isSignedIn() && (uid() == subUid || isAdminPanel());
+      allow write: if false;
+    }
+
+    match /reviews/{reviewId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isAppUser()
+        && request.resource.data.authorId == uid();
+      allow update, delete: if false;
+    }
+
+    match /stats/{document=**} {
+      allow read: if isAdminPanel();
+      allow write: if false;
+    }
+
+    match /notifications/{notificationId} {
+      allow read: if isSignedIn() && resource.data.userId == uid();
+      allow update: if isSignedIn()
+        && resource.data.userId == uid()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'read', 'updatedAt'
+        ]);
+      allow create, delete: if false;
     }
   }
 }

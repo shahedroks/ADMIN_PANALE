@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+
+import { UserAvatar } from "@/components/UserAvatar";
 import type { SwapperMember } from "@/features/users/types";
 
 const statusLabel: Record<SwapperMember["status"], string> = {
@@ -70,9 +72,10 @@ export function UsersManagementTable({
               <tr key={row.id}>
                 <td>
                   <div className="users-table__person">
-                    <img
-                      src={`https://i.pravatar.cc/64?u=${row.avatarSeed}`}
-                      alt=""
+                    <UserAvatar
+                      photoUrl={row.photoUrl}
+                      seed={row.avatarSeed}
+                      displayName={row.name}
                       width={40}
                       height={40}
                     />

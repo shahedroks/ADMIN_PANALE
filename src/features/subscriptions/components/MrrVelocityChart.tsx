@@ -42,7 +42,7 @@ export function MrrVelocityChart() {
                 width={barW}
                 height={baseH}
                 rx="4"
-                fill="#00241a"
+                fill="var(--swapit-primary-dark)"
               />
               <rect
                 x={x}
@@ -50,7 +50,7 @@ export function MrrVelocityChart() {
                 width={barW}
                 height={growthH}
                 rx="4"
-                fill="#acf847"
+                fill="var(--swapit-accent)"
               />
               <text x={x + barW / 2} y={chartH + 20} textAnchor="middle" className="sub-chart__axis-label">
                 {m}

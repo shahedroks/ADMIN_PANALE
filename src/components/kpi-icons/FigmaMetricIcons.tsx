@@ -5,12 +5,12 @@ export function DashChatIcon({ className }: IconProps) {
   return (
     <svg className={className} viewBox="0 0 20 20" aria-hidden>
       <path
-        fill="#416900"
+        fill="var(--swapit-primary-dark)"
         opacity="0.45"
         d="M15.25 2.5H8.75A2.25 2.25 0 0 0 6.5 4.75V8.5a2.25 2.25 0 0 0 2.25 2.25h.65l1.35 1.65V10.75H15.25A2.25 2.25 0 0 0 17.5 8.5V4.75A2.25 2.25 0 0 0 15.25 2.5Z"
       />
       <path
-        fill="#416900"
+        fill="var(--swapit-primary-dark)"
         d="M13.5 5H5.75A2.25 2.25 0 0 0 3.5 7.25v4.75a2.25 2.25 0 0 0 2.25 2.25h1.55l2.05 2.5V14.25h4.15A2.25 2.25 0 0 0 15.75 12V7.25A2.25 2.25 0 0 0 13.5 5Z"
       />
     </svg>
@@ -59,7 +59,7 @@ export function ReportShieldOutlineIcon({ className }: IconProps) {
     <svg className={className} viewBox="0 0 20 22" aria-hidden>
       <path
         fill="none"
-        stroke="#00241a"
+        stroke="var(--swapit-primary-dark)"
         strokeWidth="1.45"
         strokeLinejoin="round"
         d="M10 2.25 3.25 4.85v6.05c0 4.55 3.15 8.65 6.75 10.05 3.6-1.4 6.75-5.5 6.75-10.05V4.85L10 2.25Z"
@@ -88,10 +88,10 @@ export function ReportFlagOutlineIcon({ className }: IconProps) {
 export function ReportClockOutlineIcon({ className }: IconProps) {
   return (
     <svg className={className} viewBox="0 0 20 20" aria-hidden>
-      <circle cx="10" cy="10.5" r="7.25" fill="none" stroke="#00241a" strokeWidth="1.45" />
+      <circle cx="10" cy="10.5" r="7.25" fill="none" stroke="var(--swapit-primary-dark)" strokeWidth="1.45" />
       <path
         fill="none"
-        stroke="#00241a"
+        stroke="var(--swapit-primary-dark)"
         strokeWidth="1.45"
         strokeLinecap="round"
         d="M10 6.75V10.5l2.65 1.65M6.5 2.75h7"
@@ -106,14 +106,14 @@ export function ReportLeafOutlineIcon({ className }: IconProps) {
     <svg className={className} viewBox="0 0 20 20" aria-hidden>
       <path
         fill="none"
-        stroke="#416900"
+        stroke="var(--swapit-primary-dark)"
         strokeWidth="1.45"
         strokeLinejoin="round"
         d="M10 17.25s5.75-3.65 5.75-9.1C15.75 4.85 10 2.75 10 2.75S4.25 4.85 4.25 8.15c0 5.45 5.75 9.1 5.75 9.1Z"
       />
       <path
         fill="none"
-        stroke="#416900"
+        stroke="var(--swapit-primary-dark)"
         strokeWidth="1.35"
         strokeLinecap="round"
         d="M10 17V8.25"
@@ -126,18 +126,18 @@ export function ReportLeafOutlineIcon({ className }: IconProps) {
 export function UserMembersOutlineIcon({ className }: IconProps) {
   return (
     <svg className={className} viewBox="0 0 24 12" aria-hidden>
-      <circle cx="7.2" cy="3.4" r="2.15" fill="none" stroke="#00241a" strokeWidth="1.35" />
+      <circle cx="7.2" cy="3.4" r="2.15" fill="none" stroke="var(--swapit-primary-dark)" strokeWidth="1.35" />
       <path
         fill="none"
-        stroke="#00241a"
+        stroke="var(--swapit-primary-dark)"
         strokeWidth="1.35"
         strokeLinecap="round"
         d="M2.4 11c0-2.35 2.05-3.75 4.55-3.75S11.55 8.65 11.55 11"
       />
-      <circle cx="14.6" cy="3.95" r="2.45" fill="none" stroke="#00241a" strokeWidth="1.35" />
+      <circle cx="14.6" cy="3.95" r="2.45" fill="none" stroke="var(--swapit-primary-dark)" strokeWidth="1.35" />
       <path
         fill="none"
-        stroke="#00241a"
+        stroke="var(--swapit-primary-dark)"
         strokeWidth="1.35"
         strokeLinecap="round"
         d="M8.6 11c0-2.75 2.35-4.15 6-4.15s6 1.4 6 4.15"
@@ -155,20 +155,20 @@ export function UserTrustSealIcon({ className }: IconProps) {
         cy="10.5"
         r="9.35"
         fill="none"
-        stroke="#416900"
+        stroke="var(--swapit-primary-dark)"
         strokeWidth="1"
         strokeDasharray="2.4 2.2"
       />
       <path
         fill="none"
-        stroke="#416900"
+        stroke="var(--swapit-primary-dark)"
         strokeWidth="1.35"
         strokeLinejoin="round"
         d="M11 3.15 5.35 5.55v4.65c0 3.45 2.15 6.65 5.65 8 3.5-1.35 5.65-4.55 5.65-8V5.55L11 3.15Z"
       />
       <path
         fill="none"
-        stroke="#416900"
+        stroke="var(--swapit-primary-dark)"
         strokeWidth="1.45"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -209,7 +209,7 @@ export function PlanPriceTagIcon({ className }: IconProps) {
   return (
     <svg className={className} viewBox="0 0 19 19" aria-hidden>
       <path
-        fill="#00241a"
+        fill="var(--swapit-primary-dark)"
         d="M2.75 2.25h7.85l3.65 3.65V16.5H2.75V2.25Zm5.55 2.05v4.35h4.35L8.3 4.3ZM6.35 11.65a1.35 1.35 0 1 0 0-2.7 1.35 1.35 0 0 0 0 2.7Z"
       />
     </svg>
@@ -227,11 +227,11 @@ export function PlanBanknoteIcon({ className }: IconProps) {
         height="12.8"
         rx="2"
         fill="none"
-        stroke="#457000"
+        stroke="var(--swapit-medium-green)"
         strokeWidth="1.35"
       />
-      <circle cx="10.5" cy="7.5" r="2.65" fill="none" stroke="#457000" strokeWidth="1.25" />
-      <path stroke="#457000" strokeWidth="1.15" d="M1.1 5.2h18.8M1.1 9.8h18.8" />
+      <circle cx="10.5" cy="7.5" r="2.65" fill="none" stroke="var(--swapit-medium-green)" strokeWidth="1.25" />
+      <path stroke="var(--swapit-medium-green)" strokeWidth="1.15" d="M1.1 5.2h18.8M1.1 9.8h18.8" />
     </svg>
   );
 }
@@ -242,7 +242,7 @@ export function PlanRecycleIcon({ className }: IconProps) {
     <svg className={className} viewBox="0 0 20 20" aria-hidden>
       <path
         fill="none"
-        stroke="#00241a"
+        stroke="var(--swapit-primary-dark)"
         strokeWidth="1.35"
         strokeLinecap="round"
         strokeLinejoin="round"

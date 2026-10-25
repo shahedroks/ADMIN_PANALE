@@ -1,6 +1,8 @@
 export type GallerySlide = {
   label: string;
+  /** Fallback for placeholder when [url] is missing. */
   seed: string;
+  url?: string;
 };
 
 export type ItemDetail = {
@@ -25,6 +27,9 @@ export type ItemDetail = {
     summary: string;
     nlpHits: string[];
   };
+  ownerId: string;
+  location: string;
+  wants: string;
   owner: {
     name: string;
     handle: string;
@@ -33,7 +38,9 @@ export type ItemDetail = {
     trustScore: string;
     swapsLabel: string;
     infractions: string;
+    photoUrl?: string;
   };
+  showViolation: boolean;
   suggestedEditNote: string;
   ruleReference: {
     title: string;

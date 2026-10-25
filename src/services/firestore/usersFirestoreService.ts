@@ -1,20 +1,35 @@
 import {
   collection,
+  doc,
+  getCountFromServer,
+  getDoc,
   getDocs,
   limit,
-  orderBy,
+  onSnapshot,
   query,
+  Timestamp,
   where,
-  type Timestamp,
+  type Unsubscribe,
 } from "firebase/firestore";
 
 import type { SwapperMember } from "@/features/users/types";
 import { db } from "@/lib/firebase";
 
-type UserDoc = {
+export type UserRestrictionDoc = {
+  manualReview?: boolean;
+  allowChat?: boolean;
+  allowListings?: boolean;
+  durationDays?: string;
+  note?: string;
+};
+
+export type UserDoc = {
   email?: string;
   displayName?: string;
   handle?: string;
+  photoUrl?: string;
+  bio?: string;
+  location?: string;
   accountStatus?: string;
   verified?: boolean;
   trustLevel?: string;
@@ -22,11 +37,17 @@ type UserDoc = {
   reportCount?: number;
   lastActiveAt?: Timestamp;
   createdAt?: Timestamp;
+  lastKnownIp?: string;
+  restriction?: UserRestrictionDoc;
+  restrictedAt?: Timestamp;
+  bannedAt?: Timestamp;
+  liftedAt?: Timestamp;
 };
 
 function formatLastActive(ts?: Timestamp): string {
   if (!ts) return "—";
   const hours = Math.floor((Date.now() - ts.toMillis()) / (1000 * 60 * 60));
+  if (hours < 1) return "0h ago";
   if (hours < 24) return `${hours}h ago`;
   return `${Math.floor(hours / 24)}d ago`;
 }
@@ -46,6 +67,10 @@ function trustDots(level?: string): number {
   }
 }
 
+function sortMembers(members: SwapperMember[]): SwapperMember[] {
+  return [...members].sort((a, b) => a.name.localeCompare(b.name));
+}
+
 export function mapUserToMember(id: string, data: UserDoc): SwapperMember {
   const status = (data.accountStatus ?? "active") as SwapperMember["status"];
   const trust = (data.trustLevel ?? "good") as SwapperMember["trust"];
@@ -57,6 +82,7 @@ export function mapUserToMember(id: string, data: UserDoc): SwapperMember {
     email: data.email ?? "",
     verified: data.verified ?? false,
     avatarSeed: id,
+    photoUrl: data.photoUrl,
     status,
     trust,
     trustDots: trustDots(data.trustLevel),
@@ -66,13 +92,77 @@ export function mapUserToMember(id: string, data: UserDoc): SwapperMember {
   };
 }
 
-export async function fetchSwapperMembers(max = 200): Promise<SwapperMember[]> {
-  const q = query(
-    collection(db, "users"),
-    where("role", "==", "user"),
-    orderBy("createdAt", "desc"),
-    limit(max),
-  );
+export async function fetchUserById(uid: string): Promise<UserDoc | null> {
+  const snap = await getDoc(doc(db, "users", uid));
+  if (!snap.exists()) return null;
+  return snap.data() as UserDoc;
+}
+
+async function loadSwapperMemberDocs(max: number): Promise<SwapperMember[]> {
+  const q = query(collection(db, "users"), where("role", "==", "user"), limit(max));
   const snap = await getDocs(q);
-  return snap.docs.map((d) => mapUserToMember(d.id, d.data() as UserDoc));
+  return sortMembers(snap.docs.map((d) => mapUserToMember(d.id, d.data() as UserDoc)));
+}
+
+export async function fetchSwapperMembers(max = 500): Promise<SwapperMember[]> {
+  return loadSwapperMemberDocs(max);
+}
+
+export function subscribeUserMember(
+  userId: string,
+  onData: (member: SwapperMember | null) => void,
+  onError: (message: string) => void,
+): Unsubscribe {
+  return onSnapshot(
+    doc(db, "users", userId),
+    (snap) => {
+      if (!snap.exists()) {
+        onData(null);
+        return;
+      }
+      onData(mapUserToMember(snap.id, snap.data() as UserDoc));
+    },
+    (err) => onError(err.message),
+  );
+}
+
+export function subscribeSwapperMembers(
+  onData: (members: SwapperMember[]) => void,
+  onError: (message: string) => void,
+  max = 500,
+): Unsubscribe {
+  const q = query(collection(db, "users"), where("role", "==", "user"), limit(max));
+  return onSnapshot(
+    q,
+    (snap) => {
+      onData(sortMembers(snap.docs.map((d) => mapUserToMember(d.id, d.data() as UserDoc))));
+    },
+    (err) => {
+      onError(err.message);
+    },
+  );
+}
+
+export async function fetchOpenReportCount(): Promise<number> {
+  const q = query(
+    collection(db, "reports"),
+    where("status", "in", ["open", "under_review"]),
+  );
+  const snap = await getCountFromServer(q);
+  return snap.data().count;
+}
+
+export async function countMembersJoinedSince(days: number): Promise<number> {
+  const since = Timestamp.fromMillis(Date.now() - days * 24 * 60 * 60 * 1000);
+  try {
+    const q = query(
+      collection(db, "users"),
+      where("role", "==", "user"),
+      where("createdAt", ">=", since),
+    );
+    const snap = await getCountFromServer(q);
+    return snap.data().count;
+  } catch {
+    return 0;
+  }
 }

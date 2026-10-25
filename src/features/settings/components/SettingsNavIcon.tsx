@@ -6,7 +6,7 @@ type SettingsNavIconProps = {
 };
 
 export function SettingsNavIcon({ id, active }: SettingsNavIconProps) {
-  const fill = active ? "#acf847" : "#414845";
+  const fill = active ? "var(--swapit-accent)" : "#414845";
 
   switch (id) {
     case "general":
@@ -43,7 +43,7 @@ export function SettingsImpactLeafIcon() {
   return (
     <svg className="settings-impact__leaf" viewBox="0 0 13 13" aria-hidden>
       <path
-        fill="#416900"
+        fill="var(--swapit-primary-dark)"
         d="M6.5 1.2C4.2 1.2 2.4 3 2.4 5.4c0 3.8 4.1 6.4 4.1 6.4s4.1-2.6 4.1-6.4c0-2.4-1.8-4.2-4.1-4.2Zm0 2.1a1.35 1.35 0 1 1 0 2.7 1.35 1.35 0 0 1 0-2.7Z"
       />
     </svg>
@@ -65,7 +65,7 @@ export function SettingsPhoneIcon() {
   return (
     <svg className="settings-2fa__phone" viewBox="0 0 14 20" aria-hidden>
       <path
-        fill="#00241a"
+        fill="var(--swapit-primary-dark)"
         d="M4.25 1.5h5.5a1.25 1.25 0 0 1 1.25 1.25v14.5A1.25 1.25 0 0 1 9.75 18.5h-5.5A1.25 1.25 0 0 1 3 17.25V2.75A1.25 1.25 0 0 1 4.25 1.5Zm2.75 14.25a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z"
       />
     </svg>

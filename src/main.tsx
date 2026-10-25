@@ -2,15 +2,16 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { AppRouter } from "@/routes";
 import { AppProvider } from "@/store";
-import { DemoProvider } from "@/store/demoStore";
+import { ToastProvider } from "@/store/toastStore";
+import "@/styles/swapit-tokens.css";
 import "@/styles/global.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <AppProvider>
-      <DemoProvider>
+      <ToastProvider>
         <AppRouter />
-      </DemoProvider>
+      </ToastProvider>
     </AppProvider>
   </StrictMode>,
 );

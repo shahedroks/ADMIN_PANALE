@@ -20,6 +20,7 @@ export type SwapperMember = {
   email: string;
   verified: boolean;
   avatarSeed: string;
+  photoUrl?: string;
   status: AccountStatus;
   trust: TrustLevel;
   trustDots: number;

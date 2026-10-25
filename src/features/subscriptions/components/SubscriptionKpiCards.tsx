@@ -1,9 +1,9 @@
 function PremiumIcon() {
   return (
     <svg viewBox="0 0 20 20" aria-hidden>
-      <circle cx="10" cy="10" r="10" fill="rgba(172, 248, 71, 0.35)" />
+      <circle cx="10" cy="10" r="10" fill="rgba(163, 114, 34, 0.35)" />
       <path
-        fill="#416900"
+        fill="var(--swapit-primary-dark)"
         d="M6.5 10.2 8.8 12.5l4.7-5.2 1.3 1.2-6 6.6-3.3-3.3 1.3-1.2Z"
       />
     </svg>

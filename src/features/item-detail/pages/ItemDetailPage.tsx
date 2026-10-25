@@ -2,20 +2,35 @@ import { Link, useParams } from "react-router-dom";
 import { ItemDetailAdjudicationPanel } from "@/features/item-detail/components/ItemDetailAdjudicationPanel";
 import { ItemDetailMainColumn } from "@/features/item-detail/components/ItemDetailMainColumn";
 import { useItemDetail } from "@/hooks/useFirestoreAdminData";
-import { useDemoStore } from "@/store/demoStore";
 import "@/features/dashboard/styles/dashboard.css";
 import "@/features/item-detail/styles/item-detail.css";
 
 export function ItemDetailPage() {
   const { itemId } = useParams();
-  const { detail: firestoreDetail, loading } = useItemDetail(itemId);
-  const { getItemDetailByRouteId } = useDemoStore();
-  const detail = firestoreDetail ?? getItemDetailByRouteId(itemId);
+  const { detail, loading, error } = useItemDetail(itemId);
 
-  if (loading && !firestoreDetail) {
+  if (loading) {
     return (
       <div className="dash-page item-detail-page">
-        <p>Loading item…</p>
+        <p>Loading listing…</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="dash-page item-detail-page">
+        <p className="items-review-error">{error}</p>
+        <Link to="/items-review">← Back to Items Review</Link>
+      </div>
+    );
+  }
+
+  if (!detail) {
+    return (
+      <div className="dash-page item-detail-page">
+        <p>Listing not found.</p>
+        <Link to="/items-review">← Back to Items Review</Link>
       </div>
     );
   }

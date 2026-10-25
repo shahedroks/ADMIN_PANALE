@@ -17,7 +17,7 @@
   font-weight: 700;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  color: #416900;
+  color: var(--swapit-primary-dark);
 }
 
 .users-page__header h1 {
@@ -25,7 +25,7 @@
   font-size: 28px;
   font-weight: 800;
   letter-spacing: -0.7px;
-  color: #00241a;
+  color: var(--swapit-primary-dark);
 }
 
 .users-page__subtitle {
@@ -69,7 +69,7 @@
 
 .users-page__export {
   border: none;
-  background: #00241a;
+  background: var(--swapit-primary-dark);
   color: #ffffff;
 }
 
@@ -151,7 +151,7 @@
   font-size: 22px;
   font-weight: 700;
   line-height: 28px;
-  color: #00241a;
+  color: var(--swapit-primary-dark);
 }
 
 .users-kpi--alert .users-kpi__value {
@@ -252,7 +252,7 @@
   width: 8px;
   height: 8px;
   border-radius: 9999px;
-  background: #acf847;
+  background: var(--swapit-accent);
   flex-shrink: 0;
 }
 
@@ -282,14 +282,14 @@
 }
 
 .users-tab--active {
-  background: #00241a;
+  background: var(--swapit-primary-dark);
   color: #ffffff;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .users-tab--active .users-tab__count {
-  background: #acf847;
-  color: #102000;
+  background: var(--swapit-accent);
+  color: var(--swapit-on-accent);
 }
 
 /* Table card */
@@ -390,21 +390,21 @@
 }
 
 .users-status--active {
-  background: rgba(172, 248, 71, 0.4);
-  color: #457000;
+  background: rgba(163, 114, 34, 0.4);
+  color: var(--swapit-medium-green);
 }
 
 .users-status--active::before {
-  background: #416900;
+  background: var(--swapit-primary-dark);
 }
 
 .users-status--restricted {
   background: #eff4ff;
-  color: #00241a;
+  color: var(--swapit-primary-dark);
 }
 
 .users-status--restricted::before {
-  background: #00241a;
+  background: var(--swapit-primary-dark);
 }
 
 .users-status--banned {
@@ -427,7 +427,7 @@
   font-size: 11px;
   font-weight: 700;
   line-height: 14px;
-  color: #00241a;
+  color: var(--swapit-primary-dark);
 }
 
 .users-trust__dots {
@@ -444,7 +444,7 @@
 }
 
 .users-trust--good .users-trust__dots i.on {
-  background: #416900;
+  background: var(--swapit-primary-dark);
 }
 
 .users-trust--review .users-trust__label {
@@ -452,7 +452,7 @@
 }
 
 .users-trust--review .users-trust__dots i.on {
-  background: #00241a;
+  background: var(--swapit-primary-dark);
 }
 
 .users-trust--low .users-trust__label {
@@ -574,7 +574,7 @@
 }
 
 .users-pagination__controls button.is-active {
-  background: #00241a;
+  background: var(--swapit-primary-dark);
   color: #ffffff;
 }
 

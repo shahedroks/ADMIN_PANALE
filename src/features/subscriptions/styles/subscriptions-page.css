@@ -34,8 +34,8 @@
   width: 8px;
   height: 8px;
   border-radius: 9999px;
-  background: #416900;
-  box-shadow: 0 0 0 3px rgba(172, 248, 71, 0.35);
+  background: var(--swapit-primary-dark);
+  box-shadow: 0 0 0 3px rgba(163, 114, 34, 0.35);
 }
 
 .subscriptions-page__title-row {
@@ -52,7 +52,7 @@
   font-weight: 800;
   line-height: 36px;
   letter-spacing: -0.7px;
-  color: #00241a;
+  color: var(--swapit-primary-dark);
 }
 
 .subscriptions-page__subtitle {
@@ -69,7 +69,7 @@
   height: 6px;
   margin-left: 4px;
   border-radius: 9999px;
-  background: #acf847;
+  background: var(--swapit-accent);
   vertical-align: middle;
 }
 
@@ -152,7 +152,7 @@
   font-size: 22px;
   font-weight: 800;
   line-height: 28px;
-  color: #00241a;
+  color: var(--swapit-primary-dark);
 }
 
 .sub-kpi__value--inverse {
@@ -167,7 +167,7 @@
 }
 
 .sub-kpi__meta--positive {
-  color: #416900;
+  color: var(--swapit-primary-dark);
 }
 
 .sub-kpi__meta--danger {
@@ -210,7 +210,7 @@
   box-sizing: border-box;
   margin: 0 -20px -20px;
   padding: 12px 20px 16px;
-  background: linear-gradient(180deg, rgba(172, 248, 71, 0.08) 0%, rgba(172, 248, 71, 0.22) 100%);
+  background: linear-gradient(180deg, rgba(163, 114, 34, 0.08) 0%, rgba(163, 114, 34, 0.22) 100%);
 }
 
 .sub-kpi__progress {
@@ -224,11 +224,11 @@
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #00241a, #416900);
+  background: linear-gradient(90deg, var(--swapit-primary-dark), var(--swapit-primary-dark));
 }
 
 .sub-kpi--mrr {
-  background: #00241a;
+  background: var(--swapit-primary-dark);
   box-shadow:
     0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -2px rgba(0, 0, 0, 0.1);
@@ -242,7 +242,7 @@
   width: 96px;
   height: 96px;
   border-radius: 9999px;
-  background: rgba(172, 248, 71, 0.1);
+  background: rgba(163, 114, 34, 0.1);
   filter: blur(20px);
   pointer-events: none;
 }
@@ -256,10 +256,10 @@
 .sub-kpi__delta-pill {
   padding: 2px 8px;
   border-radius: 9999px;
-  background: #acf847;
+  background: var(--swapit-accent);
   font-size: 10px;
   font-weight: 700;
-  color: #457000;
+  color: var(--swapit-medium-green);
 }
 
 .sub-kpi__foot--inverse {
@@ -274,7 +274,7 @@
   width: 80px;
   height: 80px;
   border-radius: 9999px;
-  background: rgba(172, 248, 71, 0.2);
+  background: rgba(163, 114, 34, 0.2);
   filter: blur(12px);
   pointer-events: none;
 }
@@ -323,7 +323,7 @@
   font-size: 18px;
   font-weight: 700;
   line-height: 24px;
-  color: #00241a;
+  color: var(--swapit-primary-dark);
 }
 
 .subscriptions-card__head p {
@@ -342,13 +342,13 @@
 }
 
 .subscriptions-card__pill--live {
-  background: #acf847;
-  color: #457000;
+  background: var(--swapit-accent);
+  color: var(--swapit-medium-green);
 }
 
 .subscriptions-card__pill--mrr {
   background: #caead6;
-  color: #00241a;
+  color: var(--swapit-primary-dark);
 }
 
 .subscriptions-card__chip {
@@ -406,7 +406,7 @@
   display: inline-block;
   padding: 4px 8px;
   border-radius: 8px;
-  background: #00241a;
+  background: var(--swapit-primary-dark);
   color: #ffffff;
   font-size: 9px;
   font-weight: 700;
@@ -442,7 +442,7 @@
 }
 
 .sub-chart__dot--premium {
-  background: #00241a;
+  background: var(--swapit-primary-dark);
 }
 
 .sub-chart__dot--free {
@@ -450,7 +450,7 @@
 }
 
 .sub-chart__dot--trial {
-  background: #acf847;
+  background: var(--swapit-accent);
 }
 
 .sub-chart__retention {
@@ -471,7 +471,7 @@
 .sub-chart__mrr-headline strong {
   font-size: 22px;
   font-weight: 800;
-  color: #00241a;
+  color: var(--swapit-primary-dark);
 }
 
 .sub-chart__mrr-headline span {
@@ -505,7 +505,7 @@
   display: block;
   margin-top: 4px;
   font-size: 13px;
-  color: #00241a;
+  color: var(--swapit-primary-dark);
 }
 
 .sub-chart__mini-metric em {
@@ -518,7 +518,7 @@
 }
 
 .sub-chart__mini-hint--positive {
-  color: #416900 !important;
+  color: var(--swapit-primary-dark) !important;
 }
 
 @media (max-width: 1100px) {

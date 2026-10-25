@@ -1,5 +1,8 @@
-import type { ItemDetail } from "@/features/item-detail/types";
+import { Link } from "react-router-dom";
+
+import { UserAvatar } from "@/components/UserAvatar";
 import { ItemDetailGallery } from "@/features/item-detail/components/ItemDetailGallery";
+import type { ItemDetail } from "@/features/item-detail/types";
 
 type ItemDetailMainColumnProps = {
   detail: ItemDetail;
@@ -38,6 +41,10 @@ export function ItemDetailMainColumn({ detail }: ItemDetailMainColumnProps) {
             <span>Source</span>
             <strong>{detail.createdVia}</strong>
           </div>
+          <div>
+            <span>Location</span>
+            <strong>{detail.location}</strong>
+          </div>
         </div>
 
         <p className="item-detail-section-label">What they want in exchange</p>
@@ -52,14 +59,18 @@ export function ItemDetailMainColumn({ detail }: ItemDetailMainColumnProps) {
           {renderHighlightedDescription(detail)}
         </div>
 
-        <div className="item-detail-violation">
-          <strong>Flagged rule violation: Rule {detail.violation.ruleId}</strong>
-          <p>{detail.violation.title}</p>
-          <p>{detail.violation.summary}</p>
-          <p className="item-detail-violation__hits">
-            NLP hits: {detail.violation.nlpHits.join(", ")}
-          </p>
-        </div>
+        {detail.showViolation && (
+          <div className="item-detail-violation">
+            <strong>Flagged rule violation: Rule {detail.violation.ruleId}</strong>
+            <p>{detail.violation.title}</p>
+            <p>{detail.violation.summary}</p>
+            {detail.violation.nlpHits.length > 0 && (
+              <p className="item-detail-violation__hits">
+                Flags: {detail.violation.nlpHits.join(", ")}
+              </p>
+            )}
+          </div>
+        )}
       </section>
 
       <section className="item-detail-card item-detail-owner">
@@ -83,15 +94,22 @@ export function ItemDetailMainColumn({ detail }: ItemDetailMainColumnProps) {
             </svg>
             Owner account &amp; reliability record
           </h2>
-          <a href="#owner">
-            View owner profile <span aria-hidden>→</span>
-          </a>
+          {detail.ownerId ? (
+            <Link to={`/users/${detail.ownerId}`}>
+              View owner profile <span aria-hidden>→</span>
+            </Link>
+          ) : (
+            <span className="item-detail-owner__link-disabled">Owner profile unavailable</span>
+          )}
         </div>
-        <div className="item-detail-owner__body">
-          <img
+        <div className="item-detail-owner__body" id="owner">
+          <UserAvatar
             className="item-detail-owner__avatar"
-            src={`https://i.pravatar.cc/80?u=${encodeURIComponent(detail.owner.handle)}`}
-            alt=""
+            photoUrl={detail.owner.photoUrl}
+            seed={detail.ownerId || detail.owner.handle}
+            displayName={detail.owner.name}
+            width={80}
+            height={80}
           />
           <div className="item-detail-owner__identity">
             <div className="item-detail-owner__name">

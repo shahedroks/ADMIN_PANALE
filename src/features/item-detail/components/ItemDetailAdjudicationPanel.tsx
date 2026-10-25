@@ -1,7 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import type { ItemDetail } from "@/features/item-detail/types";
+import { auth } from "@/lib/firebase";
 import { callModerateItem } from "@/lib/callableFunctions";
-import { useDemoStore } from "@/store/demoStore";
+import { moderateItemFirestore } from "@/services/firestore/itemsModerationFirestoreService";
+import { writeAuditLogClient } from "@/services/firestore/auditLogFirestoreService";
+import { useToast } from "@/store/toastStore";
 
 type ItemDetailAdjudicationPanelProps = {
   detail: ItemDetail;
@@ -12,23 +16,37 @@ export function ItemDetailAdjudicationPanel({
   detail,
   itemRouteId,
 }: ItemDetailAdjudicationPanelProps) {
-  const { pushToast } = useDemoStore();
+  const navigate = useNavigate();
+  const { pushToast } = useToast();
   const [editNote, setEditNote] = useState(detail.suggestedEditNote);
   const [auditNote, setAuditNote] = useState("");
   const [notifyOwner, setNotifyOwner] = useState(true);
   const [busy, setBusy] = useState(false);
+
+  const moderatorLabel =
+    auth.currentUser?.displayName ??
+    auth.currentUser?.email ??
+    "Admin";
 
   async function runModeration(
     action: "approve" | "hide" | "reject" | "request_edit",
     note?: string,
   ) {
     setBusy(true);
+    const moderatorUid = auth.currentUser?.uid;
     try {
-      await callModerateItem({ itemId: itemRouteId, action, note });
-      pushToast("Moderation action saved to Firebase.", "success");
+      try {
+        await callModerateItem({ itemId: itemRouteId, action, note });
+      } catch {
+        await moderateItemFirestore(itemRouteId, action, note, moderatorUid);
+      }
+      pushToast("Moderation action saved successfully.", "success");
+      if (action === "approve" || action === "hide") {
+        navigate("/items-review");
+      }
     } catch (e) {
       pushToast(
-        e instanceof Error ? e.message : "Moderation failed. Deploy functions & rules?",
+        e instanceof Error ? e.message : "Moderation failed.",
         "error",
       );
     } finally {
@@ -42,7 +60,7 @@ export function ItemDetailAdjudicationPanel({
         <div className="item-detail-adjudication__head">
           <h2>Take adjudication</h2>
           <span className="item-detail-pending">
-            <i /> Decision pending
+            <i /> {detail.statusLabel === "PENDING" ? "Decision pending" : detail.statusLabel}
           </span>
         </div>
 
@@ -140,21 +158,28 @@ export function ItemDetailAdjudicationPanel({
             type="checkbox"
             checked={notifyOwner}
             onChange={(e) => setNotifyOwner(e.target.checked)}
+            disabled
           />
-          Send automated compliance notification to {detail.owner.name}
+          Notify owner ({notifyOwner ? "planned" : "off"}) — {detail.owner.name}
         </label>
 
         <button
           type="button"
           className="item-detail-escalate"
-          onClick={() => pushToast("Escalation queued for senior admin review.", "info")}
+          onClick={() => {
+            void writeAuditLogClient({
+              action: "item_escalate",
+              targetType: "item",
+              targetId: itemRouteId,
+              note: auditNote || "Escalated to senior admin",
+            }).then(() => pushToast("Escalation logged to the audit trail.", "info"));
+          }}
         >
           Escalate to Senior Admin / Legal Supervisor
         </button>
-        <p className="item-detail-sla">SLA: 4h left</p>
 
         <div className="item-detail-audit-bar">
-          Audit session active: logged as Sara Miller
+          Audit session: {moderatorLabel} • item {itemRouteId}
         </div>
       </section>
 

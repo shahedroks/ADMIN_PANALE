@@ -1,26 +1,55 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { ReportKpiCards } from "@/features/reports/components/ReportKpiCards";
 import { ReportsPagination } from "@/features/reports/components/ReportsPagination";
 import { ReportsTable } from "@/features/reports/components/ReportsTable";
 import { ReportToolbar } from "@/features/reports/components/ReportToolbar";
-import { PAGE_SIZE, reportKpis } from "@/features/reports/data/reportsData";
-import type { ReportFilterTab } from "@/features/reports/types";
+import { PAGE_SIZE } from "@/features/reports/data/reportsData";
+import type { ReportFilterTab, ReportKpi } from "@/features/reports/types";
+import { filterReportsForMember } from "@/features/reports/utils/filterReportsForMember";
 import { useModerationReports } from "@/hooks/useFirestoreAdminData";
-import { useDemoStore } from "@/store/demoStore";
+import { fetchReportKpis } from "@/services/firestore/reportsFirestoreService";
+import { fetchListedItemsForUser } from "@/services/firestore/userDetailFirestoreService";
+import { useToast } from "@/store/toastStore";
 import "@/features/dashboard/styles/dashboard.css";
 import "@/features/reports/styles/reports-page.css";
 
 export function ReportsPage() {
+  const [searchParams] = useSearchParams();
+  const memberId = searchParams.get("member")?.trim() ?? "";
   const { reports, setReportStatus, loading } = useModerationReports();
-  const { pushToast } = useDemoStore();
+  const { pushToast } = useToast();
+  const [kpis, setKpis] = useState<ReportKpi[]>([]);
+  const [ownedItemIds, setOwnedItemIds] = useState<Set<string> | null>(null);
+
+  useEffect(() => {
+    if (!memberId) {
+      setOwnedItemIds(null);
+      return;
+    }
+    void fetchListedItemsForUser(memberId).then((items) => {
+      setOwnedItemIds(new Set(items.map((item) => item.id)));
+    });
+  }, [memberId]);
+
+  const scopedReports = useMemo(() => {
+    if (!memberId || ownedItemIds === null) return reports;
+    return filterReportsForMember(reports, memberId, ownedItemIds);
+  }, [reports, memberId, ownedItemIds]);
+
+  useEffect(() => {
+    if (loading) return;
+    if (memberId && ownedItemIds === null) return;
+    void fetchReportKpis(scopedReports).then(setKpis);
+  }, [scopedReports, loading, memberId, ownedItemIds]);
 
   const reportCounts = useMemo(
     () => ({
-      all: reports.length,
-      high: reports.filter((r) => r.priority === "high").length,
-      under_review: reports.filter((r) => r.status === "under_review").length,
+      all: scopedReports.length,
+      high: scopedReports.filter((r) => r.priority === "high").length,
+      under_review: scopedReports.filter((r) => r.status === "under_review").length,
     }),
-    [reports],
+    [scopedReports],
   );
 
   const [activeTab, setActiveTab] = useState<ReportFilterTab>("all");
@@ -28,7 +57,7 @@ export function ReportsPage() {
   const [page, setPage] = useState(1);
 
   const filtered = useMemo(() => {
-    let list = reports;
+    let list = scopedReports;
 
     if (activeTab === "high") {
       list = list.filter((r) => r.priority === "high");
@@ -42,12 +71,13 @@ export function ReportsPage() {
         (r) =>
           r.id.includes(q) ||
           r.type.toLowerCase().includes(q) ||
-          r.targetLabel.toLowerCase().includes(q),
+          r.targetLabel.toLowerCase().includes(q) ||
+          (r.targetId ?? "").toLowerCase().includes(q),
       );
     }
 
     return list;
-  }, [activeTab, search, reports]);
+  }, [activeTab, search, scopedReports]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
@@ -56,7 +86,15 @@ export function ReportsPage() {
   return (
     <div className="dash-page reports-page">
       {loading && <p>Loading reports…</p>}
-      <ReportKpiCards items={reportKpis} />
+      {memberId && (
+        <p className="reports-page__scope">
+          Showing reports for member{" "}
+          <code>{memberId.slice(0, 8)}…</code>
+          {" · "}
+          <a href="/reports">Clear filter</a>
+        </p>
+      )}
+      <ReportKpiCards items={kpis} />
       <ReportToolbar
         activeTab={activeTab}
         onTabChange={setActiveTab}
@@ -66,8 +104,6 @@ export function ReportsPage() {
       />
       <ReportsTable
         rows={pageRows}
-        reviewItems={[]}
-        members={[]}
         onReview={(id) => {
           void setReportStatus(id, "under_review");
           pushToast("Report marked under review.", "success");

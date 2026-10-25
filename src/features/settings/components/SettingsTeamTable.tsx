@@ -1,13 +1,13 @@
 import { SettingsInviteIcon } from "@/features/settings/components/SettingsNavIcon";
 import type { AdminMember } from "@/features/settings/data/settingsData";
-import { useDemoStore } from "@/store/demoStore";
+import { useToast } from "@/store/toastStore";
 
 type SettingsTeamTableProps = {
   members: AdminMember[];
 };
 
 export function SettingsTeamTable({ members }: SettingsTeamTableProps) {
-  const { pushToast } = useDemoStore();
+  const { pushToast } = useToast();
 
   return (
     <section className="settings-panel" id="settings-team">

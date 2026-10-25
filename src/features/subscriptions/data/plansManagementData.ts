@@ -21,6 +21,11 @@ export type SubscriptionPlan = {
   featureGates: { id: string; title: string; subtitle: string; enabled: boolean }[];
 };
 
+export type SubscriptionPlanUpdate = Pick<
+  SubscriptionPlan,
+  "listingUnlimited" | "photosPerListing" | "searchRadiusMiles" | "featureGates" | "cadence"
+>;
+
 export type PlanSummaryKpiIcon = "tag" | "cash" | "cycle" | "verified";
 
 export const plansSummaryKpis = [
@@ -40,7 +45,7 @@ export const plansSummaryKpis = [
     hint: "+$5.56 ARPU",
     hintTone: "positive" as const,
     icon: "cash" as const,
-    iconBg: "rgba(172, 248, 71, 0.2)",
+    iconBg: "rgba(163, 114, 34, 0.2)",
   },
   {
     id: "circulating",

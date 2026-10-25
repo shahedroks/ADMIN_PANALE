@@ -40,7 +40,7 @@
   flex: 0 0 42%;
   min-width: 320px;
   padding: 32px;
-  background: #00241a;
+  background: var(--swapit-primary-dark);
   color: #ffffff;
   overflow: hidden;
 }
@@ -58,7 +58,7 @@
   height: 384px;
   left: -128px;
   top: -128px;
-  background: #acf847;
+  background: var(--swapit-accent);
   opacity: 0.1;
 }
 
@@ -99,9 +99,9 @@
 .login-hero__accent-shimmer {
   background: linear-gradient(
     120deg,
-    #acf847 0%,
+    var(--swapit-accent) 0%,
     #d4ff8a 45%,
-    #acf847 90%
+    var(--swapit-accent) 90%
   );
   background-size: 200% auto;
   -webkit-background-clip: text;
@@ -159,7 +159,7 @@
   line-height: 14px;
   letter-spacing: 0.55px;
   text-transform: uppercase;
-  color: #acf847;
+  color: var(--swapit-accent);
 }
 
 .login-hero__copy {
@@ -175,7 +175,7 @@
 }
 
 .login-hero__accent {
-  color: #acf847;
+  color: var(--swapit-accent);
 }
 
 .login-hero__subline {
@@ -225,7 +225,7 @@
 }
 
 .login-hero__orbit-dot {
-  filter: drop-shadow(0 0 6px rgba(172, 248, 71, 0.85));
+  filter: drop-shadow(0 0 6px rgba(163, 114, 34, 0.85));
 }
 
 .login-hero--animate .login-hero__orbit-core {
@@ -284,7 +284,7 @@
   justify-content: center;
   width: 40px;
   height: 40px;
-  background: #00241a;
+  background: var(--swapit-primary-dark);
   border-radius: 8px;
 }
 
@@ -295,7 +295,7 @@
   line-height: 14px;
   letter-spacing: 0.55px;
   text-transform: uppercase;
-  color: #acf847;
+  color: var(--swapit-accent);
 }
 
 .login-hero__metric-number {
@@ -337,7 +337,7 @@
   font-size: 28px;
   line-height: 36px;
   letter-spacing: -0.7px;
-  color: #00241a;
+  color: var(--swapit-primary-dark);
 }
 
 .login-form-panel__header p {
@@ -359,7 +359,7 @@
   line-height: 12px;
   letter-spacing: 0.25px;
   text-transform: uppercase;
-  color: #00241a;
+  color: var(--swapit-primary-dark);
 }
 
 .login-form-panel--animate .login-reveal {
@@ -454,16 +454,16 @@
 
 .login-field__input:focus {
   outline: none;
-  border-color: #acf847;
+  border-color: var(--swapit-accent);
   box-shadow:
-    0 0 0 3px rgba(172, 248, 71, 0.28),
+    0 0 0 3px rgba(163, 114, 34, 0.28),
     0 4px 12px rgba(0, 36, 26, 0.06);
   transform: translateY(-1px);
 }
 
 .login-field__control:focus-within .login-field__icon svg path,
 .login-field__control:focus-within .login-field__icon svg rect {
-  stroke: #00241a;
+  stroke: var(--swapit-primary-dark);
 }
 
 .login-field__icon {
@@ -516,7 +516,7 @@
   width: 20px;
   height: 20px;
   margin: 0;
-  accent-color: #00241a;
+  accent-color: var(--swapit-primary-dark);
   border-radius: 2.5px;
 }
 
@@ -524,7 +524,7 @@
   font-weight: 600;
   font-size: 13px;
   line-height: 18px;
-  color: #00241a;
+  color: var(--swapit-primary-dark);
   text-decoration: none;
 }
 
@@ -542,7 +542,7 @@
   height: 48px;
   border: none;
   border-radius: 12px;
-  background: linear-gradient(180deg, #003326 0%, #00241a 100%);
+  background: linear-gradient(180deg, #003326 0%, var(--swapit-primary-dark) 100%);
   box-shadow:
     0 10px 15px -3px rgba(0, 0, 0, 0.1),
     0 4px 6px -4px rgba(0, 0, 0, 0.1);
@@ -566,7 +566,7 @@
   background: linear-gradient(
     105deg,
     transparent 40%,
-    rgba(172, 248, 71, 0.12) 50%,
+    rgba(163, 114, 34, 0.12) 50%,
     transparent 60%
   );
   transform: translateX(-100%);
@@ -636,7 +636,7 @@
   width: 24px;
   height: 24px;
   flex-shrink: 0;
-  background: #acf847;
+  background: var(--swapit-accent);
   border-radius: 9999px;
   animation: login-lock-pulse 3s ease-in-out infinite;
 }
@@ -701,12 +701,12 @@
   100% {
     box-shadow:
       inset 0 2px 4px rgba(0, 0, 0, 0.05),
-      0 0 0 0 rgba(172, 248, 71, 0);
+      0 0 0 0 rgba(163, 114, 34, 0);
   }
   50% {
     box-shadow:
       inset 0 2px 4px rgba(0, 0, 0, 0.05),
-      0 0 24px rgba(172, 248, 71, 0.15);
+      0 0 24px rgba(163, 114, 34, 0.15);
   }
 }
 
@@ -719,10 +719,10 @@
 @keyframes login-lock-pulse {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(172, 248, 71, 0.4);
+    box-shadow: 0 0 0 0 rgba(163, 114, 34, 0.4);
   }
   50% {
-    box-shadow: 0 0 0 6px rgba(172, 248, 71, 0);
+    box-shadow: 0 0 0 6px rgba(163, 114, 34, 0);
   }
 }
 

@@ -1,18 +1,31 @@
 import { useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { ItemReviewCard } from "@/features/items-review/components/ItemReviewCard";
 import { PAGE_SIZE } from "@/features/items-review/data/itemsReviewData";
 import type { ItemFilterTab, SortOption } from "@/features/items-review/types";
+import { DEFAULT_OWNER_EDIT_REQUEST } from "@/features/items-review/constants/moderationCopy";
 import { useReviewItems } from "@/hooks/useFirestoreAdminData";
+import { bootstrapSwapItFirestore } from "@/services/firestore/bootstrapFirestoreService";
 import { useDemoStore } from "@/store/demoStore";
 import "@/features/dashboard/styles/dashboard.css";
 import "@/features/items-review/styles/items-review.css";
 
 export function ItemsReviewPage() {
+  const [searchParams] = useSearchParams();
+  const ownerId = searchParams.get("owner")?.trim() ?? "";
   const { items: reviewItems, reload, moderate, batchApprove, loading, error } =
     useReviewItems();
   const { pushToast } = useDemoStore();
 
-  const visibleItems = useMemo(() => reviewItems.filter((i) => !i.hidden), [reviewItems]);
+  const visibleItems = useMemo(() => {
+    let list = reviewItems.filter((i) => !i.hidden);
+    if (ownerId) {
+      list = list.filter((i) => i.ownerId === ownerId);
+    }
+    return list;
+  }, [reviewItems, ownerId]);
+
+  const [search, setSearch] = useState("");
 
   const reviewTabCounts = useMemo(
     () => ({
@@ -23,11 +36,30 @@ export function ItemsReviewPage() {
     [visibleItems],
   );
 
-  const [tab, setTab] = useState<ItemFilterTab>("awaiting");
-  const [search, setSearch] = useState("");
+  const [tab, setTab] = useState<ItemFilterTab>("all");
   const [sort, setSort] = useState<SortOption>("oldest");
   const [page, setPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [seeding, setSeeding] = useState(false);
+
+  async function handleSeedDemo() {
+    setSeeding(true);
+    try {
+      const result = await bootstrapSwapItFirestore();
+      await reload();
+      pushToast(
+        `Added ${result.items} demo listings (${result.categories} categories).`,
+        "success",
+      );
+    } catch (e) {
+      pushToast(
+        e instanceof Error ? e.message : "Could not load demo data. Sign in as an admin or manager.",
+        "error",
+      );
+    } finally {
+      setSeeding(false);
+    }
+  }
 
   const filtered = useMemo(() => {
     let list = visibleItems;
@@ -78,7 +110,7 @@ export function ItemsReviewPage() {
     });
     try {
       await batchApprove(safeIds);
-      pushToast(`Approved ${safeIds.length} item(s) via Firebase.`, "success");
+      pushToast(`Approved ${safeIds.length} item(s).`, "success");
     } catch (e) {
       pushToast(e instanceof Error ? e.message : "Batch approve failed.", "error");
     }
@@ -89,6 +121,13 @@ export function ItemsReviewPage() {
     <div className="dash-page items-review-page">
       {loading && <p className="items-review-loading">Loading review queue…</p>}
       {error && <p className="items-review-error">{error}</p>}
+      {ownerId && (
+        <p className="items-review-scope">
+          Showing listings for member <code>{ownerId.slice(0, 8)}…</code>
+          {" · "}
+          <a href="/items-review">Clear filter</a>
+        </p>
+      )}
       <header className="items-review-header">
         <div className="items-review-header__title">
           <div className="items-review-header__row">
@@ -191,6 +230,23 @@ export function ItemsReviewPage() {
         </label>
       </div>
 
+      {!loading && !error && filtered.length === 0 && (
+        <div className="items-review-empty">
+          <p>
+            No listings in the queue yet. Load demo data for testing, or post an item from the
+            mobile app (it will be <strong>pending</strong>).
+          </p>
+          <button
+            type="button"
+            className="items-review-seed-btn"
+            disabled={seeding}
+            onClick={() => void handleSeedDemo()}
+          >
+            {seeding ? "Seeding…" : "Seed demo listings"}
+          </button>
+        </div>
+      )}
+
       <div className="items-review-grid">
         {pageItems.map((item) => (
           <ItemReviewCard
@@ -202,7 +258,7 @@ export function ItemsReviewPage() {
               void moderate(
                 item.id,
                 "request_edit",
-                "Please update listing copy to stay within SWAP IT escrow rules.",
+                DEFAULT_OWNER_EDIT_REQUEST,
               )
             }
             onHide={() => void moderate(item.id, "hide")}

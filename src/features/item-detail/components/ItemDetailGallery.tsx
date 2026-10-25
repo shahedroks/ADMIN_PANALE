@@ -5,24 +5,31 @@ type ItemDetailGalleryProps = {
   detail: ItemDetail;
 };
 
+function slideImageSrc(slide: ItemDetail["gallery"][number], size: "main" | "thumb") {
+  if (slide.url) return slide.url;
+  const dims = size === "main" ? "960/640" : "120/90";
+  return `https://picsum.photos/seed/${encodeURIComponent(slide.seed)}/${dims}`;
+}
+
 export function ItemDetailGallery({ detail }: ItemDetailGalleryProps) {
+  const slides =
+    detail.gallery.length > 0
+      ? detail.gallery
+      : [{ label: "Primary", seed: detail.primarySeed }];
   const [active, setActive] = useState(0);
-  const slides = [
-    { label: "Primary", seed: detail.primarySeed },
-    ...detail.gallery,
-  ];
   const current = slides[active];
+  const hasHostedPhotos = slides.some((s) => Boolean(s.url));
 
   return (
     <section className="item-detail-card item-detail-gallery">
       <div className="item-detail-gallery__main">
-        <img
-          src={`https://picsum.photos/seed/${current.seed}/960/640`}
-          alt=""
-        />
+        <img src={slideImageSrc(current, "main")} alt={detail.title} />
         <div className="item-detail-gallery__labels">
-          <span>Primary Evidence</span>
-          <span>Original Asset • 4032 × 3024</span>
+          <span>{current.label}</span>
+          <span>
+            {hasHostedPhotos ? "Uploaded media" : "No listing photos"} •{" "}
+            {slides.length} file{slides.length === 1 ? "" : "s"}
+          </span>
         </div>
         <div className="item-detail-gallery__tools">
           <button type="button" aria-label="Zoom">
@@ -33,19 +40,21 @@ export function ItemDetailGallery({ detail }: ItemDetailGalleryProps) {
           </button>
         </div>
       </div>
-      <div className="item-detail-gallery__thumbs">
-        {slides.slice(1).map((slide, index) => (
-          <button
-            key={slide.label}
-            type="button"
-            className={active === index + 1 ? "is-active" : undefined}
-            onClick={() => setActive(index + 1)}
-          >
-            <img src={`https://picsum.photos/seed/${slide.seed}/120/90`} alt="" />
-            <span>{slide.label}</span>
-          </button>
-        ))}
-      </div>
+      {slides.length > 1 && (
+        <div className="item-detail-gallery__thumbs">
+          {slides.map((slide, index) => (
+            <button
+              key={`${slide.seed}-${index}`}
+              type="button"
+              className={active === index ? "is-active" : undefined}
+              onClick={() => setActive(index)}
+            >
+              <img src={slideImageSrc(slide, "thumb")} alt="" />
+              <span>{slide.label}</span>
+            </button>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

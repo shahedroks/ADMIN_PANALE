@@ -1,9 +1,10 @@
 import { useMemo, useState } from "react";
-import type { ActivityPoint } from "@/features/dashboard/data/dashboardData";
-import { activitySummary } from "@/features/dashboard/data/dashboardData";
+import type { ActivityPoint, ActivitySummary } from "@/features/dashboard/data/dashboardData";
+import { emptyActivitySummary } from "@/features/dashboard/data/dashboardData";
 
 type PlatformActivityChartProps = {
   data: ActivityPoint[];
+  summary?: ActivitySummary;
   onExport?: () => void;
 };
 
@@ -12,13 +13,14 @@ const H = 220;
 const PAD = { top: 16, right: 12, bottom: 28, left: 36 };
 
 function scaleY(value: number, min: number, max: number): number {
+  const span = max - min || 1;
   const inner = H - PAD.top - PAD.bottom;
-  return PAD.top + inner - ((value - min) / (max - min)) * inner;
+  return PAD.top + inner - ((value - min) / span) * inner;
 }
 
 function scaleX(index: number, count: number): number {
   const inner = W - PAD.left - PAD.right;
-  return PAD.left + (index / (count - 1)) * inner;
+  return PAD.left + (index / Math.max(count - 1, 1)) * inner;
 }
 
 function toAreaPath(points: { x: number; y: number }[]): string {
@@ -32,14 +34,39 @@ function toLinePath(points: { x: number; y: number }[]): string {
   return points.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ");
 }
 
-export function PlatformActivityChart({ data, onExport }: PlatformActivityChartProps) {
-  const [hoverIndex, setHoverIndex] = useState(4);
+function niceMax(value: number): number {
+  if (value <= 0) return 4;
+  const magnitude = 10 ** Math.floor(Math.log10(value));
+  const normalized = value / magnitude;
+  const step = normalized <= 1 ? 1 : normalized <= 2 ? 2 : normalized <= 5 ? 5 : 10;
+  return step * magnitude;
+}
+
+function buildYTicks(minY: number, maxY: number): number[] {
+  const span = maxY - minY;
+  const step = niceMax(span / 4);
+  const ticks: number[] = [];
+  for (let t = minY; t <= maxY; t += step) {
+    ticks.push(t);
+  }
+  if (ticks.length < 2) {
+    ticks.push(maxY);
+  }
+  return ticks;
+}
+
+export function PlatformActivityChart({
+  data,
+  summary = emptyActivitySummary,
+  onExport,
+}: PlatformActivityChartProps) {
+  const [hoverIndex, setHoverIndex] = useState(() => Math.max(0, data.length - 1));
 
   const { userPoints, itemPoints, yTicks, minY, maxY } = useMemo(() => {
-    const maxVal = Math.max(...data.flatMap((d) => [d.users, d.items]));
-    const minY = 2000;
-    const maxY = Math.ceil(maxVal / 2000) * 2000;
-    const yTicks = [2000, 4000, 8000, 12000, 16000].filter((t) => t <= maxY);
+    const maxVal = Math.max(0, ...data.flatMap((d) => [d.users, d.items]));
+    const minY = 0;
+    const maxY = niceMax(maxVal);
+    const yTicks = buildYTicks(minY, maxY);
 
     const userPoints = data.map((d, i) => ({
       x: scaleX(i, data.length),
@@ -55,7 +82,8 @@ export function PlatformActivityChart({ data, onExport }: PlatformActivityChartP
     return { userPoints, itemPoints, yTicks, minY, maxY };
   }, [data]);
 
-  const active = data[hoverIndex];
+  const safeHover = Math.min(hoverIndex, data.length - 1);
+  const active = data[safeHover];
 
   return (
     <section className="dash-chart-card">
@@ -119,7 +147,7 @@ export function PlatformActivityChart({ data, onExport }: PlatformActivityChartP
           <path d={toLinePath(userPoints)} className="dash-chart-card__line dash-chart-card__line--users" />
 
           {userPoints.map((p, i) => (
-            <g key={data[i].day}>
+            <g key={`${data[i].day}-${i}`}>
               <rect
                 x={p.x - 24}
                 y={PAD.top}
@@ -134,17 +162,27 @@ export function PlatformActivityChart({ data, onExport }: PlatformActivityChartP
             </g>
           ))}
 
-          {hoverIndex >= 0 && (
+          {safeHover >= 0 && userPoints[safeHover] && (
             <>
               <line
-                x1={userPoints[hoverIndex].x}
-                x2={userPoints[hoverIndex].x}
+                x1={userPoints[safeHover].x}
+                x2={userPoints[safeHover].x}
                 y1={PAD.top}
                 y2={H - PAD.bottom}
                 className="dash-chart-card__cursor"
               />
-              <circle cx={userPoints[hoverIndex].x} cy={userPoints[hoverIndex].y} r="4" className="dash-chart-card__point dash-chart-card__point--users" />
-              <circle cx={itemPoints[hoverIndex].x} cy={itemPoints[hoverIndex].y} r="4" className="dash-chart-card__point dash-chart-card__point--items" />
+              <circle
+                cx={userPoints[safeHover].x}
+                cy={userPoints[safeHover].y}
+                r="4"
+                className="dash-chart-card__point dash-chart-card__point--users"
+              />
+              <circle
+                cx={itemPoints[safeHover].x}
+                cy={itemPoints[safeHover].y}
+                r="4"
+                className="dash-chart-card__point dash-chart-card__point--items"
+              />
             </>
           )}
         </svg>
@@ -152,13 +190,13 @@ export function PlatformActivityChart({ data, onExport }: PlatformActivityChartP
         {active && (
           <div
             className="dash-chart-card__tooltip"
-            style={{ left: `${((hoverIndex + 0.5) / data.length) * 100}%` }}
+            style={{ left: `${((safeHover + 0.5) / data.length) * 100}%` }}
           >
             <span className="dash-chart-card__tooltip-kicker">
-              {active.day.toUpperCase()} SURGE • PEAK SYNC
+              {active.day.toUpperCase()} • LIVE SYNC
             </span>
             <strong>{active.users.toLocaleString()} Active Users</strong>
-            <span>{active.items.toLocaleString()} Listed Items</span>
+            <span>{active.items.toLocaleString()} New Listings</span>
           </div>
         )}
       </div>
@@ -166,15 +204,15 @@ export function PlatformActivityChart({ data, onExport }: PlatformActivityChartP
       <div className="dash-chart-card__footer">
         <div>
           <span>Daily Average Active</span>
-          <strong>{activitySummary.dailyAvgActive}</strong>
+          <strong>{summary.dailyAvgActive}</strong>
         </div>
         <div>
           <span>Item Match Conversion</span>
-          <strong className="dash-chart-card__highlight">{activitySummary.matchConversion}</strong>
+          <strong className="dash-chart-card__highlight">{summary.matchConversion}</strong>
         </div>
         <div>
           <span>Avg listings/member</span>
-          <strong>{activitySummary.avgListingsPerMember}</strong>
+          <strong>{summary.avgListingsPerMember}</strong>
         </div>
       </div>
     </section>

@@ -7,10 +7,10 @@ export function PlansFeatureGateBanner() {
     <section className="plans-gate-banner">
       <div className="plans-gate-banner__icon" aria-hidden>
         <svg viewBox="0 0 24 16">
-          <rect x="2" y="4" width="20" height="3" rx="1" fill="#acf847" />
-          <rect x="2" y="10" width="20" height="3" rx="1" fill="#acf847" />
-          <circle cx="6" cy="5.5" r="1.5" fill="#00241a" />
-          <circle cx="6" cy="11.5" r="1.5" fill="#00241a" />
+          <rect x="2" y="4" width="20" height="3" rx="1" fill="var(--swapit-accent)" />
+          <rect x="2" y="10" width="20" height="3" rx="1" fill="var(--swapit-accent)" />
+          <circle cx="6" cy="5.5" r="1.5" fill="var(--swapit-primary-dark)" />
+          <circle cx="6" cy="11.5" r="1.5" fill="var(--swapit-primary-dark)" />
         </svg>
       </div>
       <div className="plans-gate-banner__body">

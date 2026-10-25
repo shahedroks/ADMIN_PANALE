@@ -15,6 +15,7 @@ const baseItems: ReviewItem[] = [
     category: "Electronics",
     imageSeed: "keyboard",
     listedHoursAgo: 36,
+    listingStatus: "pending",
     status: "awaiting",
     userType: "Trusted user",
     userName: "Elena V.",
@@ -34,6 +35,7 @@ const baseItems: ReviewItem[] = [
     category: "Flora & Garden",
     imageSeed: "monstera",
     listedHoursAgo: 34,
+    listingStatus: "pending",
     status: "awaiting",
     userType: "New user",
     userName: "Sam K.",
@@ -53,6 +55,7 @@ const baseItems: ReviewItem[] = [
     category: "Photography",
     imageSeed: "camera",
     listedHoursAgo: 32,
+    listingStatus: "pending",
     status: "awaiting",
     userType: "Trusted user",
     userName: "Marcus L.",
@@ -72,6 +75,7 @@ const baseItems: ReviewItem[] = [
     category: "Home & Kitchen",
     imageSeed: "coffee",
     listedHoursAgo: 30,
+    listingStatus: "pending",
     status: "awaiting",
     userType: "Trusted user",
     userName: "Nina P.",
@@ -86,7 +90,7 @@ const baseItems: ReviewItem[] = [
   },
 ];
 
-const catalog: Omit<ReviewItem, "id" | "imageSeed" | "status">[] = [
+const catalog: Omit<ReviewItem, "id" | "imageSeed" | "status" | "listingStatus">[] = [
   {
     title: "Vintage Denim Jacket",
     category: "Fashion",
@@ -186,5 +190,7 @@ while (reviewItems.length < tabCounts.all) {
     imageSeed: `${template.category.toLowerCase().replace(/\s/g, "-")}-${seed}`,
     listedHoursAgo: Math.min(28, template.listedHoursAgo + cycle * 2),
     status: reviewItems.length < tabCounts.awaiting ? "awaiting" : "reviewed",
+    listingStatus:
+      reviewItems.length < tabCounts.awaiting ? "pending" : "approved",
   });
 }

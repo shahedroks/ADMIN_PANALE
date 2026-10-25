@@ -1,7 +1,7 @@
 .dash-shell {
   display: flex;
   min-height: 100vh;
-  background: #f8f9ff;
+  background: var(--swapit-warm-ivory);
 }
 
 .dash-shell__main {
@@ -38,7 +38,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background: #00241a;
+  background: var(--swapit-primary);
   box-shadow: 1px 0 8px rgba(0, 0, 0, 0.04);
   min-height: 100vh;
   position: sticky;
@@ -69,7 +69,7 @@
   font-weight: 600;
   letter-spacing: 0.35px;
   text-transform: uppercase;
-  color: #79a694;
+  color: var(--swapit-sidebar-muted);
 }
 
 .dash-sidebar__nav {
@@ -89,7 +89,7 @@
   font-weight: 600;
   font-size: 13px;
   line-height: 18px;
-  color: #79a694;
+  color: var(--swapit-sidebar-muted);
   text-decoration: none;
   transition:
     background 0.2s ease,
@@ -97,18 +97,18 @@
 }
 
 .dash-sidebar__link:hover {
-  color: #beedd9;
+  color: var(--swapit-sidebar-hover);
   background: rgba(255, 255, 255, 0.04);
 }
 
 .dash-sidebar__link--active {
-  background: #acf847;
-  color: #102000;
+  background: var(--swapit-accent);
+  color: var(--swapit-on-accent);
 }
 
 .dash-sidebar__link--parent-active {
-  background: rgba(172, 248, 71, 0.18);
-  color: #beedd9;
+  background: rgba(163, 114, 34, 0.18);
+  color: var(--swapit-sidebar-hover);
 }
 
 .dash-sidebar__group {
@@ -130,12 +130,12 @@
   font-weight: 700;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  color: #457000;
+  color: var(--swapit-medium-green);
 }
 
 .dash-sidebar__link--active .dash-sidebar__badge {
   background: rgba(16, 32, 0, 0.08);
-  color: #102000;
+  color: var(--swapit-on-accent);
 }
 
 .dash-sidebar__sublink {
@@ -148,18 +148,18 @@
   font-size: 14px;
   font-weight: 400;
   line-height: 20px;
-  color: #79a694;
+  color: var(--swapit-sidebar-muted);
   text-decoration: none;
 }
 
 .dash-sidebar__sublink:hover {
-  color: #beedd9;
+  color: var(--swapit-sidebar-hover);
 }
 
 .dash-sidebar__sublink--active,
 .dash-sidebar__sublink--active:hover {
-  background: #acf847;
-  color: #102000;
+  background: var(--swapit-accent);
+  color: var(--swapit-on-accent);
   font-weight: 600;
   border-radius: 9999px;
 }
@@ -186,7 +186,7 @@
   border: none;
   border-radius: 9999px;
   background: transparent;
-  color: #79a694;
+  color: var(--swapit-sidebar-muted);
   font-family: inherit;
   font-weight: 600;
   font-size: 13px;
@@ -194,7 +194,7 @@
 }
 
 .dash-sidebar__logout:hover {
-  color: #beedd9;
+  color: var(--swapit-sidebar-hover);
   background: rgba(255, 255, 255, 0.04);
 }
 
@@ -251,7 +251,7 @@
 }
 
 .dash-topbar__bell:hover {
-  color: #00241a;
+  color: var(--swapit-primary-dark);
 }
 
 .dash-topbar__bell-dot {
@@ -293,7 +293,29 @@
   padding: 0;
 }
 
-.dash-topbar__notify-panel li button {
+.dash-topbar__notify-empty {
+  margin: 0;
+  padding: 8px 16px 12px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.dash-topbar__notify-link {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  text-decoration: none;
+  color: inherit;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.dash-topbar__notify-panel li button,
+.dash-topbar__notify-panel li .dash-topbar__notify-link {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -308,12 +330,12 @@
 }
 
 .dash-topbar__notify-panel li button:hover {
-  background: #f8f9ff;
+  background: var(--swapit-warm-ivory);
 }
 
 .dash-topbar__notify-panel strong {
   font-size: 12px;
-  color: #00241a;
+  color: var(--swapit-primary-dark);
 }
 
 .dash-topbar__notify-panel span {

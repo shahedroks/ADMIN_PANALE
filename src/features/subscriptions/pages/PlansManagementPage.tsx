@@ -1,11 +1,12 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { PlansFeatureGateBanner } from "@/features/subscriptions/components/plans/PlansFeatureGateBanner";
 import { PlanEditorPanel } from "@/features/subscriptions/components/plans/PlanEditorPanel";
 import { PlansListPanel } from "@/features/subscriptions/components/plans/PlansListPanel";
 import { PlansSummaryKpis } from "@/features/subscriptions/components/plans/PlansSummaryKpis";
 import { SubscriptionsComingSoon } from "@/features/subscriptions/components/SubscriptionsComingSoon";
 import { SUBSCRIPTIONS_UI_VISIBLE } from "@/features/subscriptions/config/subscriptionsVisibility";
-import { useDemoStore } from "@/store/demoStore";
+import { useSubscriptionPlans } from "@/hooks/useSubscriptionPlans";
+import { useToast } from "@/store/toastStore";
 import "@/features/dashboard/styles/dashboard.css";
 import "@/features/subscriptions/styles/subscriptions-coming-soon.css";
 import "@/features/subscriptions/styles/subscriptions-page.css";
@@ -16,9 +17,16 @@ export function PlansManagementPage() {
     return <SubscriptionsComingSoon variant="plans" />;
   }
 
-  const { pushToast, subscriptionPlans, updateSubscriptionPlan } = useDemoStore();
-  const [selectedId, setSelectedId] = useState(() => subscriptionPlans[0]?.id ?? "");
+  const { pushToast } = useToast();
+  const { plans: subscriptionPlans, loading, error, updatePlan } = useSubscriptionPlans();
+  const [selectedId, setSelectedId] = useState("");
   const [editorOpen, setEditorOpen] = useState(true);
+
+  useEffect(() => {
+    if (!selectedId && subscriptionPlans[0]) {
+      setSelectedId(subscriptionPlans[0].id);
+    }
+  }, [selectedId, subscriptionPlans]);
 
   const selectedPlan = useMemo(
     () => subscriptionPlans.find((p) => p.id === selectedId) ?? subscriptionPlans[0],
@@ -27,6 +35,8 @@ export function PlansManagementPage() {
 
   return (
     <div className="dash-page plans-page">
+      {loading && <p>Loading subscription plans…</p>}
+      {error && <p role="alert">{error}</p>}
       <header className="plans-page__header">
         <div className="plans-page__intro">
           <p className="subscriptions-page__breadcrumb">
@@ -40,25 +50,6 @@ export function PlansManagementPage() {
             Manage marketplace membership tiers, pricing models, listing quotas, and entitlement
             gates for the SWAP IT subscription suite.
           </p>
-        </div>
-        <div className="plans-page__actions">
-          <button
-            type="button"
-            className="plans-btn plans-btn--outline"
-            onClick={() => pushToast("Reorder priority mode opened (demo).", "info")}
-          >
-            <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden>
-              <path d="M2 3h10M2 7h10M2 11h10" stroke="currentColor" strokeWidth="1.2" />
-            </svg>
-            Reorder Priority
-          </button>
-          <button
-            type="button"
-            className="plans-btn plans-btn--primary"
-            onClick={() => pushToast("Create new plan wizard opened (demo).")}
-          >
-            + Create New Plan
-          </button>
         </div>
       </header>
 
@@ -80,7 +71,17 @@ export function PlansManagementPage() {
           <PlanEditorPanel
             plan={selectedPlan}
             onClose={() => setEditorOpen(false)}
-            onSave={(patch) => updateSubscriptionPlan(selectedPlan.id, patch)}
+            onSave={async (patch) => {
+              try {
+                await updatePlan(selectedPlan.id, patch);
+                pushToast(`${selectedPlan.name} saved successfully.`);
+              } catch (e) {
+                pushToast(
+                  e instanceof Error ? e.message : "Could not save plan.",
+                  "error",
+                );
+              }
+            }}
           />
         )}
       </div>

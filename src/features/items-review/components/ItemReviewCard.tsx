@@ -1,6 +1,26 @@
 import { Link } from "react-router-dom";
 import type { ReviewItem } from "@/features/items-review/types";
 
+function listingStatusLabel(item: ReviewItem): string {
+  switch (item.listingStatus) {
+    case "approved":
+      return "Live on Discover";
+    case "pending":
+      return "Awaiting review";
+    case "hidden":
+      return "Hidden from feed";
+    case "rejected":
+      return "Rejected";
+    default:
+      return item.listingStatus;
+  }
+}
+
+function showModerationFlag(item: ReviewItem): boolean {
+  if (item.listingStatus === "pending") return true;
+  return Boolean(item.flagTitle.trim() || item.flagMessage.trim());
+}
+
 function FlagGlyph({ kind }: { kind: ReviewItem["flagKind"] }) {
   const stroke = "#B45309";
   switch (kind) {
@@ -50,7 +70,7 @@ export function ItemReviewCard({
   onRequestEdit,
   onHide,
 }: ItemReviewCardProps) {
-  const imageUrl = `https://picsum.photos/seed/${item.imageSeed}/480/360`;
+  const imageUrl = item.thumbnailUrl ?? "";
 
   return (
     <article className={`item-card${selected ? " item-card--selected" : ""}`}>
@@ -74,12 +94,14 @@ export function ItemReviewCard({
         <div className="item-card__meta">
           <span
             className={
-              item.status === "reviewed"
+              item.listingStatus === "approved"
                 ? "item-card__status item-card__status--done"
-                : "item-card__status"
+                : item.listingStatus === "pending"
+                  ? "item-card__status"
+                  : "item-card__status item-card__status--done"
             }
           >
-            <i /> {item.status === "reviewed" ? "Reviewed" : "Awaiting review"}
+            <i /> {listingStatusLabel(item)}
           </span>
           <span className="item-card__time">Listed {item.listedHoursAgo}h ago</span>
         </div>
@@ -106,15 +128,19 @@ export function ItemReviewCard({
           </div>
         </div>
 
-        <div className={`item-card__flag item-card__flag--${item.flagKind}`}>
-          <span className="item-card__flag-icon" aria-hidden>
-            <FlagGlyph kind={item.flagKind} />
-          </span>
-          <div>
-            <strong>{item.flagTitle.toUpperCase()}</strong>
-            <p>{item.flagMessage}</p>
+        {showModerationFlag(item) && (
+          <div className={`item-card__flag item-card__flag--${item.flagKind}`}>
+            <span className="item-card__flag-icon" aria-hidden>
+              <FlagGlyph kind={item.flagKind} />
+            </span>
+            <div>
+              <strong>
+                {(item.flagTitle || "Pending review").toUpperCase()}
+              </strong>
+              {item.flagMessage ? <p>{item.flagMessage}</p> : null}
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="item-card__tags">
           <span>Condition: {item.condition}</span>

@@ -4,7 +4,7 @@ import { SettingsSecurityPanel } from "@/features/settings/components/SettingsSe
 import { SettingsSubNav } from "@/features/settings/components/SettingsSubNav";
 import { SettingsTeamTable } from "@/features/settings/components/SettingsTeamTable";
 import { type SettingsSectionId } from "@/features/settings/data/settingsData";
-import { useDemoStore } from "@/store/demoStore";
+import { useAdminTeam, useAppSettings } from "@/hooks/useAppSettings";
 import "@/features/dashboard/styles/dashboard.css";
 import "@/features/settings/styles/settings-page.css";
 
@@ -15,7 +15,8 @@ const sectionAnchors: Record<SettingsSectionId, string> = {
 };
 
 export function SettingsPage() {
-  const { adminTeam } = useDemoStore();
+  const { members: adminTeam, loading: teamLoading } = useAdminTeam();
+  const { settings, loading: settingsLoading } = useAppSettings();
   const [active, setActive] = useState<SettingsSectionId>("general");
 
   useEffect(() => {
@@ -25,6 +26,7 @@ export function SettingsPage() {
 
   return (
     <div className="dash-page settings-page">
+      {(teamLoading || settingsLoading) && <p>Loading settings…</p>}
       <header className="settings-page__header">
         <div>
           <p className="settings-page__breadcrumb">
@@ -45,9 +47,9 @@ export function SettingsPage() {
         <SettingsSubNav active={active} onSelect={setActive} adminTeamCount={adminTeam.length} />
 
         <div className="settings-workspace">
-          <SettingsGeneralPanel />
+          <SettingsGeneralPanel settings={settings} />
           <SettingsTeamTable members={adminTeam} />
-          <SettingsSecurityPanel />
+          <SettingsSecurityPanel settings={settings} />
         </div>
       </div>
     </div>

@@ -5,7 +5,7 @@ import {
   PlanVerifiedBadgeIcon,
 } from "@/components/kpi-icons/FigmaMetricIcons";
 import type { PlanSummaryKpiIcon } from "@/features/subscriptions/data/plansManagementData";
-import { useDemoStore } from "@/store/demoStore";
+import { useSubscriptionPlans } from "@/hooks/useSubscriptionPlans";
 
 function KpiGlyph({ type }: { type: PlanSummaryKpiIcon }) {
   switch (type) {
@@ -21,7 +21,7 @@ function KpiGlyph({ type }: { type: PlanSummaryKpiIcon }) {
 }
 
 export function PlansSummaryKpis() {
-  const { subscriptionPlanKpis } = useDemoStore();
+  const { kpis: subscriptionPlanKpis } = useSubscriptionPlans();
   return (
     <div className="plans-kpis">
       {subscriptionPlanKpis.map((kpi) => (

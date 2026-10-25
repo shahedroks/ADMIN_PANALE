@@ -35,13 +35,13 @@ export function SubscriptionGrowthChart() {
           />
         ))}
         <polyline points={freePoints} fill="none" stroke="#c0c8c3" strokeWidth="2.5" />
-        <polyline points={premiumPoints} fill="none" stroke="#00241a" strokeWidth="2.5" />
+        <polyline points={premiumPoints} fill="none" stroke="var(--swapit-primary-dark)" strokeWidth="2.5" />
         <line
           x1={milestoneX}
           x2={milestoneX}
           y1={pad}
           y2={h - pad}
-          stroke="#00241a"
+          stroke="var(--swapit-primary-dark)"
           strokeDasharray="4 4"
           opacity="0.35"
         />

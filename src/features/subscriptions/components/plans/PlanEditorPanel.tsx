@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { SubscriptionPlan } from "@/features/subscriptions/data/plansManagementData";
-import type { SubscriptionPlanUpdate } from "@/store/demoStore";
+import type { SubscriptionPlanUpdate } from "@/features/subscriptions/data/plansManagementData";
 
 type PlanEditorPanelProps = {
   plan: SubscriptionPlan;

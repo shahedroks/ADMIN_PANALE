@@ -1,9 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import type { ReviewItem } from "@/features/items-review/types";
 import { resolveReportTargetPath } from "@/features/reports/utils/reportRoutes";
 import type { ModerationReport } from "@/features/reports/types";
-import type { SwapperMember } from "@/features/users/types";
-import { useDemoStore } from "@/store/demoStore";
+import { useToast } from "@/store/toastStore";
 
 const priorityLabel: Record<ModerationReport["priority"], string> = {
   high: "High",
@@ -32,24 +30,26 @@ function getReportThumbnail(row: ModerationReport) {
 
 type ReportsTableProps = {
   rows: ModerationReport[];
-  reviewItems: ReviewItem[];
-  members: SwapperMember[];
   onReview: (id: string) => void;
   onClose: (id: string) => void;
 };
 
-export function ReportsTable({ rows, reviewItems, members, onReview, onClose }: ReportsTableProps) {
+export function ReportsTable({ rows, onReview, onClose }: ReportsTableProps) {
   const navigate = useNavigate();
-  const { pushToast } = useDemoStore();
+  const { pushToast } = useToast();
 
   function handleOpen(row: ModerationReport) {
     onReview(row.id);
-    const path = resolveReportTargetPath(row, reviewItems, members);
+    const path = resolveReportTargetPath(row);
     if (path) {
       navigate(path);
       return;
     }
-    pushToast(`Conversation ${row.targetLabel} opened in moderation inbox (demo).`, "info");
+    if (row.targetKind === "conversation") {
+      pushToast(`Conversation report ${row.id} — link chat moderation when chat admin ships.`, "info");
+      return;
+    }
+    pushToast("Report has no targetId — cannot open target.", "error");
   }
 
   return (
@@ -90,6 +90,7 @@ export function ReportsTable({ rows, reviewItems, members, onReview, onClose }: 
                       <strong>{row.type}</strong>
                       <span>
                         {targetPrefix[row.targetKind]}: {row.targetLabel}
+                        {row.targetId ? ` (${row.targetId.slice(0, 8)}…)` : ""}
                       </span>
                     </div>
                   </div>
@@ -100,32 +101,17 @@ export function ReportsTable({ rows, reviewItems, members, onReview, onClose }: 
                   </span>
                 </td>
                 <td>
-                  <span className={`reports-status reports-status--${row.status}`}>
+                  <span className={`reports-pill reports-pill--status-${row.status}`}>
                     {statusLabel[row.status]}
                   </span>
                 </td>
-                <td className="reports-table__date">{row.reportedAt}</td>
+                <td>{new Date(row.reportedAt).toLocaleDateString()}</td>
                 <td>
                   <div className="reports-table__actions">
-                    <button
-                      type="button"
-                      className="reports-action-link"
-                      onClick={() => handleOpen(row)}
-                    >
+                    <button type="button" onClick={() => handleOpen(row)}>
                       Open
                     </button>
-                    <button
-                      type="button"
-                      className="reports-action reports-action--review"
-                      onClick={() => onReview(row.id)}
-                    >
-                      Review
-                    </button>
-                    <button
-                      type="button"
-                      className="reports-action-link reports-action-link--danger"
-                      onClick={() => onClose(row.id)}
-                    >
+                    <button type="button" onClick={() => onClose(row.id)}>
                       Close
                     </button>
                   </div>

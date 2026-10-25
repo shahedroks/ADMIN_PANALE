@@ -4,17 +4,17 @@ import { usePrefersReducedMotion } from "@/features/auth/hooks/usePrefersReduced
 function SwapIcon() {
   return (
     <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden>
-      <rect width="40" height="40" rx="8" fill="#ACF847" />
+      <rect width="40" height="40" rx="8" fill="var(--swapit-accent)" />
       <path
         d="M12 16h12l-2.5-2.5M28 24H16l2.5 2.5"
-        stroke="#00241A"
+        stroke="var(--swapit-primary-dark)"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
         d="M26 14l2 2-2 2M14 26l-2-2 2-2"
-        stroke="#00241A"
+        stroke="var(--swapit-primary-dark)"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -28,11 +28,11 @@ function ShieldCheckIcon() {
     <svg width="16" height="20" viewBox="0 0 16 20" fill="none" aria-hidden>
       <path
         d="M8 1L2 4v5c0 4.2 2.55 8.13 6 9.5 3.45-1.37 6-5.3 6-9.5V4L8 1z"
-        fill="#ACF847"
+        fill="var(--swapit-accent)"
       />
       <path
         d="M5.5 10l1.8 1.8L10.5 8.5"
-        stroke="#00241A"
+        stroke="var(--swapit-primary-dark)"
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -46,12 +46,12 @@ function TrustScaleIcon() {
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
       <path
         d="M12 3v3M8 6h8M6 9h12v2a6 6 0 01-12 0V9z"
-        stroke="#ACF847"
+        stroke="var(--swapit-accent)"
         strokeWidth="1.8"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <path d="M9 15h6" stroke="#ACF847" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M9 15h6" stroke="var(--swapit-accent)" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   );
 }
@@ -61,7 +61,7 @@ function CommunityShieldIcon() {
     <svg width="16" height="20" viewBox="0 0 16 20" fill="none" aria-hidden>
       <path
         d="M8 1L2 4v5c0 4.2 2.55 8.13 6 9.5 3.45-1.37 6-5.3 6-9.5V4L8 1z"
-        fill="#ACF847"
+        fill="var(--swapit-accent)"
       />
     </svg>
   );
@@ -130,11 +130,11 @@ export function LoginHeroPanel() {
                 cy="112"
                 r="103"
                 fill="none"
-                stroke="rgba(172, 248, 71, 0.25)"
+                stroke="rgba(163, 114, 34, 0.25)"
                 strokeWidth="1.68"
                 strokeDasharray="8 10"
               />
-              <circle cx="112" cy="9" r="5" fill="#ACF847" className="login-hero__orbit-dot" />
+              <circle cx="112" cy="9" r="5" fill="var(--swapit-accent)" className="login-hero__orbit-dot" />
             </g>
             <g
               className={

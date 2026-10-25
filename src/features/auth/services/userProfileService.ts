@@ -1,4 +1,14 @@
-import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  limit,
+  query,
+  serverTimestamp,
+  setDoc,
+  where,
+} from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { APP_USER_ROLE } from "@/features/auth/constants/userRoles";
 
@@ -10,15 +20,50 @@ export type UserProfile = {
 
 const usersCollection = "users";
 
-export async function fetchUserProfile(uid: string): Promise<UserProfile | null> {
-  const snap = await getDoc(doc(db, usersCollection, uid));
-  if (!snap.exists()) return null;
-  const data = snap.data();
+function mapProfileData(data: Record<string, unknown>): UserProfile {
+  const role = (data.role as string | undefined)?.trim() || APP_USER_ROLE;
   return {
     email: (data.email as string) ?? "",
     displayName: (data.displayName as string | null) ?? null,
-    role: (data.role as string) ?? APP_USER_ROLE,
+    role,
   };
+}
+
+export async function fetchUserProfile(uid: string): Promise<UserProfile | null> {
+  const snap = await getDoc(doc(db, usersCollection, uid));
+  if (!snap.exists()) return null;
+  return mapProfileData(snap.data());
+}
+
+/** Finds a profile by email when the Firestore doc id may not match Auth UID. */
+export async function fetchUserProfileByEmail(
+  email: string,
+): Promise<{ uid: string; profile: UserProfile } | null> {
+  const normalized = email.trim();
+  if (!normalized) return null;
+
+  const snap = await getDocs(
+    query(
+      collection(db, usersCollection),
+      where("email", "==", normalized),
+      limit(1),
+    ),
+  );
+  if (snap.empty) {
+    const lowerSnap = await getDocs(
+      query(
+        collection(db, usersCollection),
+        where("email", "==", normalized.toLowerCase()),
+        limit(1),
+      ),
+    );
+    if (lowerSnap.empty) return null;
+    const docSnap = lowerSnap.docs[0];
+    return { uid: docSnap.id, profile: mapProfileData(docSnap.data()) };
+  }
+
+  const docSnap = snap.docs[0];
+  return { uid: docSnap.id, profile: mapProfileData(docSnap.data()) };
 }
 
 /** Creates a mobile-app profile if missing (apk registration path). */

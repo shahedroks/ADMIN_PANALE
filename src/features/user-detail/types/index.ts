@@ -12,6 +12,15 @@ export type UserListedItem = {
   category: string;
   status: "under_review" | "in_swap" | "active";
   imageSeed: string;
+  thumbnailUrl?: string;
+};
+
+export type UserRestrictionSettings = {
+  manualReview: boolean;
+  allowChat: boolean;
+  allowListings: boolean;
+  durationDays: string;
+  note: string;
 };
 
 export type UserActionLogEntry = {
@@ -29,6 +38,7 @@ export type UserDetailProfile = {
   bio: string;
   tags: string[];
   trustPercent: number;
+  trustLabel: string;
   joined: string;
   lastActive: string;
   swapsCompleted: number;
@@ -37,6 +47,7 @@ export type UserDetailProfile = {
   handle: string;
   ipAddress: string;
   avatarSeed: string;
+  photoUrl?: string;
   reports: UserReportEntry[];
   items: UserListedItem[];
   actions: UserActionLogEntry[];

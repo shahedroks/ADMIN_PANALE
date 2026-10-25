@@ -20,7 +20,7 @@
   font-weight: 700;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  color: #416900;
+  color: var(--swapit-primary-dark);
 }
 
 .settings-page__breadcrumb span {
@@ -33,7 +33,7 @@
   font-size: 28px;
   font-weight: 800;
   letter-spacing: -0.7px;
-  color: #00241a;
+  color: var(--swapit-primary-dark);
 }
 
 .settings-page__subtitle {
@@ -53,14 +53,14 @@
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   font-size: 11px;
   font-weight: 600;
-  color: #00241a;
+  color: var(--swapit-primary-dark);
 }
 
 .settings-page__status i {
   width: 8px;
   height: 8px;
   border-radius: 9999px;
-  background: #acf847;
+  background: var(--swapit-accent);
   animation: settings-pulse 2s ease-in-out infinite;
 }
 
@@ -152,7 +152,7 @@
 
 .settings-subnav__item.is-active {
   background: #0d3b2e;
-  box-shadow: inset 3px 0 0 #acf847;
+  box-shadow: inset 3px 0 0 var(--swapit-accent);
 }
 
 .settings-subnav__item.is-active strong {
@@ -211,7 +211,7 @@
   width: 80px;
   height: 80px;
   border-radius: 9999px;
-  background: rgba(172, 248, 71, 0.2);
+  background: rgba(163, 114, 34, 0.2);
   filter: blur(12px);
   z-index: 0;
   pointer-events: none;
@@ -237,7 +237,7 @@
   font-weight: 700;
   line-height: 12px;
   text-transform: uppercase;
-  color: #416900;
+  color: var(--swapit-primary-dark);
 }
 
 .settings-impact strong {
@@ -248,7 +248,7 @@
   font-size: 18px;
   font-weight: 700;
   line-height: 24px;
-  color: #00241a;
+  color: var(--swapit-primary-dark);
 }
 
 .settings-impact span {
@@ -287,7 +287,7 @@
   font-weight: 700;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  color: #416900;
+  color: var(--swapit-primary-dark);
 }
 
 .settings-panel__head {
@@ -304,7 +304,7 @@
   font-size: 22px;
   font-weight: 700;
   line-height: 28px;
-  color: #00241a;
+  color: var(--swapit-primary-dark);
 }
 
 .settings-panel__desc {
@@ -333,7 +333,7 @@
   width: 6px;
   height: 6px;
   border-radius: 9999px;
-  background: #416900;
+  background: var(--swapit-primary-dark);
 }
 
 .settings-general-grid {
@@ -389,7 +389,7 @@
 }
 
 .settings-btn--primary {
-  background: #00241a;
+  background: var(--swapit-primary-dark);
   color: #ffffff;
 }
 
@@ -409,7 +409,7 @@
   margin-top: 10px;
   background: #ffffff;
   border: 1px solid rgba(0, 36, 26, 0.15);
-  color: #00241a;
+  color: var(--swapit-primary-dark);
 }
 
 .settings-link-btn {
@@ -418,7 +418,7 @@
   font-family: inherit;
   font-size: 12px;
   font-weight: 600;
-  color: #00241a;
+  color: var(--swapit-primary-dark);
   cursor: pointer;
   text-decoration: underline;
 }
@@ -470,7 +470,7 @@
   place-items: center;
   background: #eff4ff;
   font-weight: 700;
-  color: #00241a;
+  color: var(--swapit-primary-dark);
 }
 
 img.settings-table__avatar {
@@ -510,13 +510,13 @@ img.settings-table__avatar {
 .settings-role--super {
   padding: 4px 10px;
   font-size: 11px;
-  background: #00241a;
+  background: var(--swapit-primary-dark);
   color: #ffffff;
 }
 
 .settings-role--moderator {
-  background: #acf847;
-  color: #457000;
+  background: var(--swapit-accent);
+  color: var(--swapit-medium-green);
 }
 
 .settings-role--support {
@@ -537,7 +537,7 @@ img.settings-table__avatar {
   width: 4px;
   height: 6px;
   border-radius: 9999px;
-  background: #acf847;
+  background: var(--swapit-accent);
   flex-shrink: 0;
 }
 
@@ -557,7 +557,7 @@ img.settings-table__avatar {
   font-size: 13px;
   font-weight: 700;
   line-height: 18px;
-  color: #00241a;
+  color: var(--swapit-primary-dark);
   cursor: pointer;
   text-align: left;
   flex-shrink: 0;
@@ -648,7 +648,7 @@ img.settings-table__avatar {
   width: 44px;
   height: 24px;
   border-radius: 9999px;
-  background: #00241a;
+  background: var(--swapit-primary-dark);
   position: relative;
 }
 
@@ -660,7 +660,7 @@ img.settings-table__avatar {
   width: 18px;
   height: 18px;
   border-radius: 9999px;
-  background: #acf847;
+  background: var(--swapit-accent);
 }
 
 .settings-toggle input:not(:checked) + .settings-toggle__track {
@@ -736,7 +736,7 @@ img.settings-table__avatar {
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #acf847, #416900);
+  background: linear-gradient(90deg, var(--swapit-accent), var(--swapit-primary-dark));
 }
 
 .settings-strength__label {

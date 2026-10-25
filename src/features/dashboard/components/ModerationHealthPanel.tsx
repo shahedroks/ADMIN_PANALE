@@ -1,7 +1,26 @@
 import { Link } from "react-router-dom";
-import { moderationHealth } from "@/features/dashboard/data/dashboardData";
+import {
+  emptyModerationHealth,
+  type ModerationHealthView,
+} from "@/features/dashboard/data/dashboardData";
 
-export function ModerationHealthPanel() {
+type ModerationHealthPanelProps = {
+  moderation?: ModerationHealthView;
+};
+
+export function ModerationHealthPanel({ moderation = emptyModerationHealth }: ModerationHealthPanelProps) {
+  const badge =
+    moderation.urgentCount > 0
+      ? "Attention"
+      : moderation.closedReportsRate >= 80
+        ? "Optimal"
+        : "Monitoring";
+
+  const reviewBarWidth =
+    moderation.avgReviewMinutes > 0
+      ? Math.min(100, Math.round((30 / moderation.avgReviewMinutes) * 72))
+      : 0;
+
   return (
     <aside className="dash-mod-panel">
       <div className="dash-mod-panel__head">
@@ -11,7 +30,7 @@ export function ModerationHealthPanel() {
           </svg>
           <h2>Moderation Health</h2>
         </div>
-        <span className="dash-mod-panel__badge">Optimal</span>
+        <span className="dash-mod-panel__badge">{badge}</span>
       </div>
       <p className="dash-mod-panel__sub">Operational performance and SLA compliance.</p>
 
@@ -22,11 +41,11 @@ export function ModerationHealthPanel() {
             <i /> Stable
           </span>
         </div>
-        <strong className="dash-mod-metric__value">{moderationHealth.closedReportsRate}%</strong>
+        <strong className="dash-mod-metric__value">{moderation.closedReportsRate}%</strong>
         <div className="dash-mod-metric__bar">
-          <span style={{ width: `${moderationHealth.closedReportsRate}%` }} />
+          <span style={{ width: `${moderation.closedReportsRate}%` }} />
         </div>
-        <p className="dash-mod-metric__hint">{moderationHealth.closedReportsDelta}</p>
+        <p className="dash-mod-metric__hint">{moderation.closedReportsDelta}</p>
       </div>
 
       <div className="dash-mod-metric">
@@ -36,31 +55,37 @@ export function ModerationHealthPanel() {
             <i /> Stable
           </span>
         </div>
-        <strong className="dash-mod-metric__value">{moderationHealth.avgReviewMinutes} minutes</strong>
+        <strong className="dash-mod-metric__value">
+          {moderation.avgReviewMinutes > 0
+            ? `${moderation.avgReviewMinutes} minutes`
+            : "—"}
+        </strong>
         <div className="dash-mod-metric__bar dash-mod-metric__bar--blue">
-          <span style={{ width: "72%" }} />
+          <span style={{ width: `${reviewBarWidth}%` }} />
         </div>
-        <p className="dash-mod-metric__hint">{moderationHealth.reviewBenchmark}</p>
+        <p className="dash-mod-metric__hint">{moderation.reviewBenchmark}</p>
       </div>
 
-      <div className="dash-mod-alert">
-        <div className="dash-mod-alert__icon">
-          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden>
-            <path d="M8 1l7 13H1L8 1z" stroke="#BA1A1A" fill="none" />
-            <path d="M8 6v4M8 12h.01" stroke="#BA1A1A" />
-          </svg>
+      {moderation.urgentCount > 0 && (
+        <div className="dash-mod-alert">
+          <div className="dash-mod-alert__icon">
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden>
+              <path d="M8 1l7 13H1L8 1z" stroke="#BA1A1A" fill="none" />
+              <path d="M8 6v4M8 12h.01" stroke="#BA1A1A" />
+            </svg>
+          </div>
+          <div>
+            <strong>Urgent Escalation</strong>
+            <p>
+              {moderation.urgentCount} high priority user reports require immediate
+              verification.
+            </p>
+            <Link to="/reports" className="dash-mod-alert__link">
+              Review now →
+            </Link>
+          </div>
         </div>
-        <div>
-          <strong>Urgent Escalation</strong>
-          <p>
-            {moderationHealth.urgentCount} high priority user reports require immediate
-            verification.
-          </p>
-          <Link to="/reports" className="dash-mod-alert__link">
-            Review now →
-          </Link>
-        </div>
-      </div>
+      )}
     </aside>
   );
 }

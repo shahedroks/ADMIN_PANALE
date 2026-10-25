@@ -1,3 +1,4 @@
+import { UserAvatar } from "@/components/UserAvatar";
 import type { UserDetailProfile } from "@/features/user-detail/types";
 
 type UserDetailSummaryProps = {
@@ -56,7 +57,7 @@ export function UserDetailSummary({ profile }: UserDetailSummaryProps) {
             <SummaryIcon type="trust" /> Trust level
           </span>
           <div className="user-detail-stat-row__trust">
-            <strong>High • {profile.trustPercent}%</strong>
+            <strong>{profile.trustLabel} • {profile.trustPercent}%</strong>
             <div className="user-detail-trust__bar">
               <span style={{ width: `${profile.trustPercent}%` }} />
             </div>
@@ -94,9 +95,10 @@ export function UserDetailSummary({ profile }: UserDetailSummaryProps) {
 
       <div className="user-detail-summary__contact">
         <div className="user-detail-avatar-wrap">
-          <img
-            src={`https://i.pravatar.cc/160?u=${profile.avatarSeed}`}
-            alt=""
+          <UserAvatar
+            photoUrl={profile.photoUrl}
+            seed={profile.avatarSeed}
+            displayName={profile.name}
             width={80}
             height={80}
           />

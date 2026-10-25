@@ -36,7 +36,7 @@ export const reportKpis: ReportKpi[] = [
     hint: "4,120 transactions",
     hintTone: "neutral",
     icon: "leaf",
-    iconBg: "rgba(172, 248, 71, 0.35)",
+    iconBg: "rgba(163, 114, 34, 0.35)",
   },
 ];
 

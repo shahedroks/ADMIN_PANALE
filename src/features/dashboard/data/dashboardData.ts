@@ -21,31 +21,69 @@ export type ActivityPoint = {
   items: number;
 };
 
-export const dashboardMetrics: DashboardMetric[] = [
+export type ActivitySummary = {
+  dailyAvgActive: string;
+  matchConversion: string;
+  avgListingsPerMember: string;
+};
+
+export type ModerationHealthView = {
+  closedReportsRate: number;
+  closedReportsDelta: string;
+  avgReviewMinutes: number;
+  reviewBenchmark: string;
+  urgentCount: number;
+};
+
+const emptyWeek: ActivityPoint[] = [
+  { day: "Mon", users: 0, items: 0 },
+  { day: "Tue", users: 0, items: 0 },
+  { day: "Wed", users: 0, items: 0 },
+  { day: "Thu", users: 0, items: 0 },
+  { day: "Fri", users: 0, items: 0 },
+  { day: "Sat", users: 0, items: 0 },
+  { day: "Sun", users: 0, items: 0 },
+];
+
+export const emptyActivitySummary: ActivitySummary = {
+  dailyAvgActive: "0",
+  matchConversion: "—",
+  avgListingsPerMember: "—",
+};
+
+export const emptyModerationHealth: ModerationHealthView = {
+  closedReportsRate: 0,
+  closedReportsDelta: "Loading…",
+  avgReviewMinutes: 0,
+  reviewBenchmark: "—",
+  urgentCount: 0,
+};
+
+export const skeletonDashboardMetrics: DashboardMetric[] = [
   {
     id: "matches",
     title: "Matches and Chats",
-    value: "1,842",
-    delta: "+12%",
-    deltaTone: "positive",
+    value: "—",
+    delta: "—",
+    deltaTone: "neutral",
     status: "stable",
     statusLabel: "Stable",
     footnote: "vs previous 7 days",
-    progressPercent: 72,
-    progressColor: "#acf847",
+    progressPercent: 0,
+    progressColor: "var(--swapit-accent)",
     icon: "chat",
-    iconBg: "rgba(172, 248, 71, 0.3)",
+    iconBg: "rgba(163, 114, 34, 0.3)",
   },
   {
     id: "reports",
     title: "Open Reports",
-    value: "28",
-    delta: "+4 urgent",
-    deltaTone: "negative",
-    status: "review",
-    statusLabel: "Needs review",
+    value: "—",
+    delta: "—",
+    deltaTone: "neutral",
+    status: "stable",
+    statusLabel: "Stable",
     footnote: "Requires manual audit",
-    progressPercent: 48,
+    progressPercent: 0,
     progressColor: "#ba1a1a",
     icon: "flag",
     iconBg: "rgba(255, 218, 214, 0.4)",
@@ -53,13 +91,13 @@ export const dashboardMetrics: DashboardMetric[] = [
   {
     id: "items",
     title: "Listed Items",
-    value: "6,210",
-    delta: "+8.4%",
-    deltaTone: "positive",
+    value: "—",
+    delta: "—",
+    deltaTone: "neutral",
     status: "stable",
     statusLabel: "Stable",
     footnote: "Circulating inventory",
-    progressPercent: 84,
+    progressPercent: 0,
     progressColor: "#0d3b2e",
     icon: "box",
     iconBg: "rgba(190, 237, 217, 0.4)",
@@ -67,39 +105,17 @@ export const dashboardMetrics: DashboardMetric[] = [
   {
     id: "users",
     title: "Active Users",
-    value: "14,350",
-    delta: "+15.2%",
-    deltaTone: "positive",
+    value: "—",
+    delta: "—",
+    deltaTone: "neutral",
     status: "stable",
     statusLabel: "Stable",
     footnote: "30-day verified active",
-    progressPercent: 91,
-    progressColor: "#416900",
+    progressPercent: 0,
+    progressColor: "var(--swapit-primary-dark)",
     icon: "users",
     iconBg: "#e6eeff",
   },
 ];
 
-export const platformActivity: ActivityPoint[] = [
-  { day: "Mon", users: 9200, items: 4100 },
-  { day: "Tue", users: 10400, items: 4500 },
-  { day: "Wed", users: 11200, items: 4800 },
-  { day: "Thu", users: 11800, items: 5100 },
-  { day: "Fri", users: 13820, items: 5940 },
-  { day: "Sat", users: 12500, items: 5600 },
-  { day: "Sun", users: 10900, items: 5200 },
-];
-
-export const activitySummary = {
-  dailyAvgActive: "11,490",
-  matchConversion: "34.6%",
-  avgListingsPerMember: "2.4 items",
-};
-
-export const moderationHealth = {
-  closedReportsRate: 94,
-  closedReportsDelta: "+2.1% SLA increase",
-  avgReviewMinutes: 18,
-  reviewBenchmark: "12m below benchmark",
-  urgentCount: 3,
-};
+export const emptyPlatformActivity = emptyWeek;

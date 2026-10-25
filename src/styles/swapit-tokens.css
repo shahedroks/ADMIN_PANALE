@@ -1,0 +1,20 @@
+/**
+ * Aligned with apk-/lib/core/constants/app_colors.dart
+ */
+:root {
+  --swapit-warm-ivory: #f8f4ec;
+  --swapit-field-gray: #e7eae1;
+  --swapit-sage: #c6d6c6;
+  --swapit-promo: #b5d0b8;
+  --swapit-primary: #154835;
+  --swapit-primary-dark: #103828;
+  --swapit-medium-green: #256249;
+  --swapit-accent: #a37222;
+  --swapit-terracotta: #cc844c;
+  --swapit-text-primary: #1a2e26;
+  --swapit-text-secondary: #3d4a42;
+  --swapit-text-muted: #6b7569;
+  --swapit-sidebar-muted: #a8c4b8;
+  --swapit-sidebar-hover: #d5e8de;
+  --swapit-on-accent: #f8f4ec;
+}

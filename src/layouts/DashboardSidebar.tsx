@@ -86,7 +86,7 @@ function BrandIcon() {
       <rect width="32" height="32" rx="8" fill="#0D3B2E" />
       <path
         d="M10 13h8l-2-2M22 19h-8l2 2M20 11l2 2-2 2M12 21l-2-2 2-2"
-        stroke="#ACF847"
+        stroke="var(--swapit-accent)"
         strokeWidth="1.6"
         strokeLinecap="round"
       />

@@ -3,11 +3,9 @@ import { UserManagementKpis } from "@/features/users/components/UserManagementKp
 import { UserManagementToolbar } from "@/features/users/components/UserManagementToolbar";
 import { UsersManagementTable } from "@/features/users/components/UsersManagementTable";
 import { UserWorkflowCards } from "@/features/users/components/UserWorkflowCards";
-import {
-  PAGE_SIZE,
-  userKpis,
-} from "@/features/users/data/usersManagementData";
+import { PAGE_SIZE } from "@/features/users/data/usersManagementData";
 import type { UserFilterTab } from "@/features/users/types";
+import { buildPaginationPages } from "@/features/users/utils/userManagementMetrics";
 import { useSwapperMembers } from "@/hooks/useFirestoreAdminData";
 import { useDemoStore } from "@/store/demoStore";
 import "@/features/dashboard/styles/dashboard.css";
@@ -16,14 +14,24 @@ import "@/features/users/styles/users-page.css";
 export function UsersPage() {
   const {
     members,
+    metrics,
     restrictMember,
     banMember,
     liftMemberRestriction,
+    deleteMember,
     loading,
     error,
-    reload,
   } = useSwapperMembers();
   const { pushToast } = useDemoStore();
+
+  const runAction = async (label: string, action: () => Promise<void>) => {
+    try {
+      await action();
+      pushToast(label, "success");
+    } catch (e) {
+      pushToast(e instanceof Error ? e.message : `Could not complete: ${label}`, "error");
+    }
+  };
 
   const exportMembersCsv = () => {
     const header = "id,name,email,status\n";
@@ -37,12 +45,7 @@ export function UsersPage() {
     a.download = "swappers.csv";
     a.click();
     URL.revokeObjectURL(url);
-  };
-
-  const deleteMember = async (id: string) => {
-    const { callDeleteUser } = await import("@/lib/callableFunctions");
-    await callDeleteUser({ userId: id });
-    await reload();
+    pushToast("User directory exported.");
   };
 
   const [search, setSearch] = useState("");
@@ -72,6 +75,7 @@ export function UsersPage() {
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
   const pageRows = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+  const pageButtons = buildPaginationPages(safePage, totalPages);
 
   const start = filtered.length === 0 ? 0 : (safePage - 1) * PAGE_SIZE + 1;
   const end = Math.min(safePage * PAGE_SIZE, filtered.length);
@@ -83,10 +87,12 @@ export function UsersPage() {
     banned: members.filter((u) => u.status === "banned").length,
   };
 
+  const standingPercent = metrics?.activeGoodStandingPercent ?? 0;
+
   return (
     <div className="dash-page users-page">
       {loading && <p>Loading users…</p>}
-      {error && <p>{error}</p>}
+      {error && <p role="alert">{error}</p>}
       <header className="users-page__header">
         <div>
           <p className="users-page__eyebrow">Community governance • Real-time directory</p>
@@ -130,7 +136,7 @@ export function UsersPage() {
         </div>
       </header>
 
-      <UserManagementKpis items={userKpis} />
+      <UserManagementKpis items={metrics?.kpis ?? []} />
 
       <UserManagementToolbar
         search={search}
@@ -149,15 +155,15 @@ export function UsersPage() {
       <section className="users-table-card">
         <UsersManagementTable
           rows={pageRows}
-          onRestrict={restrictMember}
-          onBan={banMember}
-          onLift={liftMemberRestriction}
-          onDelete={deleteMember}
+          onRestrict={(id) => runAction("User temporarily restricted.", () => restrictMember(id))}
+          onBan={(id) => runAction("User banned from the network.", () => banMember(id))}
+          onLift={(id) => runAction("Restriction lifted — user is active again.", () => liftMemberRestriction(id))}
+          onDelete={(id) => runAction("User marked as removed.", () => deleteMember(id))}
         />
         <footer className="users-pagination">
           <p>
-            Showing {start} to {end} of {displayTotal.toLocaleString()} swappers (96.8% active
-            good standing)
+            Showing {start} to {end} of {displayTotal.toLocaleString()} swappers ({standingPercent}%
+            active good standing)
           </p>
           <div className="users-pagination__controls">
             <button
@@ -167,20 +173,22 @@ export function UsersPage() {
             >
               ‹ Previous
             </button>
-            {[1, 2, 3].map((p) => (
-              <button
-                key={p}
-                type="button"
-                className={p === safePage ? "is-active" : undefined}
-                onClick={() => setPage(p)}
-              >
-                {p}
-              </button>
-            ))}
-            <span>…</span>
-            <button type="button" onClick={() => setPage(Math.min(570, totalPages))}>
-              570
-            </button>
+            {pageButtons.map((p, index) => {
+              const prev = pageButtons[index - 1];
+              const showEllipsis = prev !== undefined && p - prev > 1;
+              return (
+                <span key={p} style={{ display: "contents" }}>
+                  {showEllipsis && <span>…</span>}
+                  <button
+                    type="button"
+                    className={p === safePage ? "is-active" : undefined}
+                    onClick={() => setPage(p)}
+                  >
+                    {p}
+                  </button>
+                </span>
+              );
+            })}
             <button
               type="button"
               disabled={safePage >= totalPages}
@@ -192,7 +200,7 @@ export function UsersPage() {
         </footer>
       </section>
 
-      <UserWorkflowCards />
+      {metrics && <UserWorkflowCards workflow={metrics.workflow} />}
     </div>
   );
 }

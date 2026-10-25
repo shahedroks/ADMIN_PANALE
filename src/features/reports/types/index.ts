@@ -17,11 +17,13 @@ export type ModerationReport = {
   id: string;
   flow: string;
   type: string;
+  targetId?: string;
   targetLabel: string;
   targetKind: "item" | "user" | "conversation";
   priority: ReportPriority;
   status: ReportStatus;
   reportedAt: string;
+  updatedAt?: string;
   thumbnailHue: number;
 };
 

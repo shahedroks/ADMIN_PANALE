@@ -1,33 +1,14 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { useAppStore } from "@/store";
-import { useDemoStore } from "@/store/demoStore";
+import { formatAdminNotificationTime } from "@/services/firestore/adminLiveNotificationsService";
+import { useAdminLiveNotifications } from "@/hooks/useAdminLiveNotifications";
 
 const DEFAULT_AVATAR = "https://i.pravatar.cc/96?u=sara-miller-swap-admin";
 
-const notifications = [
-  {
-    id: "n1",
-    title: "3 high-priority reports",
-    body: "User safety queue needs verification within 2h.",
-    time: "2m ago",
-  },
-  {
-    id: "n2",
-    title: "Policy sync complete",
-    body: "Community rules v2.4 deployed to all nodes.",
-    time: "18m ago",
-  },
-  {
-    id: "n3",
-    title: "Batch review ready",
-    body: "12 safe listings cleared for auto-approve.",
-    time: "1h ago",
-  },
-];
-
 export function DashboardTopBar() {
   const { user } = useAppStore();
-  const { pushToast } = useDemoStore();
+  const { notifications, unreadCount, markAllRead, markRead } = useAdminLiveNotifications();
   const [open, setOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -44,6 +25,10 @@ export function DashboardTopBar() {
     if (open) document.addEventListener("mousedown", onDocClick);
     return () => document.removeEventListener("mousedown", onDocClick);
   }, [open]);
+
+  useEffect(() => {
+    if (open) markAllRead();
+  }, [open, markAllRead]);
 
   return (
     <header className="dash-topbar">
@@ -65,28 +50,37 @@ export function DashboardTopBar() {
                 strokeWidth="1.2"
               />
             </svg>
-            <span className="dash-topbar__bell-dot" />
+            {unreadCount > 0 && (
+              <span className="dash-topbar__bell-dot" aria-hidden />
+            )}
           </button>
           {open && (
             <div className="dash-topbar__notify-panel" role="dialog" aria-label="Notifications">
-              <p className="dash-topbar__notify-head">Notifications</p>
-              <ul>
-                {notifications.map((item) => (
-                  <li key={item.id}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        pushToast(item.title, "info");
-                        setOpen(false);
-                      }}
-                    >
-                      <strong>{item.title}</strong>
-                      <span>{item.body}</span>
-                      <time>{item.time}</time>
-                    </button>
-                  </li>
-                ))}
-              </ul>
+              <p className="dash-topbar__notify-head">Live alerts</p>
+              {notifications.length === 0 ? (
+                <p className="dash-topbar__notify-empty">No open reports or pending listings.</p>
+              ) : (
+                <ul>
+                  {notifications.map((item) => (
+                    <li key={item.id}>
+                      <Link
+                        to={item.href}
+                        className="dash-topbar__notify-link"
+                        onClick={() => {
+                          markRead(item.id);
+                          setOpen(false);
+                        }}
+                      >
+                        <strong>{item.title}</strong>
+                        <span>{item.body}</span>
+                        <time dateTime={item.createdAt.toISOString()}>
+                          {formatAdminNotificationTime(item.createdAt)}
+                        </time>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           )}
         </div>

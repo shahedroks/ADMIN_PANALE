@@ -23,13 +23,13 @@
 }
 
 .demo-toast--success {
-  background: #00241a;
+  background: var(--swapit-primary-dark);
   color: #ffffff;
 }
 
 .demo-toast--info {
   background: #eff4ff;
-  color: #00241a;
+  color: var(--swapit-primary-dark);
 }
 
 .demo-toast--error {

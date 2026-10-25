@@ -3,36 +3,78 @@ import { MetricCard } from "@/features/dashboard/components/MetricCard";
 import { ModerationHealthPanel } from "@/features/dashboard/components/ModerationHealthPanel";
 import { PlatformActivityChart } from "@/features/dashboard/components/PlatformActivityChart";
 import {
-  dashboardMetrics,
-  platformActivity,
+  emptyActivitySummary,
+  emptyModerationHealth,
+  emptyPlatformActivity,
+  skeletonDashboardMetrics,
+  type DashboardMetric,
 } from "@/features/dashboard/data/dashboardData";
-import { useDashboardCounts } from "@/hooks/useFirestoreAdminData";
+import { useDashboardSnapshot } from "@/hooks/useFirestoreAdminData";
+import type { DashboardSnapshot } from "@/services/firestore/dashboardFirestoreService";
 import { useDemoStore } from "@/store/demoStore";
 import "@/features/dashboard/styles/dashboard.css";
 
+function buildMetricsFromSnapshot(snapshot: DashboardSnapshot): DashboardMetric[] {
+  const { counts, metricDeltas } = snapshot;
+  const reportsNeedReview = counts.openReports > 0 || counts.urgentOpenReports > 0;
+
+  return skeletonDashboardMetrics.map((base) => {
+    switch (base.id) {
+      case "matches":
+        return {
+          ...base,
+          value: counts.matchesAndChats.toLocaleString(),
+          delta: metricDeltas.matches.delta,
+          deltaTone: metricDeltas.matches.deltaTone,
+          progressPercent: metricDeltas.matches.progressPercent,
+        };
+      case "reports":
+        return {
+          ...base,
+          value: counts.openReports.toLocaleString(),
+          delta: metricDeltas.reports.delta,
+          deltaTone: metricDeltas.reports.deltaTone,
+          status: reportsNeedReview ? "review" : "stable",
+          statusLabel: reportsNeedReview ? "Needs review" : "Stable",
+          footnote: reportsNeedReview ? "Requires manual audit" : "Queue clear",
+          progressPercent: metricDeltas.reports.progressPercent,
+        };
+      case "items":
+        return {
+          ...base,
+          value: counts.approvedItems.toLocaleString(),
+          delta: metricDeltas.items.delta,
+          deltaTone: metricDeltas.items.deltaTone,
+          footnote: `${counts.pendingItems} pending review`,
+          progressPercent: metricDeltas.items.progressPercent,
+        };
+      case "users":
+        return {
+          ...base,
+          value: counts.activeUsers.toLocaleString(),
+          delta: metricDeltas.users.delta,
+          deltaTone: metricDeltas.users.deltaTone,
+          footnote: counts.activeUsersFootnote,
+          progressPercent: metricDeltas.users.progressPercent,
+        };
+      default:
+        return base;
+    }
+  });
+}
+
 export function DashboardPage() {
-  const { counts, reload, loading } = useDashboardCounts();
+  const { snapshot, reload } = useDashboardSnapshot();
   const { pushToast } = useDemoStore();
 
-  const metrics = useMemo(() => {
-    if (!counts) return dashboardMetrics;
-    return dashboardMetrics.map((m) => {
-      if (m.id === "users") {
-        return { ...m, value: counts.users.toLocaleString() };
-      }
-      if (m.id === "reports") {
-        return { ...m, value: counts.openReports.toLocaleString() };
-      }
-      if (m.id === "items") {
-        return {
-          ...m,
-          value: counts.approvedItems.toLocaleString(),
-          footnote: `${counts.pendingItems} pending review`,
-        };
-      }
-      return m;
-    });
-  }, [counts]);
+  const metrics = useMemo(
+    () => (snapshot ? buildMetricsFromSnapshot(snapshot) : skeletonDashboardMetrics),
+    [snapshot],
+  );
+
+  const activity = snapshot?.activity ?? emptyPlatformActivity;
+  const activitySummary = snapshot?.activitySummary ?? emptyActivitySummary;
+  const moderation = snapshot?.moderation ?? emptyModerationHealth;
 
   return (
     <div className="dash-page">
@@ -52,9 +94,6 @@ export function DashboardPage() {
           <div className="dash-page__live-pill">
             <span className="dash-page__live-dot" />
             Live monitoring
-            <span className="dash-page__muted">
-              {loading ? "Refreshing…" : "Firestore counts"}
-            </span>
           </div>
           <button
             type="button"
@@ -62,7 +101,7 @@ export function DashboardPage() {
             aria-label="Refresh data"
             onClick={() => {
               void reload();
-              pushToast("Dashboard metrics refreshed from Firestore.", "success");
+              pushToast("Dashboard metrics refreshed.", "success");
             }}
           >
             <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden>
@@ -86,10 +125,11 @@ export function DashboardPage() {
 
       <div className="dash-page__grid">
         <PlatformActivityChart
-          data={platformActivity}
+          data={activity}
+          summary={activitySummary}
           onExport={() => pushToast("Chart exported from current view.", "info")}
         />
-        <ModerationHealthPanel />
+        <ModerationHealthPanel moderation={moderation} />
       </div>
     </div>
   );
