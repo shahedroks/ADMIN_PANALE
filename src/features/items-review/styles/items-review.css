@@ -7,14 +7,14 @@
   margin: 0;
   padding: 10px 14px;
   border-radius: 8px;
-  background: #f4f7ef;
+  background: var(--swapit-warm-ivory);
   font-size: 13px;
-  color: #304f00;
+  color: var(--swapit-medium-green);
 }
 
 .items-review-scope a {
   font-weight: 700;
-  color: #304f00;
+  color: var(--swapit-medium-green);
 }
 
 /* Header */
@@ -320,7 +320,7 @@
 }
 
 .item-card__status--done {
-  color: #304f00;
+  color: var(--swapit-medium-green);
 }
 
 .item-card__status--done i {
@@ -384,7 +384,7 @@
 }
 
 .item-card__verified {
-  color: #304f00;
+  color: var(--swapit-medium-green);
   font-size: 11px;
 }
 

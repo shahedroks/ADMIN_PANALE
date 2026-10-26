@@ -3,14 +3,16 @@ import { useSearchParams } from "react-router-dom";
 import { ItemReviewCard } from "@/features/items-review/components/ItemReviewCard";
 import { PAGE_SIZE } from "@/features/items-review/data/itemsReviewData";
 import type { ItemFilterTab, SortOption } from "@/features/items-review/types";
-import { DEFAULT_OWNER_EDIT_REQUEST } from "@/features/items-review/constants/moderationCopy";
+import { DEFAULT_OWNER_EDIT_REQUEST_KEY } from "@/features/items-review/constants/moderationCopy";
 import { useReviewItems } from "@/hooks/useFirestoreAdminData";
+import { useI18n } from "@/i18n";
 import { bootstrapSwapItFirestore } from "@/services/firestore/bootstrapFirestoreService";
 import { useDemoStore } from "@/store/demoStore";
 import "@/features/dashboard/styles/dashboard.css";
 import "@/features/items-review/styles/items-review.css";
 
 export function ItemsReviewPage() {
+  const { t } = useI18n();
   const [searchParams] = useSearchParams();
   const ownerId = searchParams.get("owner")?.trim() ?? "";
   const { items: reviewItems, reload, moderate, batchApprove, loading, error } =
@@ -48,12 +50,15 @@ export function ItemsReviewPage() {
       const result = await bootstrapSwapItFirestore();
       await reload();
       pushToast(
-        `Added ${result.items} demo listings (${result.categories} categories).`,
+        t("itemsReview.toast.seed", {
+          items: result.items,
+          categories: result.categories,
+        }),
         "success",
       );
     } catch (e) {
       pushToast(
-        e instanceof Error ? e.message : "Could not load demo data. Sign in as an admin or manager.",
+        e instanceof Error ? e.message : t("itemsReview.toast.seedError"),
         "error",
       );
     } finally {
@@ -110,34 +115,34 @@ export function ItemsReviewPage() {
     });
     try {
       await batchApprove(safeIds);
-      pushToast(`Approved ${safeIds.length} item(s).`, "success");
+      pushToast(t("itemsReview.toast.batch", { count: safeIds.length }), "success");
     } catch (e) {
-      pushToast(e instanceof Error ? e.message : "Batch approve failed.", "error");
+      pushToast(e instanceof Error ? e.message : t("itemsReview.toast.batchFail"), "error");
     }
     setSelectedIds(new Set());
   }
 
   return (
     <div className="dash-page items-review-page">
-      {loading && <p className="items-review-loading">Loading review queue…</p>}
+      {loading && <p className="items-review-loading">{t("itemsReview.loading")}</p>}
       {error && <p className="items-review-error">{error}</p>}
       {ownerId && (
         <p className="items-review-scope">
-          Showing listings for member <code>{ownerId.slice(0, 8)}…</code>
+          {t("itemsReview.scope")} <code>{ownerId.slice(0, 8)}…</code>
           {" · "}
-          <a href="/items-review">Clear filter</a>
+          <a href="/items-review">{t("itemsReview.clearFilter")}</a>
         </p>
       )}
       <header className="items-review-header">
         <div className="items-review-header__title">
           <div className="items-review-header__row">
-            <h1>Items Review</h1>
+            <h1>{t("itemsReview.title")}</h1>
             <span className="items-review-badge">
               <i />
-              {reviewTabCounts.awaiting} items awaiting review
+              {t("itemsReview.awaiting", { count: reviewTabCounts.awaiting })}
             </span>
           </div>
-          <p>Review listed items before making a decision.</p>
+          <p>{t("itemsReview.subtitle")}</p>
         </div>
 
         <div className="items-review-header__search">
@@ -152,8 +157,8 @@ export function ItemsReviewPage() {
               setSearch(e.target.value);
               setPage(1);
             }}
-            placeholder="Search items or swapper..."
-            aria-label="Search items"
+            placeholder={t("itemsReview.search")}
+            aria-label={t("itemsReview.searchAria")}
           />
         </div>
 
@@ -161,7 +166,7 @@ export function ItemsReviewPage() {
           <button
             type="button"
             className="items-review-filters"
-            onClick={() => pushToast("Advanced filters use the search bar for now.", "info")}
+            onClick={() => pushToast(t("itemsReview.toast.filters"), "info")}
           >
             <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden>
               <path
@@ -171,12 +176,12 @@ export function ItemsReviewPage() {
                 strokeLinecap="round"
               />
             </svg>
-            Filters
+            {t("itemsReview.filters")}
           </button>
           <button
             type="button"
             className="items-review-refresh"
-            aria-label="Refresh"
+            aria-label={t("itemsReview.refresh")}
             onClick={() => void reload()}
           >
             <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden>
@@ -196,11 +201,11 @@ export function ItemsReviewPage() {
         <div className="items-review-tabs" role="tablist">
           {(
             [
-              ["all", "All items", reviewTabCounts.all],
-              ["awaiting", "Awaiting review", reviewTabCounts.awaiting],
-              ["reviewed", "Reviewed", reviewTabCounts.reviewed],
+              ["all", "itemsReview.tab.all", reviewTabCounts.all],
+              ["awaiting", "itemsReview.tab.awaiting", reviewTabCounts.awaiting],
+              ["reviewed", "itemsReview.tab.reviewed", reviewTabCounts.reviewed],
             ] as const
-          ).map(([key, label, count]) => (
+          ).map(([key, labelKey, count]) => (
             <button
               key={key}
               type="button"
@@ -212,37 +217,34 @@ export function ItemsReviewPage() {
                 setPage(1);
               }}
             >
-              <span className="items-review-tab__label">{label}</span>
+              <span className="items-review-tab__label">{t(labelKey)}</span>
               <span className="items-review-tab__count">{count}</span>
             </button>
           ))}
         </div>
         <label className="items-review-sort">
-          Sort by:
+          {t("itemsReview.sort")}
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value as SortOption)}
           >
-            <option value="oldest">Oldest first</option>
-            <option value="newest">Newest first</option>
-            <option value="value">Est. value</option>
+            <option value="oldest">{t("itemsReview.sort.oldest")}</option>
+            <option value="newest">{t("itemsReview.sort.newest")}</option>
+            <option value="value">{t("itemsReview.sort.value")}</option>
           </select>
         </label>
       </div>
 
       {!loading && !error && filtered.length === 0 && (
         <div className="items-review-empty">
-          <p>
-            No listings in the queue yet. Load demo data for testing, or post an item from the
-            mobile app (it will be <strong>pending</strong>).
-          </p>
+          <p>{t("itemsReview.empty")}</p>
           <button
             type="button"
             className="items-review-seed-btn"
             disabled={seeding}
             onClick={() => void handleSeedDemo()}
           >
-            {seeding ? "Seeding…" : "Seed demo listings"}
+            {seeding ? t("itemsReview.seeding") : t("itemsReview.seed")}
           </button>
         </div>
       )}
@@ -258,7 +260,7 @@ export function ItemsReviewPage() {
               void moderate(
                 item.id,
                 "request_edit",
-                DEFAULT_OWNER_EDIT_REQUEST,
+                t(DEFAULT_OWNER_EDIT_REQUEST_KEY),
               )
             }
             onHide={() => void moderate(item.id, "hide")}
@@ -268,15 +270,19 @@ export function ItemsReviewPage() {
 
       <footer className="items-review-footer">
         <p>
-          Showing {start}–{end} of {tab === "awaiting" ? pendingTotal : filtered.length}{" "}
-          {tab === "awaiting" ? "pending" : ""} listings
+          {t("itemsReview.footer", {
+            start,
+            end,
+            total: tab === "awaiting" ? pendingTotal : filtered.length,
+            pendingWord: tab === "awaiting" ? t("itemsReview.pendingWord") : "",
+          })}
         </p>
         <div className="items-review-pagination">
           <button
             type="button"
             disabled={safePage <= 1}
             onClick={() => setPage((p) => p - 1)}
-            aria-label="Previous page"
+            aria-label={t("itemsReview.prevPage")}
           >
             ‹
           </button>
@@ -294,13 +300,13 @@ export function ItemsReviewPage() {
             type="button"
             disabled={safePage >= totalPages}
             onClick={() => setPage((p) => p + 1)}
-            aria-label="Next page"
+            aria-label={t("itemsReview.nextPage")}
           >
             ›
           </button>
         </div>
         <button type="button" className="items-review-batch" onClick={() => void handleBatchApprove()}>
-          ✓ Approve all safe items (batch)
+          {t("itemsReview.batchApprove")}
         </button>
       </footer>
     </div>

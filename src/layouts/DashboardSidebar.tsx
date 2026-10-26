@@ -1,28 +1,29 @@
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { useI18n } from "@/i18n";
 import { useAppStore } from "@/store";
 
 type NavIconId = "grid" | "flag" | "review" | "users" | "settings" | "subscription";
 
 const navItems: {
   to: string;
-  label: string;
+  labelKey: string;
   icon: NavIconId;
   end?: boolean;
-  badge?: string;
-  subLinks?: { to: string; label: string }[];
+  badgeKey?: string;
+  subLinks?: { to: string; labelKey: string }[];
 }[] = [
-  { to: "/dashboard", label: "Dashboard Overview", icon: "grid", end: true },
-  { to: "/reports", label: "Reports & Review", icon: "flag" },
-  { to: "/items-review", label: "Items Review", icon: "review" },
-  { to: "/users", label: "User Management", icon: "users" },
+  { to: "/dashboard", labelKey: "nav.dashboard", icon: "grid", end: true },
+  { to: "/reports", labelKey: "nav.reports", icon: "flag" },
+  { to: "/items-review", labelKey: "nav.itemsReview", icon: "review" },
+  { to: "/users", labelKey: "nav.users", icon: "users" },
   {
     to: "/subscriptions",
-    label: "Subscriptions",
+    labelKey: "nav.subscriptions",
     icon: "subscription",
-    badge: "SUITE",
-    subLinks: [{ to: "/subscriptions/plans", label: "Plans Management" }],
+    badgeKey: "nav.subscriptions.badge",
+    subLinks: [{ to: "/subscriptions/plans", labelKey: "nav.plansManagement" }],
   },
-  { to: "/settings", label: "Settings", icon: "settings" },
+  { to: "/settings", labelKey: "nav.settings", icon: "settings" },
 ];
 
 function NavIcon({ type }: { type: NavIconId }) {
@@ -104,6 +105,7 @@ function subscriptionMainClass(pathname: string, hasSub: boolean) {
 }
 
 export function DashboardSidebar() {
+  const { t } = useI18n();
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const onSubscriptions = pathname.startsWith("/subscriptions");
@@ -120,11 +122,11 @@ export function DashboardSidebar() {
         <div className="dash-sidebar__brand">
           <BrandIcon />
           <span className="dash-sidebar__brand-stack">
-            <span>SWAP IT</span>
-            <small>Control Center</small>
+            <span>{t("brand.name")}</span>
+            <small>{t("brand.controlCenter")}</small>
           </span>
         </div>
-        <nav className="dash-sidebar__nav" aria-label="Main">
+        <nav className="dash-sidebar__nav" aria-label={t("nav.main")}>
           {navItems.map((item) => (
             <div
               key={item.to}
@@ -146,8 +148,10 @@ export function DashboardSidebar() {
                 }}
               >
                 <NavIcon type={item.icon} />
-                <span className="dash-sidebar__link-text">{item.label}</span>
-                {item.badge && <span className="dash-sidebar__badge">{item.badge}</span>}
+                <span className="dash-sidebar__link-text">{t(item.labelKey)}</span>
+                {item.badgeKey && (
+                  <span className="dash-sidebar__badge">{t(item.badgeKey)}</span>
+                )}
               </NavLink>
               {item.subLinks && onSubscriptions
                 ? item.subLinks.map((sub) => {
@@ -166,7 +170,7 @@ export function DashboardSidebar() {
                         }
                       >
                         <span className="dash-sidebar__sublink-dot" aria-hidden />
-                        {sub.label}
+                        {t(sub.labelKey)}
                       </NavLink>
                     );
                   })
@@ -185,7 +189,7 @@ export function DashboardSidebar() {
             strokeLinecap="round"
           />
         </svg>
-        Log out
+        {t("nav.logout")}
       </button>
     </aside>
   );

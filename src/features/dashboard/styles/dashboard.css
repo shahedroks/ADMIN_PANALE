@@ -263,7 +263,7 @@
 }
 
 .dash-metric__delta--positive {
-  color: #304f00;
+  color: var(--swapit-medium-green);
 }
 
 .dash-metric__delta--negative {
@@ -504,7 +504,7 @@
 }
 
 .dash-chart-card__highlight {
-  color: #304f00 !important;
+  color: var(--swapit-medium-green) !important;
 }
 
 /* Moderation */
@@ -546,7 +546,7 @@
   background: rgba(163, 114, 34, 0.4);
   font-size: 10px;
   font-weight: 700;
-  color: #304f00;
+  color: var(--swapit-medium-green);
 }
 
 .dash-mod-panel__sub {
@@ -573,7 +573,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  color: #304f00;
+  color: var(--swapit-medium-green);
   font-size: 10px;
 }
 

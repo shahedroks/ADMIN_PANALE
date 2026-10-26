@@ -10,11 +10,13 @@ import { filterReportsForMember } from "@/features/reports/utils/filterReportsFo
 import { useModerationReports } from "@/hooks/useFirestoreAdminData";
 import { fetchReportKpis } from "@/services/firestore/reportsFirestoreService";
 import { fetchListedItemsForUser } from "@/services/firestore/userDetailFirestoreService";
+import { useI18n } from "@/i18n";
 import { useToast } from "@/store/toastStore";
 import "@/features/dashboard/styles/dashboard.css";
 import "@/features/reports/styles/reports-page.css";
 
 export function ReportsPage() {
+  const { t } = useI18n();
   const [searchParams] = useSearchParams();
   const memberId = searchParams.get("member")?.trim() ?? "";
   const { reports, setReportStatus, loading } = useModerationReports();
@@ -85,13 +87,13 @@ export function ReportsPage() {
 
   return (
     <div className="dash-page reports-page">
-      {loading && <p>Loading reports…</p>}
+      {loading && <p>{t("reports.loading")}</p>}
       {memberId && (
         <p className="reports-page__scope">
-          Showing reports for member{" "}
+          {t("reports.scope")}{" "}
           <code>{memberId.slice(0, 8)}…</code>
           {" · "}
-          <a href="/reports">Clear filter</a>
+          <a href="/reports">{t("reports.clearFilter")}</a>
         </p>
       )}
       <ReportKpiCards items={kpis} />
@@ -106,11 +108,11 @@ export function ReportsPage() {
         rows={pageRows}
         onReview={(id) => {
           void setReportStatus(id, "under_review");
-          pushToast("Report marked under review.", "success");
+          pushToast(t("reports.toastReview"), "success");
         }}
         onClose={(id) => {
           void setReportStatus(id, "closed");
-          pushToast("Report closed.", "success");
+          pushToast(t("reports.toastClosed"), "success");
         }}
       />
       <ReportsPagination

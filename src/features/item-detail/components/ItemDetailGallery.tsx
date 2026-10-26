@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { ItemDetail } from "@/features/item-detail/types";
+import { useI18n } from "@/i18n";
 
 type ItemDetailGalleryProps = {
   detail: ItemDetail;
@@ -12,13 +13,18 @@ function slideImageSrc(slide: ItemDetail["gallery"][number], size: "main" | "thu
 }
 
 export function ItemDetailGallery({ detail }: ItemDetailGalleryProps) {
+  const { t } = useI18n();
   const slides =
     detail.gallery.length > 0
       ? detail.gallery
-      : [{ label: "Primary", seed: detail.primarySeed }];
+      : [{ label: t("gallery.primary"), seed: detail.primarySeed }];
   const [active, setActive] = useState(0);
   const current = slides[active];
   const hasHostedPhotos = slides.some((s) => Boolean(s.url));
+  const fileCountLabel =
+    slides.length === 1
+      ? t("gallery.file", { count: slides.length })
+      : t("gallery.files", { count: slides.length });
 
   return (
     <section className="item-detail-card item-detail-gallery">
@@ -27,15 +33,14 @@ export function ItemDetailGallery({ detail }: ItemDetailGalleryProps) {
         <div className="item-detail-gallery__labels">
           <span>{current.label}</span>
           <span>
-            {hasHostedPhotos ? "Uploaded media" : "No listing photos"} •{" "}
-            {slides.length} file{slides.length === 1 ? "" : "s"}
+            {hasHostedPhotos ? t("gallery.uploaded") : t("gallery.none")} • {fileCountLabel}
           </span>
         </div>
         <div className="item-detail-gallery__tools">
-          <button type="button" aria-label="Zoom">
+          <button type="button" aria-label={t("gallery.zoom")}>
             +
           </button>
-          <button type="button" aria-label="Expand">
+          <button type="button" aria-label={t("gallery.expand")}>
             ⤢
           </button>
         </div>

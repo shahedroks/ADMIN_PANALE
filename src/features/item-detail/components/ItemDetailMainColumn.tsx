@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { UserAvatar } from "@/components/UserAvatar";
 import { ItemDetailGallery } from "@/features/item-detail/components/ItemDetailGallery";
 import type { ItemDetail } from "@/features/item-detail/types";
+import { useI18n } from "@/i18n";
 
 type ItemDetailMainColumnProps = {
   detail: ItemDetail;
@@ -22,51 +23,53 @@ function renderHighlightedDescription(detail: ItemDetail) {
 }
 
 export function ItemDetailMainColumn({ detail }: ItemDetailMainColumnProps) {
+  const { t } = useI18n();
+
   return (
     <div className="item-detail-main">
       <ItemDetailGallery detail={detail} />
 
       <section className="item-detail-card">
-        <h2>Listing details</h2>
+        <h2>{t("itemMain.details")}</h2>
         <div className="item-detail-meta-grid">
           <div>
-            <span>Primary category</span>
+            <span>{t("itemMain.category")}</span>
             <strong>{detail.category}</strong>
           </div>
           <div>
-            <span>Claimed condition</span>
+            <span>{t("itemMain.condition")}</span>
             <strong>{detail.condition}</strong>
           </div>
           <div>
-            <span>Source</span>
+            <span>{t("itemMain.source")}</span>
             <strong>{detail.createdVia}</strong>
           </div>
           <div>
-            <span>Location</span>
+            <span>{t("itemMain.location")}</span>
             <strong>{detail.location}</strong>
           </div>
         </div>
 
-        <p className="item-detail-section-label">What they want in exchange</p>
+        <p className="item-detail-section-label">{t("itemMain.exchange")}</p>
         <div className="item-detail-tags">
           {detail.exchangeTags.map((tag) => (
             <span key={tag}>{tag}</span>
           ))}
         </div>
 
-        <p className="item-detail-section-label">User description</p>
+        <p className="item-detail-section-label">{t("itemMain.description")}</p>
         <div className="item-detail-description">
           {renderHighlightedDescription(detail)}
         </div>
 
         {detail.showViolation && (
           <div className="item-detail-violation">
-            <strong>Flagged rule violation: Rule {detail.violation.ruleId}</strong>
+            <strong>{t("itemMain.violation", { ruleId: detail.violation.ruleId })}</strong>
             <p>{detail.violation.title}</p>
             <p>{detail.violation.summary}</p>
             {detail.violation.nlpHits.length > 0 && (
               <p className="item-detail-violation__hits">
-                Flags: {detail.violation.nlpHits.join(", ")}
+                {t("itemMain.flags")} {detail.violation.nlpHits.join(", ")}
               </p>
             )}
           </div>
@@ -92,14 +95,14 @@ export function ItemDetailMainColumn({ detail }: ItemDetailMainColumnProps) {
                 strokeWidth="1.25"
               />
             </svg>
-            Owner account &amp; reliability record
+            {t("itemMain.owner")}
           </h2>
           {detail.ownerId ? (
             <Link to={`/users/${detail.ownerId}`}>
-              View owner profile <span aria-hidden>→</span>
+              {t("itemMain.viewOwner")} <span aria-hidden>→</span>
             </Link>
           ) : (
-            <span className="item-detail-owner__link-disabled">Owner profile unavailable</span>
+            <span className="item-detail-owner__link-disabled">{t("itemMain.ownerUnavailable")}</span>
           )}
         </div>
         <div className="item-detail-owner__body" id="owner">
@@ -122,17 +125,17 @@ export function ItemDetailMainColumn({ detail }: ItemDetailMainColumnProps) {
           </div>
           <div className="item-detail-owner__stats">
             <div className="item-detail-owner__stat item-detail-owner__stat--trust">
-              <span>Trust score</span>
+              <span>{t("itemMain.trust")}</span>
               <strong>{detail.owner.trustScore}</strong>
               <small>{detail.owner.swapsLabel}</small>
             </div>
             <div className="item-detail-owner__stat">
-              <span>Infractions</span>
+              <span>{t("itemMain.infractions")}</span>
               <strong>{detail.owner.infractions}</strong>
               <small>
                 {detail.owner.infractions.startsWith("0")
-                  ? "Clean disciplinary history"
-                  : "Review account history"}
+                  ? t("itemMain.historyClean")
+                  : t("itemMain.historyReview")}
               </small>
             </div>
           </div>

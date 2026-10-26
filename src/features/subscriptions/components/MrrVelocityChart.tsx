@@ -2,8 +2,10 @@ import {
   mrrVelocitySeries,
   subscriptionFooterMetrics,
 } from "@/features/subscriptions/data/subscriptionsData";
+import { useI18n } from "@/i18n";
 
 export function MrrVelocityChart() {
+  const { t } = useI18n();
   const { months, values, basePortion } = mrrVelocitySeries;
   const max = 42;
   const chartH = 180;
@@ -16,13 +18,13 @@ export function MrrVelocityChart() {
     <div className="sub-chart sub-chart--mrr">
       <div className="sub-chart__mrr-headline">
         <strong>$38,420.00</strong>
-        <span>56.8% Gross Margin</span>
+        <span>{t("subs.chart.margin")}</span>
       </div>
       <svg
         viewBox={`0 0 ${totalW} ${chartH + 36}`}
         className="sub-chart__svg"
         role="img"
-        aria-label="MRR velocity bar chart"
+        aria-label={t("subs.chart.mrrAria")}
       >
         {months.map((m, i) => {
           const x = pad + i * (barW + gap);

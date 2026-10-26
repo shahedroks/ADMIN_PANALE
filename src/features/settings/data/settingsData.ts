@@ -70,13 +70,11 @@ export type SettingsNavIconId = "general" | "team" | "security";
 export const settingsNav = [
   {
     id: "general",
-    label: "General",
-    sub: "Profile & overview",
     icon: "general" as const,
     showLiveDotWhenActive: true,
   },
-  { id: "team", label: "Team & Roles", icon: "team" as const },
-  { id: "security", label: "Security", icon: "security" as const },
+  { id: "team", icon: "team" as const },
+  { id: "security", icon: "security" as const },
 ] as const;
 
 export type SettingsSectionId = (typeof settingsNav)[number]["id"];

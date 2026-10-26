@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useI18n } from "@/i18n";
 import type {
   PlanFilterTab,
   SubscriptionPlan,
@@ -39,6 +40,7 @@ function PlanRowIcon({ tone }: { tone: SubscriptionPlan["iconTone"] }) {
 }
 
 export function PlansListPanel({ plans, selectedId, onSelect }: PlansListPanelProps) {
+  const { t } = useI18n();
   const [tab, setTab] = useState<PlanFilterTab>("all");
   const [query, setQuery] = useState("");
 
@@ -77,7 +79,7 @@ export function PlansListPanel({ plans, selectedId, onSelect }: PlansListPanelPr
             className={tab === "all" ? "plans-tab plans-tab--active" : "plans-tab"}
             onClick={() => setTab("all")}
           >
-            All Plans ({counts.all})
+            {t("subs.plans.tabAll", { count: counts.all })}
           </button>
           <button
             type="button"
@@ -85,7 +87,7 @@ export function PlansListPanel({ plans, selectedId, onSelect }: PlansListPanelPr
             className={tab === "active" ? "plans-tab plans-tab--active" : "plans-tab"}
             onClick={() => setTab("active")}
           >
-            Active ({counts.active})
+            {t("subs.plans.tabActive", { count: counts.active })}
           </button>
           <button
             type="button"
@@ -93,7 +95,7 @@ export function PlansListPanel({ plans, selectedId, onSelect }: PlansListPanelPr
             className={tab === "draft" ? "plans-tab plans-tab--active" : "plans-tab"}
             onClick={() => setTab("draft")}
           >
-            Draft / Inactive ({counts.draft})
+            {t("subs.plans.tabDraft", { count: counts.draft })}
           </button>
         </div>
         <div className="plans-list-search">
@@ -105,15 +107,15 @@ export function PlansListPanel({ plans, selectedId, onSelect }: PlansListPanelPr
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search by plan name, SKU..."
-            aria-label="Search plans"
+            placeholder={t("subs.plans.search")}
+            aria-label={t("subs.plans.searchAria")}
           />
         </div>
       </div>
 
       <div className="plans-table-head">
-        <span>Plan &amp; SKU</span>
-        <span>Price</span>
+        <span>{t("subs.plans.colPlan")}</span>
+        <span>{t("subs.plans.colPrice")}</span>
       </div>
 
       <ul className="plans-rows">
@@ -135,7 +137,7 @@ export function PlansListPanel({ plans, selectedId, onSelect }: PlansListPanelPr
                       {plan.badge}
                     </span>
                     {plan.status === "draft" && (
-                      <span className="plans-row__status-pill">Inactive</span>
+                      <span className="plans-row__status-pill">{t("subs.plans.inactive")}</span>
                     )}
                   </div>
                   <p>{plan.description}</p>

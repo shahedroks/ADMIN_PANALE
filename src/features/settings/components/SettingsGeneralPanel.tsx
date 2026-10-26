@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import type { AppSettings } from "@/services/firestore/appSettingsFirestoreService";
 import { useAppSettings } from "@/hooks/useAppSettings";
 import {
@@ -7,6 +8,7 @@ import {
   setAdminNotificationSoundEnabled,
 } from "@/lib/adminNotificationPrefs";
 import { playAdminNotificationSound } from "@/lib/playAdminNotificationSound";
+import { useI18n } from "@/i18n";
 import { useToast } from "@/store/toastStore";
 
 type SettingsGeneralPanelProps = {
@@ -14,6 +16,7 @@ type SettingsGeneralPanelProps = {
 };
 
 export function SettingsGeneralPanel({ settings }: SettingsGeneralPanelProps) {
+  const { t } = useI18n();
   const { save } = useAppSettings();
   const { pushToast } = useToast();
   const [alertSound, setAlertSound] = useState(true);
@@ -26,41 +29,44 @@ export function SettingsGeneralPanel({ settings }: SettingsGeneralPanelProps) {
     <section className="settings-panel" id="settings-general">
       <div className="settings-panel__head">
         <div>
-          <p className="settings-panel__kicker">Primary parameters</p>
-          <h2>General Settings</h2>
-          <p className="settings-panel__desc">
-            Define the core marketplace identity for the SWAP IT exchange network.
-          </p>
+          <p className="settings-panel__kicker">{t("settings.general.kicker")}</p>
+          <h2>{t("settings.general.title")}</h2>
+          <p className="settings-panel__desc">{t("settings.general.desc")}</p>
         </div>
         <span className="settings-live">
-          <i /> Live mode
+          <i /> {t("settings.general.live")}
         </span>
       </div>
 
       <div className="settings-general-grid">
         <label className="settings-general-grid__wide">
-          Platform display name
+          {t("settings.general.platformName")}
           <input
             type="text"
-            defaultValue={settings?.platformDisplayName ?? "SWAP IT"}
+            defaultValue={settings?.platformDisplayName ?? t("brand.name")}
             key={settings?.platformDisplayName ?? "default"}
             onBlur={(e) => {
-              const value = e.target.value.trim() || "SWAP IT";
+              const value = e.target.value.trim() || t("brand.name");
               void save({ platformDisplayName: value }).then(() =>
-                pushToast("Platform name saved."),
+                pushToast(t("settings.general.nameSaved")),
               );
             }}
           />
         </label>
 
+        <div className="settings-language-block settings-general-grid__wide">
+          <div>
+            <strong>{t("language.panelTitle")}</strong>
+            <p>{t("language.panelDescription")}</p>
+          </div>
+          <LanguageSwitcher variant="settings" />
+        </div>
+
         <div className="settings-2fa-row settings-general-grid__wide">
           <div className="settings-2fa-row__main">
             <div>
-              <strong>Console alert sound</strong>
-              <p>
-                Play a short tone when a new report or pending listing arrives while
-                the admin panel is open.
-              </p>
+              <strong>{t("settings.general.alertTitle")}</strong>
+              <p>{t("settings.general.alertDesc")}</p>
             </div>
           </div>
           <label className="settings-toggle settings-toggle--solo">
@@ -73,7 +79,7 @@ export function SettingsGeneralPanel({ settings }: SettingsGeneralPanelProps) {
                 setAdminNotificationSoundEnabled(next);
                 if (next) playAdminNotificationSound();
                 pushToast(
-                  next ? "Alert sound enabled." : "Alert sound muted.",
+                  next ? t("settings.general.soundOn") : t("settings.general.soundOff"),
                   "info",
                 );
               }}

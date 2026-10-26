@@ -5,6 +5,7 @@ import { SettingsSubNav } from "@/features/settings/components/SettingsSubNav";
 import { SettingsTeamTable } from "@/features/settings/components/SettingsTeamTable";
 import { type SettingsSectionId } from "@/features/settings/data/settingsData";
 import { useAdminTeam, useAppSettings } from "@/hooks/useAppSettings";
+import { useI18n } from "@/i18n";
 import "@/features/dashboard/styles/dashboard.css";
 import "@/features/settings/styles/settings-page.css";
 
@@ -15,6 +16,7 @@ const sectionAnchors: Record<SettingsSectionId, string> = {
 };
 
 export function SettingsPage() {
+  const { t } = useI18n();
   const { members: adminTeam, loading: teamLoading } = useAdminTeam();
   const { settings, loading: settingsLoading } = useAppSettings();
   const [active, setActive] = useState<SettingsSectionId>("general");
@@ -26,20 +28,18 @@ export function SettingsPage() {
 
   return (
     <div className="dash-page settings-page">
-      {(teamLoading || settingsLoading) && <p>Loading settings…</p>}
+      {(teamLoading || settingsLoading) && <p>{t("settings.loading")}</p>}
       <header className="settings-page__header">
         <div>
           <p className="settings-page__breadcrumb">
-            Platform governance <span>›</span> Settings
+            {t("settings.breadcrumb.platform")} <span>›</span> {t("settings.breadcrumb.settings")}
           </p>
-          <h1>Settings</h1>
-          <p className="settings-page__subtitle">
-            Manage platform governance, admin team permissions, and security parameters.
-          </p>
+          <h1>{t("settings.title")}</h1>
+          <p className="settings-page__subtitle">{t("settings.subtitle")}</p>
         </div>
         <span className="settings-page__status">
           <i />
-          System status: Policy sync active
+          {t("settings.status")}
         </span>
       </header>
 

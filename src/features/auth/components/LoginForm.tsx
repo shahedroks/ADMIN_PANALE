@@ -1,6 +1,7 @@
 import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLogin } from "@/features/auth/hooks/useLogin";
+import { useI18n } from "@/i18n";
 import { useAppStore } from "@/store";
 
 function MailIcon() {
@@ -104,9 +105,12 @@ function SecureLockIcon() {
 }
 
 export function LoginForm() {
+  const { t } = useI18n();
   const navigate = useNavigate();
   const { submit, loading, error } = useLogin();
   const { authError, clearAuthError } = useAppStore();
+  const displayAuthError =
+    authError === "You do not have admin access." ? t("auth.noAdminAccess") : authError;
   const [email, setEmail] = useState("admin@swapit.io");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -129,21 +133,19 @@ export function LoginForm() {
         <header className="login-form-panel__header login-reveal login-reveal--1">
           <span className="login-form-panel__badge">
             <RestrictedIcon />
-            Restricted Personnel
+            {t("login.badge")}
           </span>
-          <h1>Admin Login</h1>
-          <p>
-            Enter your administrative credentials to access moderation console.
-          </p>
+          <h1>{t("login.title")}</h1>
+          <p>{t("login.subtitle")}</p>
         </header>
 
         <form className="login-form-panel__form" onSubmit={handleSubmit}>
-          {(error || authError) && (
-            <p className="login-form-panel__error">{error ?? authError}</p>
+          {(error || displayAuthError) && (
+            <p className="login-form-panel__error">{error ?? displayAuthError}</p>
           )}
 
           <div className="login-field login-reveal login-reveal--2">
-            <label htmlFor="admin-email">Email Address</label>
+            <label htmlFor="admin-email">{t("login.email")}</label>
             <div className="login-field__control">
               <span className="login-field__icon login-field__icon--left">
                 <MailIcon />
@@ -161,7 +163,7 @@ export function LoginForm() {
           </div>
 
           <div className="login-field login-reveal login-reveal--3">
-            <label htmlFor="admin-password">Password</label>
+            <label htmlFor="admin-password">{t("login.password")}</label>
             <div className="login-field__control">
               <span className="login-field__icon login-field__icon--left">
                 <LockIcon />
@@ -179,7 +181,7 @@ export function LoginForm() {
                 type="button"
                 className="login-field__toggle"
                 onClick={() => setShowPassword((v) => !v)}
-                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-label={showPassword ? t("login.hidePassword") : t("login.showPassword")}
               >
                 <EyeIcon hidden={showPassword} />
               </button>
@@ -193,10 +195,10 @@ export function LoginForm() {
                 checked={remember}
                 onChange={(e) => setRemember(e.target.checked)}
               />
-              Remember me
+              {t("login.remember")}
             </label>
             <a href="#forgot" className="login-form-panel__forgot">
-              Forgot password?
+              {t("login.forgot")}
             </a>
           </div>
 
@@ -206,7 +208,7 @@ export function LoginForm() {
             disabled={loading}
           >
             {loading && <span className="login-form-panel__spinner" aria-hidden />}
-            <span>{loading ? "Signing in…" : "Log in to Admin Console"}</span>
+            <span>{loading ? t("login.submitting") : t("login.submit")}</span>
             {!loading && (
               <span className="login-form-panel__submit-arrow">
                 <ArrowRightIcon />
@@ -220,7 +222,7 @@ export function LoginForm() {
             <SecureLockIcon />
           </span>
           <span>
-            Secured with enterprise 2FA &amp; end-to-end audit logging
+            {t("login.footer")}
           </span>
         </footer>
       </div>

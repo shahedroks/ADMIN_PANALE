@@ -1,5 +1,6 @@
 import { SettingsImpactLeafIcon, SettingsNavIcon } from "@/features/settings/components/SettingsNavIcon";
 import { settingsNav, type SettingsSectionId } from "@/features/settings/data/settingsData";
+import { useI18n } from "@/i18n";
 
 type SettingsSubNavProps = {
   active: SettingsSectionId;
@@ -8,10 +9,12 @@ type SettingsSubNavProps = {
 };
 
 export function SettingsSubNav({ active, onSelect, adminTeamCount }: SettingsSubNavProps) {
+  const { t } = useI18n();
+
   return (
     <aside className="settings-subnav">
-      <p className="settings-subnav__kicker">Configuration deck</p>
-      <nav aria-label="Settings sections">
+      <p className="settings-subnav__kicker">{t("settings.subnav.kicker")}</p>
+      <nav aria-label={t("settings.subnav.aria")}>
         {settingsNav.map((item) => {
           const isActive = active === item.id;
           return (
@@ -26,8 +29,8 @@ export function SettingsSubNav({ active, onSelect, adminTeamCount }: SettingsSub
               <span className="settings-subnav__main">
                 <SettingsNavIcon id={item.icon} active={isActive} />
                 <span className="settings-subnav__copy">
-                  <strong>{item.label}</strong>
-                  {"sub" in item && item.sub && <small>{item.sub}</small>}
+                  <strong>{t(`settings.nav.${item.id}`)}</strong>
+                  {item.id === "general" && <small>{t("settings.nav.generalSub")}</small>}
                 </span>
               </span>
               <span className="settings-subnav__aside">
@@ -46,12 +49,10 @@ export function SettingsSubNav({ active, onSelect, adminTeamCount }: SettingsSub
       <div className="settings-impact">
         <div className="settings-impact__title">
           <SettingsImpactLeafIcon />
-          <p>Circulate impact</p>
+          <p>{t("settings.impact.title")}</p>
         </div>
         <strong>14,280 kg</strong>
-        <span>
-          Carbon offset facilitated through verified peer-to-peer handoffs this cycle.
-        </span>
+        <span>{t("settings.impact.body")}</span>
       </div>
     </aside>
   );

@@ -2,17 +2,19 @@ import { Link, useParams } from "react-router-dom";
 import { ItemDetailAdjudicationPanel } from "@/features/item-detail/components/ItemDetailAdjudicationPanel";
 import { ItemDetailMainColumn } from "@/features/item-detail/components/ItemDetailMainColumn";
 import { useItemDetail } from "@/hooks/useFirestoreAdminData";
+import { useI18n } from "@/i18n";
 import "@/features/dashboard/styles/dashboard.css";
 import "@/features/item-detail/styles/item-detail.css";
 
 export function ItemDetailPage() {
+  const { t } = useI18n();
   const { itemId } = useParams();
   const { detail, loading, error } = useItemDetail(itemId);
 
   if (loading) {
     return (
       <div className="dash-page item-detail-page">
-        <p>Loading listing…</p>
+        <p>{t("itemDetail.loading")}</p>
       </div>
     );
   }
@@ -21,7 +23,7 @@ export function ItemDetailPage() {
     return (
       <div className="dash-page item-detail-page">
         <p className="items-review-error">{error}</p>
-        <Link to="/items-review">← Back to Items Review</Link>
+        <Link to="/items-review">{t("itemDetail.back")}</Link>
       </div>
     );
   }
@@ -29,8 +31,8 @@ export function ItemDetailPage() {
   if (!detail) {
     return (
       <div className="dash-page item-detail-page">
-        <p>Listing not found.</p>
-        <Link to="/items-review">← Back to Items Review</Link>
+        <p>{t("itemDetail.notFound")}</p>
+        <Link to="/items-review">{t("itemDetail.back")}</Link>
       </div>
     );
   }
@@ -39,7 +41,7 @@ export function ItemDetailPage() {
     <div className="dash-page item-detail-page">
       <header className="item-detail-header">
         <Link to="/items-review" className="item-detail-back">
-          ← Back to Items Review
+          {t("itemDetail.back")}
         </Link>
         <p className="item-detail-meta-line">
           {detail.listedOn}

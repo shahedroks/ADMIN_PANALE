@@ -1,4 +1,5 @@
 import type { Product } from "@/features/products/types";
+import { useI18n } from "@/i18n";
 import { formatCurrency } from "@/utils/format";
 
 type ProductListProps = {
@@ -6,14 +7,16 @@ type ProductListProps = {
 };
 
 export function ProductList({ products }: ProductListProps) {
+  const { t } = useI18n();
+
   return (
     <table className="data-table">
       <thead>
         <tr>
-          <th>Name</th>
-          <th>SKU</th>
-          <th>Price</th>
-          <th>Stock</th>
+          <th>{t("products.col.name")}</th>
+          <th>{t("products.col.sku")}</th>
+          <th>{t("products.col.price")}</th>
+          <th>{t("products.col.stock")}</th>
         </tr>
       </thead>
       <tbody>

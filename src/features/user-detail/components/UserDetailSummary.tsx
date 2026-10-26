@@ -1,5 +1,6 @@
 import { UserAvatar } from "@/components/UserAvatar";
 import type { UserDetailProfile } from "@/features/user-detail/types";
+import { useI18n } from "@/i18n";
 
 type UserDetailSummaryProps = {
   profile: UserDetailProfile;
@@ -34,12 +35,13 @@ function TagIcon({ index }: { index: number }) {
 }
 
 export function UserDetailSummary({ profile }: UserDetailSummaryProps) {
+  const { t } = useI18n();
   const memberSince = profile.joined.replace(/^Member since\s*/i, "").trim();
 
   return (
     <section className="user-detail-card user-detail-summary">
       <div className="user-detail-summary__bio">
-        <h2>Biography &amp; stance</h2>
+        <h2>{t("summary.bio")}</h2>
         <p>{profile.bio}</p>
         <div className="user-detail-tags">
           {profile.tags.map((tag, index) => (
@@ -54,7 +56,7 @@ export function UserDetailSummary({ profile }: UserDetailSummaryProps) {
       <div className="user-detail-summary__metrics">
         <div className="user-detail-stat-row user-detail-stat-row--trust">
           <span className="user-detail-stat-row__label">
-            <SummaryIcon type="trust" /> Trust level
+            <SummaryIcon type="trust" /> {t("summary.trust")}
           </span>
           <div className="user-detail-stat-row__trust">
             <strong>{profile.trustLabel} • {profile.trustPercent}%</strong>
@@ -65,30 +67,30 @@ export function UserDetailSummary({ profile }: UserDetailSummaryProps) {
         </div>
         <div className="user-detail-stat-row">
           <span className="user-detail-stat-row__label">
-            <SummaryIcon type="calendar" /> Joined date
+            <SummaryIcon type="calendar" /> {t("summary.joined")}
           </span>
           <span className="user-detail-stat-row__value">{profile.joined}</span>
         </div>
         <div className="user-detail-stat-row">
           <span className="user-detail-stat-row__label">
-            <SummaryIcon type="clock" /> Last active
+            <SummaryIcon type="clock" /> {t("summary.lastActive")}
           </span>
           <span className="user-detail-stat-row__value">{profile.lastActive}</span>
         </div>
         <div className="user-detail-stat-row">
           <span className="user-detail-stat-row__label">
-            <SummaryIcon type="swap" /> Total swaps
+            <SummaryIcon type="swap" /> {t("summary.totalSwaps")}
           </span>
           <span className="user-detail-stat-row__value user-detail-stat-row__value--good">
-            {profile.swapsCompleted} completed
+            {t("summary.completed", { count: profile.swapsCompleted })}
           </span>
         </div>
         <div className="user-detail-stat-row">
           <span className="user-detail-stat-row__label">
-            <SummaryIcon type="report" /> Report status
+            <SummaryIcon type="report" /> {t("summary.reportStatus")}
           </span>
           <span className="user-detail-pill user-detail-pill--warn">
-            {profile.reportsUnderReview} under review
+            {t("summary.reportsReview", { count: profile.reportsUnderReview })}
           </span>
         </div>
       </div>
@@ -107,9 +109,9 @@ export function UserDetailSummary({ profile }: UserDetailSummaryProps) {
         <p className="user-detail-contact__email">{profile.email}</p>
         <p className="user-detail-contact__handle">{profile.handle}</p>
         <p className="user-detail-contact__member">
-          {profile.trusted ? "Active citizen" : "Member"}
+          {profile.trusted ? t("summary.activeCitizen") : t("summary.member")}
           <i aria-hidden>•</i>
-          Member since {memberSince}
+          {t("summary.memberSince", { date: memberSince })}
         </p>
         <code>{profile.ipAddress}</code>
       </div>

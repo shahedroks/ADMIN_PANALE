@@ -1,8 +1,8 @@
+import { FirebaseError } from "firebase/app";
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import type { LoginCredentials, AuthSession } from "@/features/auth/types";
 import type { User } from "@/features/users/types";
 import { auth } from "@/lib/firebase";
-import { firebaseAuthErrorMessage } from "@/features/auth/utils/firebaseAuthErrors";
 import { resolveAdminUser } from "@/features/auth/utils/resolveAdminUser";
 
 export async function login(
@@ -29,10 +29,13 @@ export async function login(
       },
     };
   } catch (error) {
+    if (error instanceof FirebaseError) {
+      throw error;
+    }
     if (error instanceof Error && error.message.includes("admin access")) {
       throw error;
     }
-    throw new Error(firebaseAuthErrorMessage(error));
+    throw error;
   }
 }
 

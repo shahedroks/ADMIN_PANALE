@@ -5,6 +5,7 @@ import {
 } from "@/features/settings/components/SettingsNavIcon";
 import type { AppSettings } from "@/services/firestore/appSettingsFirestoreService";
 import { useAppSettings } from "@/hooks/useAppSettings";
+import { useI18n } from "@/i18n";
 import { useToast } from "@/store/toastStore";
 
 type SettingsSecurityPanelProps = {
@@ -12,6 +13,7 @@ type SettingsSecurityPanelProps = {
 };
 
 export function SettingsSecurityPanel({ settings }: SettingsSecurityPanelProps) {
+  const { t } = useI18n();
   const { pushToast } = useToast();
   const { save } = useAppSettings();
   const [enforce2fa, setEnforce2fa] = useState(true);
@@ -27,20 +29,17 @@ export function SettingsSecurityPanel({ settings }: SettingsSecurityPanelProps) 
     <section className="settings-panel" id="settings-security">
       <div className="settings-panel__head settings-panel__head--stacked">
         <div className="settings-panel__intro">
-          <p className="settings-panel__kicker">Hardened perimeter</p>
-          <h2>Security Parameters</h2>
-          <p className="settings-panel__desc">
-            Manage enforcement policies, session governance, and downloadable audit
-            trails for privileged console access.
-          </p>
+          <p className="settings-panel__kicker">{t("settings.security.kicker")}</p>
+          <h2>{t("settings.security.title")}</h2>
+          <p className="settings-panel__desc">{t("settings.security.desc")}</p>
         </div>
         <button
           type="button"
           className="settings-download"
-          onClick={() => pushToast("Audit log export will be available in a future release.", "info")}
+          onClick={() => pushToast(t("settings.security.toastAudit"), "info")}
         >
           <SettingsDownloadIcon />
-          Download Security Audit Log
+          {t("settings.security.download")}
         </button>
       </div>
 
@@ -51,8 +50,8 @@ export function SettingsSecurityPanel({ settings }: SettingsSecurityPanelProps) 
               <SettingsPhoneIcon />
             </span>
             <div>
-              <strong>Enforce Two-Factor Authentication (2FA)</strong>
-              <p>Require OTP verification for all admin console sign-ins.</p>
+              <strong>{t("settings.security.2fa")}</strong>
+              <p>{t("settings.security.2faDesc")}</p>
             </div>
           </div>
           <label className="settings-toggle settings-toggle--solo">
@@ -63,7 +62,11 @@ export function SettingsSecurityPanel({ settings }: SettingsSecurityPanelProps) 
                 const next = e.target.checked;
                 setEnforce2fa(next);
                 void save({ enforceTwoFactor: next }).then(() =>
-                  pushToast(`2FA enforcement ${next ? "enabled" : "disabled"}.`),
+                  pushToast(
+                    t("settings.security.toast2fa", {
+                      state: next ? t("settings.security.enabled") : t("settings.security.disabled"),
+                    }),
+                  ),
                 );
               }}
             />
@@ -73,10 +76,8 @@ export function SettingsSecurityPanel({ settings }: SettingsSecurityPanelProps) 
 
         <div className="settings-security-grid">
           <div className="settings-security-card">
-            <strong className="settings-security-card__title">Session Inactivity Timeout</strong>
-            <p className="settings-security-card__desc">
-              Automatically close idle staff sessions to mitigate unattended terminal risks.
-            </p>
+            <strong className="settings-security-card__title">{t("settings.security.session")}</strong>
+            <p className="settings-security-card__desc">{t("settings.security.sessionDesc")}</p>
             <select
               id="session-timeout"
               className="settings-security-card__select"
@@ -85,13 +86,13 @@ export function SettingsSecurityPanel({ settings }: SettingsSecurityPanelProps) 
                 const minutes = Number.parseInt(e.target.value, 10);
                 setSessionTimeout(e.target.value);
                 void save({ sessionTimeoutMinutes: minutes }).then(() =>
-                  pushToast(`Session timeout set to ${minutes} minutes.`),
+                  pushToast(t("settings.security.toastSession", { minutes }), "info"),
                 );
               }}
             >
-              <option value="15">15 minutes of inactivity</option>
-              <option value="30">30 minutes of inactivity</option>
-              <option value="60">60 minutes of inactivity</option>
+              <option value="15">{t("settings.security.min15")}</option>
+              <option value="30">{t("settings.security.min30")}</option>
+              <option value="60">{t("settings.security.min60")}</option>
             </select>
           </div>
         </div>

@@ -4,8 +4,21 @@
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: linear-gradient(135deg, #e4e8f2 0%, #eef1f8 45%, #e8ebf4 100%);
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    var(--swapit-warm-ivory) 0%,
+    var(--swapit-field-gray) 45%,
+    var(--swapit-sage) 100%
+  );
   background-size: 200% 200%;
+}
+
+.login-page__lang {
+  position: absolute;
+  top: 20px;
+  inset-inline-end: 24px;
+  z-index: 2;
 }
 
 .login-page--enter {
@@ -40,7 +53,7 @@
   flex: 0 0 42%;
   min-width: 320px;
   padding: 32px;
-  background: var(--swapit-primary-dark);
+  background: var(--swapit-primary);
   color: #ffffff;
   overflow: hidden;
 }

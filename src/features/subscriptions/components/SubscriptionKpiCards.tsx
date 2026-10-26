@@ -1,3 +1,5 @@
+import { useI18n } from "@/i18n";
+
 function PremiumIcon() {
   return (
     <svg viewBox="0 0 20 20" aria-hidden>
@@ -30,15 +32,17 @@ function GraceIcon() {
 }
 
 export function SubscriptionKpiCards() {
+  const { t } = useI18n();
+
   return (
     <div className="sub-kpis">
       <article className="sub-kpi sub-kpi--premium">
         <div className="sub-kpi__top">
           <div>
-            <p className="sub-kpi__label">Active Premium</p>
+            <p className="sub-kpi__label">{t("subs.kpi.premium")}</p>
             <strong className="sub-kpi__value">4,820</strong>
             <p className="sub-kpi__meta sub-kpi__meta--positive">
-              <span aria-hidden>↑</span> 26.1% Conv.
+              <span aria-hidden>↑</span> {t("subs.kpi.premiumMeta")}
             </p>
           </div>
           <span className="sub-kpi__icon sub-kpi__icon--premium">
@@ -46,16 +50,16 @@ export function SubscriptionKpiCards() {
           </span>
         </div>
         <div className="sub-kpi__foot sub-kpi__foot--gradient">
-          <span>+18.4% monthly cohort spike</span>
+          <span>{t("subs.kpi.premiumFoot")}</span>
         </div>
       </article>
 
       <article className="sub-kpi">
         <div className="sub-kpi__top">
           <div>
-            <p className="sub-kpi__label">Free Base</p>
+            <p className="sub-kpi__label">{t("subs.kpi.free")}</p>
             <strong className="sub-kpi__value">13,630</strong>
-            <p className="sub-kpi__meta">73.9% active free</p>
+            <p className="sub-kpi__meta">{t("subs.kpi.freeMeta")}</p>
           </div>
           <span className="sub-kpi__icon sub-kpi__icon--muted">
             <FreeBaseIcon />
@@ -71,16 +75,16 @@ export function SubscriptionKpiCards() {
       <article className="sub-kpi sub-kpi--grace">
         <div className="sub-kpi__top">
           <div>
-            <p className="sub-kpi__label">Grace Hopper</p>
+            <p className="sub-kpi__label">{t("subs.kpi.grace")}</p>
             <strong className="sub-kpi__value">86</strong>
-            <p className="sub-kpi__meta sub-kpi__meta--danger">7-day recovery</p>
+            <p className="sub-kpi__meta sub-kpi__meta--danger">{t("subs.kpi.graceMeta")}</p>
           </div>
           <span className="sub-kpi__icon sub-kpi__icon--danger">
             <GraceIcon />
           </span>
         </div>
         <div className="sub-kpi__foot">
-          <span>61% projected reclaim</span>
+          <span>{t("subs.kpi.graceFoot")}</span>
         </div>
       </article>
 
@@ -88,7 +92,7 @@ export function SubscriptionKpiCards() {
         <div className="sub-kpi__top">
           <div>
             <div className="sub-kpi__mrr-head">
-              <p className="sub-kpi__label sub-kpi__label--inverse">Monthly MRR</p>
+              <p className="sub-kpi__label sub-kpi__label--inverse">{t("subs.kpi.mrr")}</p>
               <span className="sub-kpi__delta-pill">+12.8%</span>
             </div>
             <strong className="sub-kpi__value sub-kpi__value--inverse">$38,420</strong>
@@ -96,7 +100,7 @@ export function SubscriptionKpiCards() {
           </div>
         </div>
         <div className="sub-kpi__foot sub-kpi__foot--inverse">
-          <span>Velocity target on schedule</span>
+          <span>{t("subs.kpi.mrrFoot")}</span>
         </div>
       </article>
     </div>

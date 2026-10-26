@@ -8,12 +8,7 @@ import {
 } from "@/components/icons/UserDetailIcons";
 import type { UserDetailProfile, UserRestrictionSettings } from "@/features/user-detail/types";
 import type { SwapperMember } from "@/features/users/types";
-
-const itemStatusLabel = {
-  under_review: "Under review",
-  in_swap: "In swap",
-  active: "Active",
-} as const;
+import { useI18n } from "@/i18n";
 
 type UserDetailColumnsProps = {
   profile: UserDetailProfile;
@@ -30,7 +25,14 @@ export function UserDetailColumns({
   restrictionSettings,
   onSaveSettings,
 }: UserDetailColumnsProps) {
+  const { t } = useI18n();
   const itemTotal = profile.items.length;
+
+  const itemStatusLabel = {
+    under_review: t("status.underReview"),
+    in_swap: t("columns.inSwap"),
+    active: t("status.active"),
+  } as const;
 
   return (
     <>
@@ -38,16 +40,16 @@ export function UserDetailColumns({
         <section className="user-detail-card user-detail-col">
           <div className="user-detail-col__head">
             <h2>
-              <UserDetailColumnIcon type="report" /> Report History
+              <UserDetailColumnIcon type="report" /> {t("columns.reports")}
             </h2>
             <span className="user-detail-col__count user-detail-col__count--warn">
-              {profile.reports.length} total
+              {t("columns.reportsCount", { count: profile.reports.length })}
             </span>
           </div>
           <ul className="user-detail-report-list">
             {profile.reports.length === 0 ? (
               <li>
-                <p>No reports filed against this member or their listings.</p>
+                <p>{t("columns.reportsEmpty")}</p>
               </li>
             ) : (
               profile.reports.map((report) => (
@@ -61,7 +63,9 @@ export function UserDetailColumns({
                           : "user-detail-pill user-detail-pill--compact user-detail-pill--resolved"
                       }
                     >
-                      {report.status === "under_review" ? "Under review" : "Dismissed"}
+                      {report.status === "under_review"
+                        ? t("status.underReview")
+                        : t("columns.dismissed")}
                     </span>
                   </div>
                   <p>{report.summary}</p>
@@ -70,25 +74,24 @@ export function UserDetailColumns({
               ))
             )}
           </ul>
-          <Link
-            to={`/users/${userId}?panel=reports`}
-            className="user-detail-col__link"
-          >
-            View all reports →
+          <Link to={`/users/${userId}?panel=reports`} className="user-detail-col__link">
+            {t("columns.viewReports")}
           </Link>
         </section>
 
         <section className="user-detail-card user-detail-col">
           <div className="user-detail-col__head">
             <h2>
-              <UserDetailColumnIcon type="items" /> Listed Items
+              <UserDetailColumnIcon type="items" /> {t("columns.items")}
             </h2>
-            <span className="user-detail-col__count">{itemTotal} total</span>
+            <span className="user-detail-col__count">
+              {t("columns.reportsCount", { count: itemTotal })}
+            </span>
           </div>
           <ul className="user-detail-item-list">
             {profile.items.length === 0 ? (
               <li>
-                <p>No listings published by this member yet.</p>
+                <p>{t("columns.itemsEmpty")}</p>
               </li>
             ) : (
               profile.items.map((item) => (
@@ -114,20 +117,19 @@ export function UserDetailColumns({
               ))
             )}
           </ul>
-          <Link
-            to={`/users/${userId}?panel=items`}
-            className="user-detail-col__link"
-          >
-            View all items ({itemTotal}) →
+          <Link to={`/users/${userId}?panel=items`} className="user-detail-col__link">
+            {t("columns.viewItems", { count: itemTotal })}
           </Link>
         </section>
 
         <section className="user-detail-card user-detail-col">
           <div className="user-detail-col__head">
             <h2>
-              <UserDetailColumnIcon type="actions" /> Action Log
+              <UserDetailColumnIcon type="actions" /> {t("columns.log")}
             </h2>
-            <span className="user-detail-col__count">{profile.actions.length} events</span>
+            <span className="user-detail-col__count">
+              {t("columns.events", { count: profile.actions.length })}
+            </span>
           </div>
           <ul className="user-detail-action-list">
             {profile.actions.map((action) => (
@@ -140,11 +142,8 @@ export function UserDetailColumns({
               </li>
             ))}
           </ul>
-          <Link
-            to={`/users/${userId}?panel=log`}
-            className="user-detail-col__link"
-          >
-            View moderation directory →
+          <Link to={`/users/${userId}?panel=log`} className="user-detail-col__link">
+            {t("columns.viewDirectory")}
           </Link>
         </section>
       </div>
@@ -169,6 +168,7 @@ function UserDetailRestrictionPanel({
   initialSettings: UserRestrictionSettings;
   onSaveSettings: (settings: UserRestrictionSettings) => Promise<void>;
 }) {
+  const { t } = useI18n();
   const [settings, setSettings] = useState<UserRestrictionSettings>(initialSettings);
   const [saving, setSaving] = useState(false);
 
@@ -188,22 +188,19 @@ function UserDetailRestrictionPanel({
       <div className="user-detail-col__head">
         <h2>
           <UserDetailShieldIcon />
-          Restriction &amp; Ban Settings
+          {t("columns.restrict")}
         </h2>
-        <span className="user-detail-pill user-detail-pill--muted">Policy v2.4</span>
+        <span className="user-detail-pill user-detail-pill--muted">{t("columns.policy")}</span>
       </div>
 
       {memberStatus === "banned" && (
-        <p className="user-detail-restrict__notice">
-          This account is banned. Lift the ban from User Management before changing restriction
-          toggles.
-        </p>
+        <p className="user-detail-restrict__notice">{t("columns.bannedNotice")}</p>
       )}
 
       <label className="user-detail-toggle-row">
         <span>
-          <strong>Manual report review</strong>
-          <small>Require supervisor approval on new reports</small>
+          <strong>{t("columns.manualReview")}</strong>
+          <small>{t("columns.manualHint")}</small>
         </span>
         <span className="user-detail-switch">
           <input
@@ -217,8 +214,8 @@ function UserDetailRestrictionPanel({
       </label>
       <label className="user-detail-toggle-row">
         <span>
-          <strong>Allow chat messages</strong>
-          <small>Peer messaging in active swaps</small>
+          <strong>{t("columns.allowChat")}</strong>
+          <small>{t("columns.chatHint")}</small>
         </span>
         <span className="user-detail-switch">
           <input
@@ -232,8 +229,8 @@ function UserDetailRestrictionPanel({
       </label>
       <label className="user-detail-toggle-row">
         <span>
-          <strong>Allow new listings</strong>
-          <small>Publishing items to marketplace feed</small>
+          <strong>{t("columns.allowListings")}</strong>
+          <small>{t("columns.listingsHint")}</small>
         </span>
         <span className="user-detail-switch">
           <input
@@ -247,28 +244,28 @@ function UserDetailRestrictionPanel({
       </label>
 
       <label className="user-detail-field" htmlFor="restriction-days">
-        Restriction duration
+        {t("columns.duration")}
         <select
           id="restriction-days"
           value={settings.durationDays}
           disabled={memberStatus === "banned"}
           onChange={(e) => update("durationDays", e.target.value)}
         >
-          <option value="7">7 days</option>
-          <option value="14">14 days</option>
-          <option value="30">30 days</option>
+          <option value="7">{t("columns.days7")}</option>
+          <option value="14">{t("columns.days14")}</option>
+          <option value="30">{t("columns.days30")}</option>
         </select>
       </label>
 
       <label className="user-detail-field" htmlFor="admin-note">
-        Internal admin note
+        {t("columns.note")}
         <textarea
           id="admin-note"
           rows={3}
           value={settings.note}
           disabled={memberStatus === "banned"}
           onChange={(e) => update("note", e.target.value)}
-          placeholder="Document rationale for restriction or ban…"
+          placeholder={t("columns.notePlaceholder")}
         />
       </label>
 
@@ -282,7 +279,7 @@ function UserDetailRestrictionPanel({
         }}
       >
         <UserDetailSaveIcon />
-        {saving ? "Saving…" : "Save settings"}
+        {saving ? t("columns.saving") : t("columns.save")}
       </button>
     </section>
   );

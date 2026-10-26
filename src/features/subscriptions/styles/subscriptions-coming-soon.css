@@ -28,7 +28,7 @@
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #304f00;
+  color: var(--swapit-medium-green);
 }
 
 .subscriptions-coming-soon h1 {

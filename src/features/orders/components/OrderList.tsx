@@ -1,4 +1,5 @@
 import type { Order } from "@/features/orders/types";
+import { useI18n } from "@/i18n";
 import { formatCurrency, formatDate } from "@/utils/format";
 
 type OrderListProps = {
@@ -6,15 +7,17 @@ type OrderListProps = {
 };
 
 export function OrderList({ orders }: OrderListProps) {
+  const { t } = useI18n();
+
   return (
     <table className="data-table">
       <thead>
         <tr>
-          <th>ID</th>
-          <th>Customer</th>
-          <th>Total</th>
-          <th>Status</th>
-          <th>Created</th>
+          <th>{t("orders.col.id")}</th>
+          <th>{t("orders.col.customer")}</th>
+          <th>{t("orders.col.total")}</th>
+          <th>{t("orders.col.status")}</th>
+          <th>{t("orders.col.created")}</th>
         </tr>
       </thead>
       <tbody>

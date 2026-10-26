@@ -5,6 +5,7 @@ import { auth } from "@/lib/firebase";
 import { callModerateItem } from "@/lib/callableFunctions";
 import { moderateItemFirestore } from "@/services/firestore/itemsModerationFirestoreService";
 import { writeAuditLogClient } from "@/services/firestore/auditLogFirestoreService";
+import { useI18n } from "@/i18n";
 import { useToast } from "@/store/toastStore";
 
 type ItemDetailAdjudicationPanelProps = {
@@ -16,6 +17,7 @@ export function ItemDetailAdjudicationPanel({
   detail,
   itemRouteId,
 }: ItemDetailAdjudicationPanelProps) {
+  const { t } = useI18n();
   const navigate = useNavigate();
   const { pushToast } = useToast();
   const [editNote, setEditNote] = useState(detail.suggestedEditNote);
@@ -26,7 +28,7 @@ export function ItemDetailAdjudicationPanel({
   const moderatorLabel =
     auth.currentUser?.displayName ??
     auth.currentUser?.email ??
-    "Admin";
+    t("role.admin");
 
   async function runModeration(
     action: "approve" | "hide" | "reject" | "request_edit",
@@ -40,15 +42,12 @@ export function ItemDetailAdjudicationPanel({
       } catch {
         await moderateItemFirestore(itemRouteId, action, note, moderatorUid);
       }
-      pushToast("Moderation action saved successfully.", "success");
+      pushToast(t("adjudication.toastSaved"), "success");
       if (action === "approve" || action === "hide") {
         navigate("/items-review");
       }
     } catch (e) {
-      pushToast(
-        e instanceof Error ? e.message : "Moderation failed.",
-        "error",
-      );
+      pushToast(e instanceof Error ? e.message : t("adjudication.toastFailed"), "error");
     } finally {
       setBusy(false);
     }
@@ -58,27 +57,28 @@ export function ItemDetailAdjudicationPanel({
     <aside className="item-detail-side">
       <section className="item-detail-card item-detail-adjudication">
         <div className="item-detail-adjudication__head">
-          <h2>Take adjudication</h2>
+          <h2>{t("adjudication.title")}</h2>
           <span className="item-detail-pending">
-            <i /> {detail.statusLabel === "PENDING" ? "Decision pending" : detail.statusLabel}
+            <i />{" "}
+            {detail.statusLabel === "PENDING" ? t("adjudication.pending") : detail.statusLabel}
           </span>
         </div>
 
-        <p className="item-detail-adjudication__hint">Suggested path</p>
+        <p className="item-detail-adjudication__hint">{t("adjudication.suggested")}</p>
         <button
           type="button"
           className="item-detail-btn item-detail-btn--suggest"
           disabled={busy}
           onClick={() => void runModeration("request_edit", editNote)}
         >
-          Request edit from owner
+          {t("adjudication.requestEdit")}
         </button>
         <textarea
           className="item-detail-textarea"
           value={editNote}
           onChange={(e) => setEditNote(e.target.value)}
           rows={4}
-          aria-label="Edit request message"
+          aria-label={t("adjudication.editAria")}
         />
 
         <button
@@ -105,7 +105,7 @@ export function ItemDetailAdjudicationPanel({
               strokeWidth="1.35"
             />
           </svg>
-          Approve listing (Dismiss flag)
+          {t("adjudication.approve")}
         </button>
         <button
           type="button"
@@ -138,11 +138,11 @@ export function ItemDetailAdjudicationPanel({
               strokeWidth="1.5"
             />
           </svg>
-          Hide item from feed (Direct takedown)
+          {t("adjudication.hide")}
         </button>
 
         <label className="item-detail-section-label" htmlFor="audit-note">
-          Internal justification / moderation audit note
+          {t("adjudication.auditLabel")}
         </label>
         <textarea
           id="audit-note"
@@ -150,7 +150,7 @@ export function ItemDetailAdjudicationPanel({
           value={auditNote}
           onChange={(e) => setAuditNote(e.target.value)}
           rows={3}
-          placeholder="Document rationale for compliance archive…"
+          placeholder={t("adjudication.auditPlaceholder")}
         />
 
         <label className="item-detail-check">
@@ -160,7 +160,10 @@ export function ItemDetailAdjudicationPanel({
             onChange={(e) => setNotifyOwner(e.target.checked)}
             disabled
           />
-          Notify owner ({notifyOwner ? "planned" : "off"}) — {detail.owner.name}
+          {t("adjudication.notify", {
+            state: notifyOwner ? t("adjudication.planned") : t("adjudication.off"),
+            ownerName: detail.owner.name,
+          })}
         </label>
 
         <button
@@ -171,15 +174,15 @@ export function ItemDetailAdjudicationPanel({
               action: "item_escalate",
               targetType: "item",
               targetId: itemRouteId,
-              note: auditNote || "Escalated to senior admin",
-            }).then(() => pushToast("Escalation logged to the audit trail.", "info"));
+              note: auditNote || t("adjudication.escalationNote"),
+            }).then(() => pushToast(t("adjudication.toastEscalated"), "info"));
           }}
         >
-          Escalate to Senior Admin / Legal Supervisor
+          {t("adjudication.escalate")}
         </button>
 
         <div className="item-detail-audit-bar">
-          Audit session: {moderatorLabel} • item {itemRouteId}
+          {t("adjudication.session", { moderator: moderatorLabel, itemId: itemRouteId })}
         </div>
       </section>
 

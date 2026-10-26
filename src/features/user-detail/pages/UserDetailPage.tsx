@@ -4,6 +4,7 @@ import { UserDetailColumns } from "@/features/user-detail/components/UserDetailC
 import { UserDetailMemberPanel } from "@/features/user-detail/components/UserDetailMemberPanel";
 import { UserDetailSummary } from "@/features/user-detail/components/UserDetailSummary";
 import { useSwapperMemberDetail } from "@/hooks/useFirestoreAdminData";
+import { useI18n } from "@/i18n";
 import { useDemoStore } from "@/store/demoStore";
 import "@/features/dashboard/styles/dashboard.css";
 import "@/features/user-detail/styles/user-detail.css";
@@ -11,6 +12,7 @@ import "@/features/user-detail/styles/user-detail.css";
 const memberPanelValues = new Set(["reports", "items", "log"]);
 
 export function UserDetailPage() {
+  const { t } = useI18n();
   const { userId } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -44,14 +46,17 @@ export function UserDetailPage() {
       await action();
       pushToast(label, "success");
     } catch (e) {
-      pushToast(e instanceof Error ? e.message : `Could not complete: ${label}`, "error");
+      pushToast(
+        e instanceof Error ? e.message : t("userDetail.toast.failed", { action: label }),
+        "error",
+      );
     }
   };
 
   if (loading) {
     return (
       <div className="dash-page user-detail-page">
-        <p>Loading user profile…</p>
+        <p>{t("userDetail.loading")}</p>
       </div>
     );
   }
@@ -60,9 +65,9 @@ export function UserDetailPage() {
     return (
       <div className="dash-page user-detail-page">
         <Link to="/users" className="user-detail-back">
-          ← Back to User Management
+          {t("userDetail.back")}
         </Link>
-        <p>{error ?? "User not found."}</p>
+        <p>{error ?? t("userDetail.notFound")}</p>
       </div>
     );
   }
@@ -71,13 +76,13 @@ export function UserDetailPage() {
     <div className="dash-page user-detail-page">
       <header className="user-detail-header">
         <Link to="/users" className="user-detail-back">
-          ← Back to User Management
+          {t("userDetail.back")}
         </Link>
         <div className="user-detail-header__row">
           <div className="user-detail-header__title">
-            <h1>User Details</h1>
+            <h1>{t("userDetail.title")}</h1>
             {profile.trusted && (
-              <span className="user-detail-pill user-detail-pill--trusted">Trusted</span>
+              <span className="user-detail-pill user-detail-pill--trusted">{t("userDetail.trusted")}</span>
             )}
             <span className="user-detail-pill user-detail-pill--code">{profile.userCode}</span>
             <span className="user-detail-header__name">{profile.name}</span>
@@ -87,19 +92,19 @@ export function UserDetailPage() {
               type="button"
               className="user-detail-action user-detail-action--warn"
               onClick={() =>
-                runAction("User temporarily restricted.", () => restrictMember(member.id))
+                runAction(t("userDetail.toast.restricted"), () => restrictMember(member.id))
               }
               disabled={member.status === "banned"}
             >
-              Temporarily restrict
+              {t("userDetail.restrict")}
             </button>
             <button
               type="button"
               className="user-detail-action user-detail-action--ban"
-              onClick={() => runAction("User banned from the network.", () => banMember(member.id))}
+              onClick={() => runAction(t("userDetail.toast.banned"), () => banMember(member.id))}
               disabled={member.status === "banned"}
             >
-              Ban account
+              {t("userDetail.ban")}
             </button>
           </div>
         </div>
@@ -114,10 +119,10 @@ export function UserDetailPage() {
         onSaveSettings={async (settings) => {
           try {
             await saveRestrictionSettings(settings);
-            pushToast("User restriction settings saved.", "success");
+            pushToast(t("userDetail.toast.saved"), "success");
           } catch (e) {
             pushToast(
-              e instanceof Error ? e.message : "Could not save restriction settings.",
+              e instanceof Error ? e.message : t("userDetail.toast.saveFailed"),
               "error",
             );
           }

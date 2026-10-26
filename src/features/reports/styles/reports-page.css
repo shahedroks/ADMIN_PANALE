@@ -6,14 +6,14 @@
   margin: 0 0 12px;
   padding: 10px 14px;
   border-radius: 8px;
-  background: #f4f7ef;
+  background: var(--swapit-warm-ivory);
   font-size: 13px;
-  color: #304f00;
+  color: var(--swapit-medium-green);
 }
 
 .reports-page__scope a {
   font-weight: 700;
-  color: #304f00;
+  color: var(--swapit-medium-green);
 }
 
 .reports-page__header {
@@ -183,7 +183,7 @@
 }
 
 .reports-kpi__hint--positive {
-  color: #304f00;
+  color: var(--swapit-medium-green);
 }
 
 .reports-kpi__hint--negative {
@@ -440,7 +440,7 @@
 
 .reports-pill--low {
   background: rgba(163, 114, 34, 0.35);
-  color: #304f00;
+  color: var(--swapit-medium-green);
 }
 
 .reports-pill--low::before {
@@ -465,7 +465,7 @@
 
 .reports-status--open {
   background: rgba(163, 114, 34, 0.3);
-  color: #304f00;
+  color: var(--swapit-medium-green);
 }
 
 .reports-status--closed {

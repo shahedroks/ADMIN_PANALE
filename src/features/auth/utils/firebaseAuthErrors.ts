@@ -1,24 +1,45 @@
 import { FirebaseError } from "firebase/app";
 
-export function firebaseAuthErrorMessage(error: unknown): string {
+import type { TranslateParams } from "@/i18n/translate";
+
+export type AuthTranslateFn = (key: string, params?: TranslateParams) => string;
+
+const AUTH_CODE_TO_KEY: Record<string, string> = {
+  "auth/invalid-email": "auth.invalidEmail",
+  "auth/user-disabled": "auth.userDisabled",
+  "auth/user-not-found": "auth.invalidCredentials",
+  "auth/wrong-password": "auth.invalidCredentials",
+  "auth/invalid-credential": "auth.invalidCredentials",
+  "auth/too-many-requests": "auth.tooManyRequests",
+  "auth/network-request-failed": "auth.networkError",
+};
+
+const FALLBACK_MESSAGES: Record<string, string> = {
+  "auth.invalidEmail": "Please enter a valid email address.",
+  "auth.userDisabled": "This account has been disabled.",
+  "auth.invalidCredentials": "Invalid email or password.",
+  "auth.tooManyRequests": "Too many attempts. Try again later.",
+  "auth.networkError": "Network error. Check your connection.",
+  "auth.noAdminAccess": "You do not have admin access.",
+  "login.failed": "Login failed.",
+};
+
+function resolveMessage(key: string, t?: AuthTranslateFn): string {
+  if (t) return t(key);
+  return FALLBACK_MESSAGES[key] ?? key;
+}
+
+export function firebaseAuthErrorMessage(error: unknown, t?: AuthTranslateFn): string {
   if (error instanceof FirebaseError) {
-    switch (error.code) {
-      case "auth/invalid-email":
-        return "Please enter a valid email address.";
-      case "auth/user-disabled":
-        return "This account has been disabled.";
-      case "auth/user-not-found":
-      case "auth/wrong-password":
-      case "auth/invalid-credential":
-        return "Invalid email or password.";
-      case "auth/too-many-requests":
-        return "Too many attempts. Try again later.";
-      case "auth/network-request-failed":
-        return "Network error. Check your connection.";
-      default:
-        return error.message;
-    }
+    const key = AUTH_CODE_TO_KEY[error.code];
+    if (key) return resolveMessage(key, t);
+    return error.message;
   }
-  if (error instanceof Error) return error.message;
-  return "Login failed.";
+  if (error instanceof Error) {
+    if (error.message.includes("admin access")) {
+      return resolveMessage("auth.noAdminAccess", t);
+    }
+    return error.message;
+  }
+  return resolveMessage("login.failed", t);
 }

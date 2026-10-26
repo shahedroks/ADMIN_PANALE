@@ -1,3 +1,5 @@
+import { useI18n } from "@/i18n";
+
 type ReportsPaginationProps = {
   page: number;
   pageSize: number;
@@ -11,6 +13,7 @@ export function ReportsPagination({
   total,
   onPageChange,
 }: ReportsPaginationProps) {
+  const { t } = useI18n();
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const start = total === 0 ? 0 : (page - 1) * pageSize + 1;
   const end = Math.min(page * pageSize, total);
@@ -19,16 +22,14 @@ export function ReportsPagination({
 
   return (
     <footer className="reports-pagination">
-      <p>
-        Showing {start} to {end} of {total} reports
-      </p>
+      <p>{t("reports.pagination", { start, end, total })}</p>
       <div className="reports-pagination__controls">
         <button
           type="button"
           disabled={page <= 1}
           onClick={() => onPageChange(page - 1)}
         >
-          Previous
+          {t("pagination.previous")}
         </button>
         {pages.map((p) => (
           <button
@@ -46,7 +47,7 @@ export function ReportsPagination({
           disabled={page >= totalPages}
           onClick={() => onPageChange(page + 1)}
         >
-          Next
+          {t("pagination.next")}
         </button>
       </div>
     </footer>

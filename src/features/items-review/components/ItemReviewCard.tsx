@@ -1,25 +1,6 @@
 import { Link } from "react-router-dom";
 import type { ReviewItem } from "@/features/items-review/types";
-
-function listingStatusLabel(item: ReviewItem): string {
-  switch (item.listingStatus) {
-    case "approved":
-      return "Live on Discover";
-    case "pending":
-      return "Awaiting review";
-    case "hidden":
-      return "Hidden from feed";
-    case "rejected":
-      return "Rejected";
-    default:
-      return item.listingStatus;
-  }
-}
-
-function showModerationFlag(item: ReviewItem): boolean {
-  if (item.listingStatus === "pending") return true;
-  return Boolean(item.flagTitle.trim() || item.flagMessage.trim());
-}
+import { useI18n } from "@/i18n";
 
 function FlagGlyph({ kind }: { kind: ReviewItem["flagKind"] }) {
   const stroke = "#B45309";
@@ -70,14 +51,35 @@ export function ItemReviewCard({
   onRequestEdit,
   onHide,
 }: ItemReviewCardProps) {
+  const { t } = useI18n();
   const imageUrl = item.thumbnailUrl ?? "";
+
+  function listingStatusLabel(listingStatus: ReviewItem["listingStatus"]): string {
+    switch (listingStatus) {
+      case "approved":
+        return t("itemCard.approved");
+      case "pending":
+        return t("itemCard.pending");
+      case "hidden":
+        return t("itemCard.hidden");
+      case "rejected":
+        return t("itemCard.rejected");
+      default:
+        return listingStatus;
+    }
+  }
+
+  function showModerationFlag(reviewItem: ReviewItem): boolean {
+    if (reviewItem.listingStatus === "pending") return true;
+    return Boolean(reviewItem.flagTitle.trim() || reviewItem.flagMessage.trim());
+  }
 
   return (
     <article className={`item-card${selected ? " item-card--selected" : ""}`}>
       <div className="item-card__media">
         <img src={imageUrl} alt="" loading="lazy" />
         <span className="item-card__category">{item.category}</span>
-        <button type="button" className="item-card__favorite" aria-label="Save item">
+        <button type="button" className="item-card__favorite" aria-label={t("itemCard.save")}>
           <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden>
             <path
               d="M7 12.5S1.5 9 1.5 5.5a3 3 0 016 0 3 3 0 016 0c0 3.5-5.5 7-5.5 7z"
@@ -87,7 +89,7 @@ export function ItemReviewCard({
             />
           </svg>
         </button>
-        <span className="item-card__id">ID: #{item.id}</span>
+        <span className="item-card__id">{t("itemCard.id")}{item.id}</span>
       </div>
 
       <div className="item-card__body">
@@ -101,9 +103,11 @@ export function ItemReviewCard({
                   : "item-card__status item-card__status--done"
             }
           >
-            <i /> {listingStatusLabel(item)}
+            <i /> {listingStatusLabel(item.listingStatus)}
           </span>
-          <span className="item-card__time">Listed {item.listedHoursAgo}h ago</span>
+          <span className="item-card__time">
+            {t("itemCard.listed", { hours: item.listedHoursAgo })}
+          </span>
         </div>
 
         <h2>
@@ -135,7 +139,7 @@ export function ItemReviewCard({
             </span>
             <div>
               <strong>
-                {(item.flagTitle || "Pending review").toUpperCase()}
+                {(item.flagTitle || t("itemCard.flag")).toUpperCase()}
               </strong>
               {item.flagMessage ? <p>{item.flagMessage}</p> : null}
             </div>
@@ -143,8 +147,8 @@ export function ItemReviewCard({
         )}
 
         <div className="item-card__tags">
-          <span>Condition: {item.condition}</span>
-          <span>Est. value: {item.estimatedValue}</span>
+          <span>{t("itemCard.condition", { value: item.condition })}</span>
+          <span>{t("itemCard.value", { value: item.estimatedValue })}</span>
           <span>{item.location}</span>
         </div>
 
@@ -154,16 +158,16 @@ export function ItemReviewCard({
             className="item-card__btn item-card__btn--edit"
             onClick={onRequestEdit}
           >
-            Request edit
+            {t("itemCard.requestEdit")}
           </button>
           <button type="button" className="item-card__btn item-card__btn--hide" onClick={onHide}>
-            Hide
+            {t("itemCard.hide")}
           </button>
           <button
             type="button"
             className={`item-card__select${selected ? " is-on" : ""}`}
             onClick={onToggleSelect}
-            aria-label={selected ? "Deselect item" : "Select item"}
+            aria-label={selected ? t("itemCard.deselect") : t("itemCard.select")}
           >
             ✓
           </button>

@@ -1,19 +1,37 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { useAppStore } from "@/store";
-import { formatAdminNotificationTime } from "@/services/firestore/adminLiveNotificationsService";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useFormatAdminTime } from "@/hooks/useFormatAdminTime";
 import { useAdminLiveNotifications } from "@/hooks/useAdminLiveNotifications";
+import { useI18n } from "@/i18n";
+import type { AdminLiveNotification } from "@/services/firestore/adminLiveNotificationsService";
+import { useAppStore } from "@/store";
 
 const DEFAULT_AVATAR = "https://i.pravatar.cc/96?u=sara-miller-swap-admin";
 
+function notificationTitle(
+  item: AdminLiveNotification,
+  t: (key: string) => string,
+): string {
+  if (item.kind === "report") {
+    if (item.title === "High-priority report") return t("notify.highReport");
+    return t("notify.newReport");
+  }
+  if (item.title === "Listing pending review") return t("notify.pendingListing");
+  return t("notify.newListing");
+}
+
 export function DashboardTopBar() {
+  const { t } = useI18n();
+  const formatTime = useFormatAdminTime();
   const { user } = useAppStore();
   const { notifications, unreadCount, markAllRead, markRead } = useAdminLiveNotifications();
   const [open, setOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
   const displayName = user?.name ?? "Sara Miller";
-  const roleLabel = user?.role === "admin" ? "Super Admin" : user?.role ?? "Admin";
+  const roleLabel =
+    user?.role === "admin" ? t("role.superAdmin") : user?.role ?? t("role.admin");
   const avatarSrc = user?.avatarUrl ?? DEFAULT_AVATAR;
 
   useEffect(() => {
@@ -32,13 +50,14 @@ export function DashboardTopBar() {
 
   return (
     <header className="dash-topbar">
-      <p className="dash-topbar__eyebrow">Exchange Control Center</p>
+      <p className="dash-topbar__eyebrow">{t("topbar.eyebrow")}</p>
       <div className="dash-topbar__actions">
+        <LanguageSwitcher />
         <div className="dash-topbar__notify-wrap" ref={panelRef}>
           <button
             type="button"
             className="dash-topbar__bell"
-            aria-label="Notifications"
+            aria-label={t("topbar.notifications")}
             aria-expanded={open}
             onClick={() => setOpen((v) => !v)}
           >
@@ -55,10 +74,14 @@ export function DashboardTopBar() {
             )}
           </button>
           {open && (
-            <div className="dash-topbar__notify-panel" role="dialog" aria-label="Notifications">
-              <p className="dash-topbar__notify-head">Live alerts</p>
+            <div
+              className="dash-topbar__notify-panel"
+              role="dialog"
+              aria-label={t("topbar.notifications")}
+            >
+              <p className="dash-topbar__notify-head">{t("topbar.liveAlerts")}</p>
               {notifications.length === 0 ? (
-                <p className="dash-topbar__notify-empty">No open reports or pending listings.</p>
+                <p className="dash-topbar__notify-empty">{t("topbar.notificationsEmpty")}</p>
               ) : (
                 <ul>
                   {notifications.map((item) => (
@@ -71,10 +94,10 @@ export function DashboardTopBar() {
                           setOpen(false);
                         }}
                       >
-                        <strong>{item.title}</strong>
+                        <strong>{notificationTitle(item, t)}</strong>
                         <span>{item.body}</span>
                         <time dateTime={item.createdAt.toISOString()}>
-                          {formatAdminNotificationTime(item.createdAt)}
+                          {formatTime(item.createdAt)}
                         </time>
                       </Link>
                     </li>

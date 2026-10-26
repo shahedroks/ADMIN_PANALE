@@ -1,0 +1,48 @@
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px;
+  border-radius: 8px;
+  background: rgba(13, 59, 46, 0.06);
+  border: 1px solid rgba(13, 59, 46, 0.12);
+}
+
+.lang-switch--settings {
+  margin-top: 16px;
+}
+
+.lang-switch__btn {
+  border: none;
+  background: transparent;
+  color: #414845;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  line-height: 1.2;
+}
+
+.lang-switch__btn.is-active {
+  background: var(--swapit-primary-dark, #0d3b2e);
+  color: #fff;
+}
+
+.lang-switch__btn:hover:not(.is-active) {
+  background: rgba(13, 59, 46, 0.08);
+}
+
+[dir="rtl"] .dash-sidebar {
+  box-shadow: -1px 0 8px rgba(0, 0, 0, 0.04);
+}
+
+[dir="rtl"] .dash-shell {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .login-form-panel,
+[dir="rtl"] .login-hero {
+  text-align: right;
+}

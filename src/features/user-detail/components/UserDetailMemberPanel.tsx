@@ -4,12 +4,7 @@ import type { UserDetailProfile } from "@/features/user-detail/types";
 import { buildUserActionLog } from "@/services/firestore/userDetailFirestoreService";
 import type { UserDoc } from "@/services/firestore/usersFirestoreService";
 import type { SwapperMember } from "@/features/users/types";
-
-const itemStatusLabel = {
-  under_review: "Under review",
-  in_swap: "In swap",
-  active: "Active",
-} as const;
+import { useI18n } from "@/i18n";
 
 type PanelKind = "reports" | "items" | "log";
 
@@ -22,12 +17,6 @@ type UserDetailMemberPanelProps = {
   onClose: () => void;
 };
 
-const panelTitles: Record<PanelKind, string> = {
-  reports: "Report history",
-  items: "Listed items",
-  log: "Moderation activity",
-};
-
 export function UserDetailMemberPanel({
   panel,
   userId,
@@ -36,16 +25,29 @@ export function UserDetailMemberPanel({
   userDoc,
   onClose,
 }: UserDetailMemberPanelProps) {
+  const { t } = useI18n();
   const fullActions = buildUserActionLog(member.id, userDoc, profile.reports, {
     maxEntries: 50,
   });
 
+  const panelTitleKey: Record<PanelKind, string> = {
+    reports: "memberPanel.reports",
+    items: "memberPanel.items",
+    log: "memberPanel.log",
+  };
+
+  const itemStatusLabel = {
+    under_review: t("status.underReview"),
+    in_swap: t("columns.inSwap"),
+    active: t("status.active"),
+  } as const;
+
   return (
     <section className="user-detail-card user-detail-member-panel" id="member-panel">
       <div className="user-detail-member-panel__head">
-        <h2>{panelTitles[panel]} — {profile.name}</h2>
+        <h2>{t("memberPanel.heading", { panel: t(panelTitleKey[panel]), name: profile.name })}</h2>
         <button type="button" className="user-detail-member-panel__close" onClick={onClose}>
-          Back to profile summary
+          {t("memberPanel.close")}
         </button>
       </div>
 
@@ -53,7 +55,7 @@ export function UserDetailMemberPanel({
         <ul className="user-detail-report-list">
           {profile.reports.length === 0 ? (
             <li>
-              <p>No reports filed against this member or their listings.</p>
+              <p>{t("columns.reportsEmpty")}</p>
             </li>
           ) : (
             profile.reports.map((report) => (
@@ -67,7 +69,9 @@ export function UserDetailMemberPanel({
                         : "user-detail-pill user-detail-pill--compact user-detail-pill--resolved"
                     }
                   >
-                    {report.status === "under_review" ? "Under review" : "Dismissed"}
+                    {report.status === "under_review"
+                      ? t("status.underReview")
+                      : t("columns.dismissed")}
                   </span>
                 </div>
                 <p>{report.summary}</p>
@@ -82,7 +86,7 @@ export function UserDetailMemberPanel({
         <ul className="user-detail-item-list user-detail-item-list--panel">
           {profile.items.length === 0 ? (
             <li>
-              <p>No listings published by this member yet.</p>
+              <p>{t("columns.itemsEmpty")}</p>
             </li>
           ) : (
             profile.items.map((item) => (
@@ -129,7 +133,7 @@ export function UserDetailMemberPanel({
       <div className="user-detail-member-panel__footer">
         {panel === "reports" && (
           <Link to={`/reports?member=${encodeURIComponent(userId)}`} className="user-detail-col__link">
-            Open in Reports &amp; Review →
+            {t("memberPanel.footerReports")}
           </Link>
         )}
         {panel === "items" && (
@@ -137,12 +141,12 @@ export function UserDetailMemberPanel({
             to={`/items-review?owner=${encodeURIComponent(userId)}`}
             className="user-detail-col__link"
           >
-            Open in Items Review →
+            {t("memberPanel.footerItems")}
           </Link>
         )}
         {panel === "log" && (
           <Link to="/users" className="user-detail-col__link">
-            Open user directory →
+            {t("memberPanel.footerLog")}
           </Link>
         )}
       </div>

@@ -3,6 +3,7 @@ import {
   ReportTabFlagIcon,
 } from "@/features/reports/components/ReportGlyphs";
 import type { ReportFilterTab } from "@/features/reports/types";
+import { useI18n } from "@/i18n";
 
 type ReportToolbarProps = {
   activeTab: ReportFilterTab;
@@ -19,9 +20,11 @@ export function ReportToolbar({
   search,
   onSearchChange,
 }: ReportToolbarProps) {
+  const { t } = useI18n();
+
   return (
     <div className="reports-toolbar">
-      <div className="reports-toolbar__tabs" role="tablist" aria-label="Filter reports">
+      <div className="reports-toolbar__tabs" role="tablist" aria-label={t("reports.searchAria")}>
         <button
           type="button"
           role="tab"
@@ -29,7 +32,7 @@ export function ReportToolbar({
           className={activeTab === "all" ? "reports-tab reports-tab--active" : "reports-tab"}
           onClick={() => onTabChange("all")}
         >
-          <span className="reports-tab__label">All</span>
+          <span className="reports-tab__label">{t("reports.tab.all")}</span>
           <span className="reports-tab__count">{counts.all}</span>
         </button>
         <button
@@ -44,7 +47,7 @@ export function ReportToolbar({
           onClick={() => onTabChange("high")}
         >
           <ReportTabFlagIcon className="reports-tab__icon" />
-          <span className="reports-tab__label">High priority</span>
+          <span className="reports-tab__label">{t("reports.tab.high")}</span>
           <span className="reports-tab__count">{counts.high}</span>
         </button>
         <button
@@ -57,7 +60,7 @@ export function ReportToolbar({
           onClick={() => onTabChange("under_review")}
         >
           <ReportTabClockIcon className="reports-tab__icon" />
-          <span className="reports-tab__label">Under review</span>
+          <span className="reports-tab__label">{t("reports.tab.review")}</span>
           <span className="reports-tab__count">{counts.under_review}</span>
         </button>
       </div>
@@ -71,10 +74,10 @@ export function ReportToolbar({
           type="search"
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Search reports by ID, user, or keyword..."
-          aria-label="Search reports"
+          placeholder={t("reports.search")}
+          aria-label={t("reports.searchAria")}
         />
-        <button type="button" className="reports-toolbar__filter" aria-label="Advanced filters">
+        <button type="button" className="reports-toolbar__filter" aria-label={t("reports.filtersAria")}>
           <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden>
             <path d="M2 4h12M4 8h8M6 12h4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
           </svg>

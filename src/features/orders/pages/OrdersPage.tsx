@@ -3,8 +3,10 @@ import { PageHeader } from "@/components/PageHeader";
 import { OrderList } from "@/features/orders/components/OrderList";
 import { fetchOrders } from "@/features/orders/services/ordersService";
 import type { Order } from "@/features/orders/types";
+import { useI18n } from "@/i18n";
 
 export function OrdersPage() {
+  const { t } = useI18n();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -23,8 +25,8 @@ export function OrdersPage() {
 
   return (
     <section>
-      <PageHeader title="Orders" description="Track customer orders." />
-      {loading ? <p>Loading…</p> : <OrderList orders={orders} />}
+      <PageHeader title={t("orders.title")} description={t("orders.desc")} />
+      {loading ? <p>{t("orders.loading")}</p> : <OrderList orders={orders} />}
     </section>
   );
 }

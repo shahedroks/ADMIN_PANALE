@@ -2,19 +2,7 @@ import { Link } from "react-router-dom";
 
 import { UserAvatar } from "@/components/UserAvatar";
 import type { SwapperMember } from "@/features/users/types";
-
-const statusLabel: Record<SwapperMember["status"], string> = {
-  active: "Active",
-  restricted: "Temporarily restricted",
-  banned: "Banned",
-};
-
-const trustLabel: Record<SwapperMember["trust"], string> = {
-  high: "High",
-  good: "Good",
-  low: "Low",
-  review: "Under review",
-};
+import { useI18n } from "@/i18n";
 
 type UsersManagementTableProps = {
   rows: SwapperMember[];
@@ -24,7 +12,15 @@ type UsersManagementTableProps = {
   onDelete: (id: string) => void;
 };
 
-function TrustDots({ count, trust }: { count: number; trust: SwapperMember["trust"] }) {
+function TrustDots({
+  count,
+  trust,
+  trustLabel,
+}: {
+  count: number;
+  trust: SwapperMember["trust"];
+  trustLabel: Record<SwapperMember["trust"], string>;
+}) {
   const tone =
     trust === "low" ? "users-trust--low" : trust === "review" ? "users-trust--review" : "users-trust--good";
   return (
@@ -46,25 +42,40 @@ export function UsersManagementTable({
   onLift,
   onDelete,
 }: UsersManagementTableProps) {
+  const { t } = useI18n();
+
+  const statusLabel: Record<SwapperMember["status"], string> = {
+    active: t("status.active"),
+    restricted: t("status.restricted"),
+    banned: t("status.banned"),
+  };
+
+  const trustLabel: Record<SwapperMember["trust"], string> = {
+    high: t("trust.high"),
+    good: t("trust.good"),
+    low: t("trust.low"),
+    review: t("trust.review"),
+  };
+
   return (
     <div className="users-table-wrap">
       <table className="users-table">
         <thead>
           <tr>
-            <th>User</th>
-            <th>Account status</th>
-            <th>Trust level</th>
-            <th>Swaps</th>
-            <th>Reports</th>
-            <th>Last active</th>
-            <th>Actions</th>
+            <th>{t("users.col.user")}</th>
+            <th>{t("users.col.status")}</th>
+            <th>{t("users.col.trust")}</th>
+            <th>{t("users.col.swaps")}</th>
+            <th>{t("users.col.reports")}</th>
+            <th>{t("users.col.lastActive")}</th>
+            <th>{t("users.col.actions")}</th>
           </tr>
         </thead>
         <tbody>
           {rows.length === 0 ? (
             <tr>
               <td colSpan={7} className="users-table__empty">
-                No members match your filters.
+                {t("users.empty")}
               </td>
             </tr>
           ) : (
@@ -96,7 +107,7 @@ export function UsersManagementTable({
                   </span>
                 </td>
                 <td>
-                  <TrustDots count={row.trustDots} trust={row.trust} />
+                  <TrustDots count={row.trustDots} trust={row.trust} trustLabel={trustLabel} />
                 </td>
                 <td>{row.swaps}</td>
                 <td>
@@ -117,7 +128,7 @@ export function UsersManagementTable({
                       to={`/users/${row.id}`}
                       className="users-table__action-link users-table__action-link--profile"
                     >
-                      Profile
+                      {t("users.action.profile")}
                     </Link>
                     {row.status === "banned" ? (
                       <>
@@ -126,14 +137,14 @@ export function UsersManagementTable({
                           className="users-table__action-link users-table__action-link--restrict"
                           onClick={() => onLift(row.id)}
                         >
-                          Lift restriction
+                          {t("users.action.lift")}
                         </button>
                         <button
                           type="button"
                           className="users-table__action-link users-table__action-link--danger"
                           onClick={() => onDelete(row.id)}
                         >
-                          Delete
+                          {t("users.action.delete")}
                         </button>
                       </>
                     ) : row.status === "restricted" ? (
@@ -143,14 +154,14 @@ export function UsersManagementTable({
                           className="users-table__action-link users-table__action-link--restrict"
                           onClick={() => onLift(row.id)}
                         >
-                          Lift restriction
+                          {t("users.action.lift")}
                         </button>
                         <button
                           type="button"
                           className="users-table__action-link users-table__action-link--danger"
                           onClick={() => onBan(row.id)}
                         >
-                          Ban
+                          {t("users.action.ban")}
                         </button>
                       </>
                     ) : (
@@ -160,14 +171,14 @@ export function UsersManagementTable({
                           className="users-table__action-link users-table__action-link--restrict"
                           onClick={() => onRestrict(row.id)}
                         >
-                          Restrict
+                          {t("users.action.restrict")}
                         </button>
                         <button
                           type="button"
                           className="users-table__action-link users-table__action-link--danger"
                           onClick={() => onBan(row.id)}
                         >
-                          Ban
+                          {t("users.action.ban")}
                         </button>
                       </>
                     )}

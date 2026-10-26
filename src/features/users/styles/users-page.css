@@ -172,7 +172,7 @@
 }
 
 .users-kpi__hint--positive {
-  color: #304f00;
+  color: var(--swapit-medium-green);
 }
 
 .users-kpi__hint--negative {
@@ -349,7 +349,7 @@
 }
 
 .users-table__verified {
-  color: #304f00;
+  color: var(--swapit-medium-green);
   font-size: 12px;
 }
 
@@ -615,7 +615,7 @@
 .users-workflow-card a {
   font-size: 12px;
   font-weight: 700;
-  color: #304f00;
+  color: var(--swapit-medium-green);
   text-decoration: none;
 }
 

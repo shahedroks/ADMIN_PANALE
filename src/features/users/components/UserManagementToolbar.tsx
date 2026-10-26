@@ -1,4 +1,5 @@
 import type { UserFilterTab } from "@/features/users/types";
+import { useI18n } from "@/i18n";
 
 type UserManagementToolbarProps = {
   search: string;
@@ -15,11 +16,13 @@ export function UserManagementToolbar({
   onTabChange,
   counts,
 }: UserManagementToolbarProps) {
-  const tabs: { id: UserFilterTab; label: string; count: number }[] = [
-    { id: "all", label: "All accounts", count: counts.all },
-    { id: "active", label: "Active", count: counts.active },
-    { id: "restricted", label: "Restricted", count: counts.restricted },
-    { id: "banned", label: "Banned", count: counts.banned },
+  const { t } = useI18n();
+
+  const tabs: { id: UserFilterTab; labelKey: string; count: number }[] = [
+    { id: "all", labelKey: "users.tab.all", count: counts.all },
+    { id: "active", labelKey: "users.tab.active", count: counts.active },
+    { id: "restricted", labelKey: "users.tab.restricted", count: counts.restricted },
+    { id: "banned", labelKey: "users.tab.banned", count: counts.banned },
   ];
 
   return (
@@ -33,8 +36,8 @@ export function UserManagementToolbar({
           type="search"
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Search by username, full name, or email..."
-          aria-label="Search users"
+          placeholder={t("users.search")}
+          aria-label={t("users.searchAria")}
         />
       </div>
       <div className="users-toolbar__tabs" role="tablist">
@@ -56,7 +59,7 @@ export function UserManagementToolbar({
             {activeTab === tab.id && tab.id !== "all" && (
               <span className="users-tab__dot" aria-hidden />
             )}
-            <span className="users-tab__label">{tab.label}</span>
+            <span className="users-tab__label">{t(tab.labelKey)}</span>
             <span className="users-tab__count">{tab.count.toLocaleString()}</span>
           </button>
         ))}

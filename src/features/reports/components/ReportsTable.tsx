@@ -1,25 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { resolveReportTargetPath } from "@/features/reports/utils/reportRoutes";
 import type { ModerationReport } from "@/features/reports/types";
+import { useI18n } from "@/i18n";
 import { useToast } from "@/store/toastStore";
-
-const priorityLabel: Record<ModerationReport["priority"], string> = {
-  high: "High",
-  medium: "Medium",
-  low: "Low",
-};
-
-const statusLabel: Record<ModerationReport["status"], string> = {
-  under_review: "Under review",
-  open: "Open",
-  closed: "Closed",
-};
-
-const targetPrefix: Record<ModerationReport["targetKind"], string> = {
-  item: "Item",
-  user: "User",
-  conversation: "Conversation",
-};
 
 function getReportThumbnail(row: ModerationReport) {
   const seed = encodeURIComponent(`${row.targetLabel}-${row.id}`);
@@ -35,8 +18,27 @@ type ReportsTableProps = {
 };
 
 export function ReportsTable({ rows, onReview, onClose }: ReportsTableProps) {
+  const { t } = useI18n();
   const navigate = useNavigate();
   const { pushToast } = useToast();
+
+  const priorityLabel: Record<ModerationReport["priority"], string> = {
+    high: t("priority.high"),
+    medium: t("priority.medium"),
+    low: t("priority.low"),
+  };
+
+  const statusLabel: Record<ModerationReport["status"], string> = {
+    under_review: t("status.underReview"),
+    open: t("status.open"),
+    closed: t("status.closed"),
+  };
+
+  const targetPrefix: Record<ModerationReport["targetKind"], string> = {
+    item: t("target.item"),
+    user: t("target.user"),
+    conversation: t("target.conversation"),
+  };
 
   function handleOpen(row: ModerationReport) {
     onReview(row.id);
@@ -46,10 +48,10 @@ export function ReportsTable({ rows, onReview, onClose }: ReportsTableProps) {
       return;
     }
     if (row.targetKind === "conversation") {
-      pushToast(`Conversation report ${row.id} — link chat moderation when chat admin ships.`, "info");
+      pushToast(t("reports.toast.chatPending", { id: row.id }), "info");
       return;
     }
-    pushToast("Report has no targetId — cannot open target.", "error");
+    pushToast(t("reports.toast.noTarget"), "error");
   }
 
   return (
@@ -57,19 +59,19 @@ export function ReportsTable({ rows, onReview, onClose }: ReportsTableProps) {
       <table className="reports-table">
         <thead>
           <tr>
-            <th>Report ID</th>
-            <th>Report type &amp; target</th>
-            <th>Priority</th>
-            <th>Status</th>
-            <th>Report date</th>
-            <th>Action</th>
+            <th>{t("reports.col.id")}</th>
+            <th>{t("reports.col.type")}</th>
+            <th>{t("reports.col.priority")}</th>
+            <th>{t("reports.col.status")}</th>
+            <th>{t("reports.col.date")}</th>
+            <th>{t("reports.col.action")}</th>
           </tr>
         </thead>
         <tbody>
           {rows.length === 0 ? (
             <tr>
               <td colSpan={6} className="reports-table__empty">
-                No reports match your filters.
+                {t("reports.empty")}
               </td>
             </tr>
           ) : (
@@ -84,12 +86,15 @@ export function ReportsTable({ rows, onReview, onClose }: ReportsTableProps) {
                     <img
                       className="reports-table__thumb"
                       src={getReportThumbnail(row)}
-                      alt={`${row.targetLabel} thumbnail`}
+                      alt={t("reports.thumbnail", { label: row.targetLabel })}
                     />
                     <div>
                       <strong>{row.type}</strong>
                       <span>
-                        {targetPrefix[row.targetKind]}: {row.targetLabel}
+                        {t("target.line", {
+                          kind: targetPrefix[row.targetKind],
+                          label: row.targetLabel,
+                        })}
                         {row.targetId ? ` (${row.targetId.slice(0, 8)}…)` : ""}
                       </span>
                     </div>
@@ -109,10 +114,10 @@ export function ReportsTable({ rows, onReview, onClose }: ReportsTableProps) {
                 <td>
                   <div className="reports-table__actions">
                     <button type="button" onClick={() => handleOpen(row)}>
-                      Open
+                      {t("reports.action.open")}
                     </button>
                     <button type="button" onClick={() => onClose(row.id)}>
-                      Close
+                      {t("reports.action.close")}
                     </button>
                   </div>
                 </td>

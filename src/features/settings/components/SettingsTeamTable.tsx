@@ -1,5 +1,6 @@
 import { SettingsInviteIcon } from "@/features/settings/components/SettingsNavIcon";
 import type { AdminMember } from "@/features/settings/data/settingsData";
+import { useI18n } from "@/i18n";
 import { useToast } from "@/store/toastStore";
 
 type SettingsTeamTableProps = {
@@ -7,22 +8,23 @@ type SettingsTeamTableProps = {
 };
 
 export function SettingsTeamTable({ members }: SettingsTeamTableProps) {
+  const { t } = useI18n();
   const { pushToast } = useToast();
 
   return (
     <section className="settings-panel" id="settings-team">
       <div className="settings-panel__head">
         <div>
-          <p className="settings-panel__kicker">Access control</p>
-          <h2>Admin Team Members ({members.length} active)</h2>
+          <p className="settings-panel__kicker">{t("settings.team.kicker")}</p>
+          <h2>{t("settings.team.title", { count: members.length })}</h2>
         </div>
         <button
           type="button"
           className="settings-btn settings-btn--invite"
-          onClick={() => pushToast("Admin invite sent (demo).")}
+          onClick={() => pushToast(t("settings.team.toastInvite"))}
         >
           <SettingsInviteIcon />
-          Invite Admin
+          {t("settings.team.invite")}
         </button>
       </div>
 
@@ -30,11 +32,11 @@ export function SettingsTeamTable({ members }: SettingsTeamTableProps) {
         <table className="settings-table">
           <thead>
             <tr>
-              <th>Name &amp; email</th>
-              <th>Role scope</th>
-              <th>Department / focus</th>
-              <th>Last active</th>
-              <th>Actions</th>
+              <th>{t("settings.team.colName")}</th>
+              <th>{t("settings.team.colRole")}</th>
+              <th>{t("settings.team.colDept")}</th>
+              <th>{t("settings.team.colActive")}</th>
+              <th>{t("settings.team.colActions")}</th>
             </tr>
           </thead>
           <tbody>
@@ -77,9 +79,11 @@ export function SettingsTeamTable({ members }: SettingsTeamTableProps) {
                   <button
                     type="button"
                     className="settings-link-btn"
-                    onClick={() => pushToast(`Editing permissions for ${member.name} (demo).`, "info")}
+                    onClick={() =>
+                      pushToast(t("settings.team.toastEdit", { name: member.name }), "info")
+                    }
                   >
-                    Edit permissions
+                    {t("settings.team.edit")}
                   </button>
                 </td>
               </tr>

@@ -1,22 +1,24 @@
 import { useLocation } from "react-router-dom";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useI18n } from "@/i18n";
 
-const titles: { match: RegExp; title: string }[] = [
-  { match: /^\/login\/?$/, title: "SWAP IT — Admin Login" },
-  { match: /^\/dashboard\/?$/, title: "SWAP IT — Dashboard Overview" },
-  { match: /^\/reports\/?$/, title: "SWAP IT — Reports & Review" },
-  { match: /^\/items-review\/[^/]+\/?$/, title: "SWAP IT — Item Detail" },
-  { match: /^\/items-review\/?$/, title: "SWAP IT — Items Review" },
-  { match: /^\/users\/[^/]+\/?$/, title: "SWAP IT — User Details" },
-  { match: /^\/users\/?$/, title: "SWAP IT — User Management" },
-  { match: /^\/settings\/?$/, title: "SWAP IT — Settings" },
-  { match: /^\/subscriptions\/plans\/?$/, title: "SWAP IT — Plans Management" },
-  { match: /^\/subscriptions\/?$/, title: "SWAP IT — Subscription Overview" },
+const titleRoutes: { match: RegExp; key: string }[] = [
+  { match: /^\/login\/?$/, key: "documentTitle.login" },
+  { match: /^\/dashboard\/?$/, key: "documentTitle.dashboard" },
+  { match: /^\/reports\/?$/, key: "documentTitle.reports" },
+  { match: /^\/items-review\/[^/]+\/?$/, key: "documentTitle.itemDetail" },
+  { match: /^\/items-review\/?$/, key: "documentTitle.itemsReview" },
+  { match: /^\/users\/[^/]+\/?$/, key: "documentTitle.userDetail" },
+  { match: /^\/users\/?$/, key: "documentTitle.users" },
+  { match: /^\/settings\/?$/, key: "documentTitle.settings" },
+  { match: /^\/subscriptions\/plans\/?$/, key: "documentTitle.plans" },
+  { match: /^\/subscriptions\/?$/, key: "documentTitle.subscriptions" },
 ];
 
 export function ShellPageTitle() {
   const { pathname } = useLocation();
-  const entry = titles.find((t) => t.match.test(pathname));
-  usePageTitle(entry?.title ?? "SWAP IT — Control Center");
+  const { t } = useI18n();
+  const entry = titleRoutes.find((route) => route.match.test(pathname));
+  usePageTitle(entry ? t(entry.key) : t("documentTitle.fallback"));
   return null;
 }

@@ -6,6 +6,7 @@ import { PlansSummaryKpis } from "@/features/subscriptions/components/plans/Plan
 import { SubscriptionsComingSoon } from "@/features/subscriptions/components/SubscriptionsComingSoon";
 import { SUBSCRIPTIONS_UI_VISIBLE } from "@/features/subscriptions/config/subscriptionsVisibility";
 import { useSubscriptionPlans } from "@/hooks/useSubscriptionPlans";
+import { useI18n } from "@/i18n";
 import { useToast } from "@/store/toastStore";
 import "@/features/dashboard/styles/dashboard.css";
 import "@/features/subscriptions/styles/subscriptions-coming-soon.css";
@@ -17,6 +18,7 @@ export function PlansManagementPage() {
     return <SubscriptionsComingSoon variant="plans" />;
   }
 
+  const { t } = useI18n();
   const { pushToast } = useToast();
   const { plans: subscriptionPlans, loading, error, updatePlan } = useSubscriptionPlans();
   const [selectedId, setSelectedId] = useState("");
@@ -35,21 +37,18 @@ export function PlansManagementPage() {
 
   return (
     <div className="dash-page plans-page">
-      {loading && <p>Loading subscription plans…</p>}
+      {loading && <p>{t("subs.plans.loading")}</p>}
       {error && <p role="alert">{error}</p>}
       <header className="plans-page__header">
         <div className="plans-page__intro">
           <p className="subscriptions-page__breadcrumb">
-            Subscriptions <span aria-hidden>›</span> Plans Management
+            {t("subs.breadcrumb.parent")} <span aria-hidden>›</span> {t("subs.plans.breadcrumb")}
           </p>
           <div className="plans-page__title-row">
-            <h1>Plans &amp; Tier Configuration</h1>
-            <span className="plans-page__engine-badge">Engine v2.4</span>
+            <h1>{t("subs.plans.title")}</h1>
+            <span className="plans-page__engine-badge">{t("subs.plans.engine")}</span>
           </div>
-          <p className="subscriptions-page__subtitle">
-            Manage marketplace membership tiers, pricing models, listing quotas, and entitlement
-            gates for the SWAP IT subscription suite.
-          </p>
+          <p className="subscriptions-page__subtitle">{t("subs.plans.subtitle")}</p>
         </div>
       </header>
 
@@ -74,10 +73,10 @@ export function PlansManagementPage() {
             onSave={async (patch) => {
               try {
                 await updatePlan(selectedPlan.id, patch);
-                pushToast(`${selectedPlan.name} saved successfully.`);
+                pushToast(t("subs.plans.saved", { planName: selectedPlan.name }));
               } catch (e) {
                 pushToast(
-                  e instanceof Error ? e.message : "Could not save plan.",
+                  e instanceof Error ? e.message : t("subs.plans.saveFailed"),
                   "error",
                 );
               }

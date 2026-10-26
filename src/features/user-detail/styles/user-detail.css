@@ -90,7 +90,7 @@
 
 .user-detail-pill--trusted {
   background: rgba(163, 114, 34, 0.4);
-  color: #304f00;
+  color: var(--swapit-medium-green);
 }
 
 .user-detail-pill--code {
@@ -220,7 +220,7 @@
 }
 
 .user-detail-stat-row__value--good {
-  color: #304f00;
+  color: var(--swapit-medium-green);
 }
 
 .user-detail-stat-row__trust {
@@ -232,7 +232,7 @@
 .user-detail-stat-row__trust strong {
   font-size: 13px;
   font-weight: 600;
-  color: #304f00;
+  color: var(--swapit-medium-green);
   white-space: nowrap;
 }
 
@@ -618,7 +618,7 @@
   margin-top: 12px;
   font-size: 12px;
   font-weight: 700;
-  color: #304f00;
+  color: var(--swapit-medium-green);
   text-decoration: none;
 }
 
@@ -659,7 +659,7 @@
   font-family: inherit;
   font-size: 12px;
   font-weight: 700;
-  color: #304f00;
+  color: var(--swapit-medium-green);
   background: #ffffff;
   cursor: pointer;
 }

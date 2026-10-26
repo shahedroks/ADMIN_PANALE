@@ -1,19 +1,13 @@
 import { useCountUp } from "@/features/auth/hooks/useCountUp";
 import { usePrefersReducedMotion } from "@/features/auth/hooks/usePrefersReducedMotion";
+import { useI18n } from "@/i18n";
 
 function SwapIcon() {
   return (
     <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden>
       <rect width="40" height="40" rx="8" fill="var(--swapit-accent)" />
       <path
-        d="M12 16h12l-2.5-2.5M28 24H16l2.5 2.5"
-        stroke="var(--swapit-primary-dark)"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M26 14l2 2-2 2M14 26l-2-2 2-2"
+        d="M12 16h12l-2.5-2.5M28 24H16l2.5 2.5M26 14l2 2-2 2M14 26l-2-2 2-2"
         stroke="var(--swapit-primary-dark)"
         strokeWidth="2"
         strokeLinecap="round"
@@ -72,6 +66,7 @@ function formatCount(n: number): string {
 }
 
 export function LoginHeroPanel() {
+  const { t } = useI18n();
   const reducedMotion = usePrefersReducedMotion();
   const trust = useCountUp(99.98, {
     duration: 1600,
@@ -88,7 +83,7 @@ export function LoginHeroPanel() {
   const heroClass = reducedMotion ? "login-hero" : "login-hero login-hero--animate";
 
   return (
-    <aside className={heroClass} aria-label="SWAP IT branding">
+    <aside className={heroClass} aria-label={t("loginHero.region")}>
       <div className="login-hero__glow login-hero__glow--top" />
       <div className="login-hero__glow login-hero__glow--bottom" />
 
@@ -98,21 +93,21 @@ export function LoginHeroPanel() {
             <SwapIcon />
           </div>
           <div className="login-hero__brand-text">
-            <span className="login-hero__brand-name">SWAP IT</span>
-            <span className="login-hero__brand-tag">Moderation &amp; Ops</span>
+            <span className="login-hero__brand-name">{t("brand.name")}</span>
+            <span className="login-hero__brand-tag">{t("loginHero.tag")}</span>
           </div>
         </div>
 
         <div className="login-hero__copy">
           <h1 className="login-hero__headline">
-            Give things a{" "}
+            {t("loginHero.headline1")}{" "}
             <span className="login-hero__accent login-hero__accent-shimmer">
-              new life.
+              {t("loginHero.headlineAccent")}
             </span>
           </h1>
           <p className="login-hero__subline">
             <ShieldCheckIcon />
-            <span>Admin control center — safe swapping first</span>
+            <span>{t("dashboard.subtitle")}</span>
           </p>
         </div>
       </div>
@@ -154,7 +149,7 @@ export function LoginHeroPanel() {
           </svg>
           <div className="login-hero__orbit-core">
             <TrustScaleIcon />
-            <span className="login-hero__orbit-label">Circular Trust</span>
+            <span className="login-hero__orbit-label">{t("loginHero.orbitLabel")}</span>
             <strong className="login-hero__orbit-value">{trust.toFixed(2)}%</strong>
           </div>
         </div>
@@ -165,14 +160,11 @@ export function LoginHeroPanel() {
           <CommunityShieldIcon />
         </div>
         <div className="login-hero__metric-body">
-          <span className="login-hero__metric-kicker">Community Shield</span>
+          <span className="login-hero__metric-kicker">{t("loginHero.metricKicker")}</span>
           <strong className="login-hero__metric-number">
             {formatCount(Math.round(community))}+
           </strong>
-          <p className="login-hero__metric-desc">
-            Circular peer-to-peer exchanges actively verified and protected
-            across all zones.
-          </p>
+          <p className="login-hero__metric-desc">{t("loginHero.metricDesc")}</p>
         </div>
       </div>
     </aside>

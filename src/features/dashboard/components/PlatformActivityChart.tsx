@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import type { ActivityPoint, ActivitySummary } from "@/features/dashboard/data/dashboardData";
 import { emptyActivitySummary } from "@/features/dashboard/data/dashboardData";
+import { useI18n } from "@/i18n";
 
 type PlatformActivityChartProps = {
   data: ActivityPoint[];
@@ -11,6 +12,16 @@ type PlatformActivityChartProps = {
 const W = 568;
 const H = 220;
 const PAD = { top: 16, right: 12, bottom: 28, left: 36 };
+
+const DAY_KEYS: Record<string, string> = {
+  Mon: "week.mon",
+  Tue: "week.tue",
+  Wed: "week.wed",
+  Thu: "week.thu",
+  Fri: "week.fri",
+  Sat: "week.sat",
+  Sun: "week.sun",
+};
 
 function scaleY(value: number, min: number, max: number): number {
   const span = max - min || 1;
@@ -46,8 +57,8 @@ function buildYTicks(minY: number, maxY: number): number[] {
   const span = maxY - minY;
   const step = niceMax(span / 4);
   const ticks: number[] = [];
-  for (let t = minY; t <= maxY; t += step) {
-    ticks.push(t);
+  for (let tick = minY; tick <= maxY; tick += step) {
+    ticks.push(tick);
   }
   if (ticks.length < 2) {
     ticks.push(maxY);
@@ -60,6 +71,7 @@ export function PlatformActivityChart({
   summary = emptyActivitySummary,
   onExport,
 }: PlatformActivityChartProps) {
+  const { t } = useI18n();
   const [hoverIndex, setHoverIndex] = useState(() => Math.max(0, data.length - 1));
 
   const { userPoints, itemPoints, yTicks, minY, maxY } = useMemo(() => {
@@ -85,22 +97,27 @@ export function PlatformActivityChart({
   const safeHover = Math.min(hoverIndex, data.length - 1);
   const active = data[safeHover];
 
+  const dayLabel = (day: string) => {
+    const key = DAY_KEYS[day];
+    return key ? t(key) : day;
+  };
+
   return (
     <section className="dash-chart-card">
       <div className="dash-chart-card__head">
         <div>
-          <h2>Platform activity</h2>
-          <p>User sessions and inventory listings across the ecosystem.</p>
+          <h2>{t("chart.platformActivity")}</h2>
+          <p>{t("chart.platformDesc")}</p>
         </div>
         <div className="dash-chart-card__controls">
           <button type="button" className="dash-chart-card__select">
-            Last 7 days
+            {t("chart.last7Days")}
             <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden>
               <path d="M1 1l4 4 4-4" stroke="currentColor" fill="none" />
             </svg>
           </button>
           <button type="button" className="dash-chart-card__export" onClick={onExport}>
-            Export
+            {t("chart.export")}
           </button>
         </div>
       </div>
@@ -108,11 +125,11 @@ export function PlatformActivityChart({
       <div className="dash-chart-card__legend">
         <span>
           <i className="dash-chart-card__dot dash-chart-card__dot--users" />
-          Active users
+          {t("chart.activeUsers")}
         </span>
         <span>
           <i className="dash-chart-card__dot dash-chart-card__dot--items" />
-          Listed items
+          {t("chart.listedItems")}
         </span>
       </div>
 
@@ -121,7 +138,7 @@ export function PlatformActivityChart({
           viewBox={`0 0 ${W} ${H}`}
           className="dash-chart-card__svg"
           role="img"
-          aria-label="Platform activity chart for the last 7 days"
+          aria-label={t("chart.ariaPlatform")}
         >
           {yTicks.map((tick) => {
             const y = scaleY(tick, minY, maxY);
@@ -157,7 +174,7 @@ export function PlatformActivityChart({
                 onMouseEnter={() => setHoverIndex(i)}
               />
               <text x={p.x} y={H - 8} textAnchor="middle" className="dash-chart-card__xlabel">
-                {data[i].day}
+                {dayLabel(data[i].day)}
               </text>
             </g>
           ))}
@@ -193,25 +210,25 @@ export function PlatformActivityChart({
             style={{ left: `${((safeHover + 0.5) / data.length) * 100}%` }}
           >
             <span className="dash-chart-card__tooltip-kicker">
-              {active.day.toUpperCase()} • LIVE SYNC
+              {t("chart.liveSync", { day: dayLabel(active.day).toUpperCase() })}
             </span>
-            <strong>{active.users.toLocaleString()} Active Users</strong>
-            <span>{active.items.toLocaleString()} New Listings</span>
+            <strong>{t("chart.tooltipUsers", { count: active.users.toLocaleString() })}</strong>
+            <span>{t("chart.tooltipListings", { count: active.items.toLocaleString() })}</span>
           </div>
         )}
       </div>
 
       <div className="dash-chart-card__footer">
         <div>
-          <span>Daily Average Active</span>
+          <span>{t("chart.dailyAvg")}</span>
           <strong>{summary.dailyAvgActive}</strong>
         </div>
         <div>
-          <span>Item Match Conversion</span>
+          <span>{t("chart.matchConversion")}</span>
           <strong className="dash-chart-card__highlight">{summary.matchConversion}</strong>
         </div>
         <div>
-          <span>Avg listings/member</span>
+          <span>{t("chart.avgListings")}</span>
           <strong>{summary.avgListingsPerMember}</strong>
         </div>
       </div>

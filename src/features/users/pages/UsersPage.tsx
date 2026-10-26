@@ -7,11 +7,13 @@ import { PAGE_SIZE } from "@/features/users/data/usersManagementData";
 import type { UserFilterTab } from "@/features/users/types";
 import { buildPaginationPages } from "@/features/users/utils/userManagementMetrics";
 import { useSwapperMembers } from "@/hooks/useFirestoreAdminData";
+import { useI18n } from "@/i18n";
 import { useDemoStore } from "@/store/demoStore";
 import "@/features/dashboard/styles/dashboard.css";
 import "@/features/users/styles/users-page.css";
 
 export function UsersPage() {
+  const { t } = useI18n();
   const {
     members,
     metrics,
@@ -29,7 +31,10 @@ export function UsersPage() {
       await action();
       pushToast(label, "success");
     } catch (e) {
-      pushToast(e instanceof Error ? e.message : `Could not complete: ${label}`, "error");
+      pushToast(
+        e instanceof Error ? e.message : t("users.toast.failed", { action: label }),
+        "error",
+      );
     }
   };
 
@@ -45,7 +50,7 @@ export function UsersPage() {
     a.download = "swappers.csv";
     a.click();
     URL.revokeObjectURL(url);
-    pushToast("User directory exported.");
+    pushToast(t("users.toast.exported"));
   };
 
   const [search, setSearch] = useState("");
@@ -91,21 +96,19 @@ export function UsersPage() {
 
   return (
     <div className="dash-page users-page">
-      {loading && <p>Loading users…</p>}
+      {loading && <p>{t("users.loading")}</p>}
       {error && <p role="alert">{error}</p>}
       <header className="users-page__header">
         <div>
-          <p className="users-page__eyebrow">Community governance • Real-time directory</p>
-          <h1>User Management</h1>
-          <p className="users-page__subtitle">
-            Keep the swapping community safe, verifiable, and trusted across all active nodes.
-          </p>
+          <p className="users-page__eyebrow">{t("users.eyebrow")}</p>
+          <h1>{t("users.title")}</h1>
+          <p className="users-page__subtitle">{t("users.subtitle")}</p>
         </div>
         <div className="users-page__actions">
           <button
             type="button"
             className="users-page__select"
-            onClick={() => pushToast("Account type filter updated (demo).", "info")}
+            onClick={() => pushToast(t("users.toast.filter"), "info")}
           >
             <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden>
               <path
@@ -115,7 +118,7 @@ export function UsersPage() {
                 strokeLinecap="round"
               />
             </svg>
-            All account types
+            {t("users.filterTypes")}
             <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden className="users-page__chev">
               <path d="M1 1l4 4 4-4" stroke="currentColor" fill="none" strokeWidth="1.2" />
             </svg>
@@ -131,7 +134,7 @@ export function UsersPage() {
                 strokeLinejoin="round"
               />
             </svg>
-            Export User List
+            {t("users.export")}
           </button>
         </div>
       </header>
@@ -145,8 +148,8 @@ export function UsersPage() {
           setPage(1);
         }}
         activeTab={tab}
-        onTabChange={(t) => {
-          setTab(t);
+        onTabChange={(nextTab) => {
+          setTab(nextTab);
           setPage(1);
         }}
         counts={liveCounts}
@@ -155,15 +158,19 @@ export function UsersPage() {
       <section className="users-table-card">
         <UsersManagementTable
           rows={pageRows}
-          onRestrict={(id) => runAction("User temporarily restricted.", () => restrictMember(id))}
-          onBan={(id) => runAction("User banned from the network.", () => banMember(id))}
-          onLift={(id) => runAction("Restriction lifted — user is active again.", () => liftMemberRestriction(id))}
-          onDelete={(id) => runAction("User marked as removed.", () => deleteMember(id))}
+          onRestrict={(id) => runAction(t("users.toast.restricted"), () => restrictMember(id))}
+          onBan={(id) => runAction(t("users.toast.banned"), () => banMember(id))}
+          onLift={(id) => runAction(t("users.toast.lifted"), () => liftMemberRestriction(id))}
+          onDelete={(id) => runAction(t("users.toast.removed"), () => deleteMember(id))}
         />
         <footer className="users-pagination">
           <p>
-            Showing {start} to {end} of {displayTotal.toLocaleString()} swappers ({standingPercent}%
-            active good standing)
+            {t("users.pagination", {
+              start,
+              end,
+              total: displayTotal,
+              percent: standingPercent,
+            })}
           </p>
           <div className="users-pagination__controls">
             <button
@@ -171,7 +178,7 @@ export function UsersPage() {
               disabled={safePage <= 1}
               onClick={() => setPage((p) => p - 1)}
             >
-              ‹ Previous
+              {t("users.prev")}
             </button>
             {pageButtons.map((p, index) => {
               const prev = pageButtons[index - 1];
@@ -194,7 +201,7 @@ export function UsersPage() {
               disabled={safePage >= totalPages}
               onClick={() => setPage((p) => p + 1)}
             >
-              Next ›
+              {t("users.next")}
             </button>
           </div>
         </footer>

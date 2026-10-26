@@ -1,6 +1,8 @@
+import { useI18n } from "@/i18n";
 import { useDemoStore } from "@/store/demoStore";
 
 export function PlansFeatureGateBanner() {
+  const { t } = useI18n();
   const { pushToast } = useDemoStore();
 
   return (
@@ -14,18 +16,15 @@ export function PlansFeatureGateBanner() {
         </svg>
       </div>
       <div className="plans-gate-banner__body">
-        <h3>Feature Gate Enforcement Engine</h3>
-        <p>
-          Real-time edge authorization for mobile and web clients — quotas, entitlements, and
-          tier gates synced across active swap nodes.
-        </p>
+        <h3>{t("subs.gate.title")}</h3>
+        <p>{t("subs.gate.body")}</p>
       </div>
       <button
         type="button"
         className="plans-gate-banner__btn"
-        onClick={() => pushToast("Feature matrix audit opened (demo).", "info")}
+        onClick={() => pushToast(t("subs.gate.toast"), "info")}
       >
-        Audit Feature Matrix
+        {t("subs.gate.action")}
       </button>
     </section>
   );
