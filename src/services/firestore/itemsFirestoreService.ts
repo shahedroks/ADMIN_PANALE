@@ -32,7 +32,18 @@ type ItemDoc = {
   description?: string;
   wants?: string;
   createdAt?: Timestamp;
+  updatedAt?: Timestamp;
+  moderatedAt?: Timestamp;
+  approvedAt?: Timestamp;
 };
+
+function itemSortKeyMs(data: ItemDoc): number {
+  if (data.approvedAt) return data.approvedAt.toMillis();
+  if (data.moderatedAt) return data.moderatedAt.toMillis();
+  if (data.updatedAt) return data.updatedAt.toMillis();
+  if (data.createdAt) return data.createdAt.toMillis();
+  return 0;
+}
 
 function hoursAgo(ts?: Timestamp): number {
   if (!ts) return 0;
@@ -62,6 +73,7 @@ function mapToReviewItem(id: string, data: ItemDoc): ReviewItem {
     ),
     listingStatus: rawStatus,
     listedHoursAgo: hoursAgo(data.createdAt),
+    sortKeyMs: itemSortKeyMs(data),
     status,
     userType: "Swapper",
     userName: data.ownerName ?? data.ownerId ?? "Unknown",
@@ -170,7 +182,7 @@ export async function fetchPendingReviewItems(max = 100): Promise<ReviewItem[]> 
       return REVIEW_QUEUE_STATUSES.has(status);
     })
     .map((d) => mapToReviewItem(d.id, d.data() as ItemDoc));
-  items.sort((a, b) => b.listedHoursAgo - a.listedHoursAgo);
+  items.sort((a, b) => b.sortKeyMs - a.sortKeyMs);
   return items;
 }
 

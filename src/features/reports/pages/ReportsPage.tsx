@@ -106,13 +106,21 @@ export function ReportsPage() {
       />
       <ReportsTable
         rows={pageRows}
-        onReview={(id) => {
-          void setReportStatus(id, "under_review");
-          pushToast(t("reports.toastReview"), "success");
+        onReview={async (id) => {
+          try {
+            await setReportStatus(id, "under_review");
+            pushToast(t("reports.toastReview"), "success");
+          } catch {
+            pushToast(t("reports.toastUpdateFailed"), "error");
+          }
         }}
-        onClose={(id) => {
-          void setReportStatus(id, "closed");
-          pushToast(t("reports.toastClosed"), "success");
+        onClose={async (id) => {
+          try {
+            await setReportStatus(id, "closed");
+            pushToast(t("reports.toastClosed"), "success");
+          } catch {
+            pushToast(t("reports.toastUpdateFailed"), "error");
+          }
         }}
       />
       <ReportsPagination

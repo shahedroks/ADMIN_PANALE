@@ -16,6 +16,7 @@ export type UserProfile = {
   email: string;
   displayName: string | null;
   role: string;
+  photoUrl?: string | null;
 };
 
 const usersCollection = "users";
@@ -26,6 +27,7 @@ function mapProfileData(data: Record<string, unknown>): UserProfile {
     email: (data.email as string) ?? "",
     displayName: (data.displayName as string | null) ?? null,
     role,
+    photoUrl: (data.photoUrl as string | null | undefined) ?? null,
   };
 }
 

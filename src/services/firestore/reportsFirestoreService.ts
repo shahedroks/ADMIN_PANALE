@@ -1,9 +1,12 @@
 import {
   collection,
+  doc,
   getDocs,
   limit,
   orderBy,
   query,
+  serverTimestamp,
+  updateDoc,
   type Timestamp,
 } from "firebase/firestore";
 
@@ -54,6 +57,18 @@ function mapReport(id: string, data: ReportDoc): ModerationReport {
     updatedAt: updated,
     thumbnailHue: id.charCodeAt(0) * 17,
   };
+}
+
+export async function updateReportFirestore(
+  reportId: string,
+  patch: { status?: ModerationReport["status"]; priority?: ModerationReport["priority"] },
+  reviewerUid?: string,
+): Promise<void> {
+  await updateDoc(doc(db, "reports", reportId), {
+    ...patch,
+    updatedAt: serverTimestamp(),
+    ...(reviewerUid ? { reviewedBy: reviewerUid } : {}),
+  });
 }
 
 export async function fetchReports(max = 100): Promise<ModerationReport[]> {

@@ -8,6 +8,9 @@ export const tabCounts = {
 
 export const PAGE_SIZE = 4;
 
+const sortFromListedHours = (listedHoursAgo: number) =>
+  Date.now() - listedHoursAgo * 3_600_000;
+
 const baseItems: ReviewItem[] = [
   {
     id: "SW-9821",
@@ -15,6 +18,7 @@ const baseItems: ReviewItem[] = [
     category: "Electronics",
     imageSeed: "keyboard",
     listedHoursAgo: 36,
+    sortKeyMs: sortFromListedHours(36),
     listingStatus: "pending",
     status: "awaiting",
     userType: "Trusted user",
@@ -35,6 +39,7 @@ const baseItems: ReviewItem[] = [
     category: "Flora & Garden",
     imageSeed: "monstera",
     listedHoursAgo: 34,
+    sortKeyMs: sortFromListedHours(34),
     listingStatus: "pending",
     status: "awaiting",
     userType: "New user",
@@ -55,6 +60,7 @@ const baseItems: ReviewItem[] = [
     category: "Photography",
     imageSeed: "camera",
     listedHoursAgo: 32,
+    sortKeyMs: sortFromListedHours(32),
     listingStatus: "pending",
     status: "awaiting",
     userType: "Trusted user",
@@ -75,6 +81,7 @@ const baseItems: ReviewItem[] = [
     category: "Home & Kitchen",
     imageSeed: "coffee",
     listedHoursAgo: 30,
+    sortKeyMs: sortFromListedHours(30),
     listingStatus: "pending",
     status: "awaiting",
     userType: "Trusted user",
@@ -95,6 +102,7 @@ const catalog: Omit<ReviewItem, "id" | "imageSeed" | "status" | "listingStatus">
     title: "Vintage Denim Jacket",
     category: "Fashion",
     listedHoursAgo: 14,
+    sortKeyMs: sortFromListedHours(14),
     userType: "Trusted user",
     userName: "Jordan A.",
     userVerified: true,
@@ -109,6 +117,7 @@ const catalog: Omit<ReviewItem, "id" | "imageSeed" | "status" | "listingStatus">
     title: "Mid-Century Bookshelf Unit",
     category: "Furniture",
     listedHoursAgo: 15,
+    sortKeyMs: sortFromListedHours(15),
     userType: "Trusted user",
     userName: "Alex M.",
     userVerified: true,
@@ -123,6 +132,7 @@ const catalog: Omit<ReviewItem, "id" | "imageSeed" | "status" | "listingStatus">
     title: "Designer Sneakers (Limited)",
     category: "Fashion",
     listedHoursAgo: 16,
+    sortKeyMs: sortFromListedHours(16),
     userType: "New user",
     userName: "Taylor R.",
     userVerified: false,
@@ -137,6 +147,7 @@ const catalog: Omit<ReviewItem, "id" | "imageSeed" | "status" | "listingStatus">
     title: "Vintage Vinyl Turntable",
     category: "Audio",
     listedHoursAgo: 17,
+    sortKeyMs: sortFromListedHours(17),
     userType: "Trusted user",
     userName: "Marcus Chen",
     userVerified: true,
@@ -151,6 +162,7 @@ const catalog: Omit<ReviewItem, "id" | "imageSeed" | "status" | "listingStatus">
     title: "Board Game Bundle",
     category: "Games",
     listedHoursAgo: 18,
+    sortKeyMs: sortFromListedHours(18),
     userType: "Trusted user",
     userName: "Chris T.",
     userVerified: true,
@@ -165,6 +177,7 @@ const catalog: Omit<ReviewItem, "id" | "imageSeed" | "status" | "listingStatus">
     title: "Electric Guitar + Amp",
     category: "Music",
     listedHoursAgo: 19,
+    sortKeyMs: sortFromListedHours(19),
     userType: "Trusted user",
     userName: "Priya N.",
     userVerified: true,
@@ -189,6 +202,9 @@ while (reviewItems.length < tabCounts.all) {
     id: `SW-${seed--}`,
     imageSeed: `${template.category.toLowerCase().replace(/\s/g, "-")}-${seed}`,
     listedHoursAgo: Math.min(28, template.listedHoursAgo + cycle * 2),
+    sortKeyMs: sortFromListedHours(
+      Math.min(28, template.listedHoursAgo + cycle * 2),
+    ),
     status: reviewItems.length < tabCounts.awaiting ? "awaiting" : "reviewed",
     listingStatus:
       reviewItems.length < tabCounts.awaiting ? "pending" : "approved",

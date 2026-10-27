@@ -22,6 +22,7 @@ type AppState = {
 
 type AppContextValue = AppState & {
   login: (user: User) => void;
+  refreshUser: () => Promise<void>;
   logout: () => Promise<void>;
   clearAuthError: () => void;
 };
@@ -63,6 +64,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setAuthError(null);
   }, []);
 
+  const refreshUser = useCallback(async () => {
+    const firebaseUser = auth.currentUser;
+    if (!firebaseUser) return;
+    const appUser = await resolveAdminUser(firebaseUser);
+    setUser(appUser);
+    setAuthError(null);
+  }, []);
+
   const logout = useCallback(async () => {
     await logoutFromFirebase();
     setUser(null);
@@ -77,10 +86,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
       authReady,
       authError,
       login,
+      refreshUser,
       logout,
       clearAuthError,
     }),
-    [user, authReady, authError, login, logout, clearAuthError],
+    [user, authReady, authError, login, refreshUser, logout, clearAuthError],
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

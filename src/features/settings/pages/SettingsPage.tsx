@@ -17,7 +17,7 @@ const sectionAnchors: Record<SettingsSectionId, string> = {
 
 export function SettingsPage() {
   const { t } = useI18n();
-  const { members: adminTeam, loading: teamLoading } = useAdminTeam();
+  const { members: adminTeam, loading: teamLoading, reload: reloadAdminTeam } = useAdminTeam();
   const { settings, loading: settingsLoading } = useAppSettings();
   const [active, setActive] = useState<SettingsSectionId>("general");
 
@@ -47,8 +47,8 @@ export function SettingsPage() {
         <SettingsSubNav active={active} onSelect={setActive} adminTeamCount={adminTeam.length} />
 
         <div className="settings-workspace">
-          <SettingsGeneralPanel settings={settings} />
-          <SettingsTeamTable members={adminTeam} />
+          <SettingsGeneralPanel />
+          <SettingsTeamTable members={adminTeam} onTeamChanged={() => void reloadAdminTeam()} />
           <SettingsSecurityPanel settings={settings} />
         </div>
       </div>

@@ -30,7 +30,10 @@ import {
   fetchItemDetail,
   fetchPendingReviewItems,
 } from "@/services/firestore/itemsFirestoreService";
-import { fetchReports } from "@/services/firestore/reportsFirestoreService";
+import {
+  fetchReports,
+  updateReportFirestore,
+} from "@/services/firestore/reportsFirestoreService";
 import {
   countMembersJoinedSince,
   fetchOpenReportCount,
@@ -295,7 +298,11 @@ export function useModerationReports() {
     loading,
     reload,
     setReportStatus: async (id: string, status: ModerationReport["status"]) => {
-      await callUpdateReport({ reportId: id, status });
+      const reviewerUid = auth.currentUser?.uid;
+      await withModerationFallback(
+        () => callUpdateReport({ reportId: id, status }),
+        () => updateReportFirestore(id, { status }, reviewerUid),
+      );
       await reload();
     },
   };

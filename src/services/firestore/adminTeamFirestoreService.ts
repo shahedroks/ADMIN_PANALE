@@ -7,7 +7,7 @@ import {
   type Timestamp,
 } from "firebase/firestore";
 
-import type { AdminMember } from "@/features/settings/data/settingsData";
+import type { AdminMember, PanelRoleId } from "@/features/settings/data/settingsData";
 import { db } from "@/lib/firebase";
 
 const PANEL_ROLES = ["admin", "manager", "viewer"];
@@ -64,9 +64,11 @@ function mapUserToAdminMember(
     name,
     email,
     role: roleLabel(role),
+    panelRole: role as PanelRoleId,
     roleVariant: roleVariant(role),
     department,
     lastActive: relativeActive(data.updatedAt as Timestamp | undefined),
+    photoUrl: (data.photoUrl as string | undefined)?.trim() || undefined,
   };
 }
 

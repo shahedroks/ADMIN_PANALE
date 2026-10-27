@@ -20,6 +20,8 @@ export type ReviewItem = {
   /** Raw Firestore `status` (source of truth for Discover visibility). */
   listingStatus: ListingModerationStatus;
   listedHoursAgo: number;
+  /** Milliseconds for sort — last approval / moderation / update. */
+  sortKeyMs: number;
   status: ItemReviewStatus;
   userType: string;
   userName: string;

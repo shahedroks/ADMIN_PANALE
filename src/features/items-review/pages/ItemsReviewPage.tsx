@@ -39,7 +39,7 @@ export function ItemsReviewPage() {
   );
 
   const [tab, setTab] = useState<ItemFilterTab>("all");
-  const [sort, setSort] = useState<SortOption>("oldest");
+  const [sort, setSort] = useState<SortOption>("newest");
   const [page, setPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [seeding, setSeeding] = useState(false);
@@ -83,9 +83,9 @@ export function ItemsReviewPage() {
     }
 
     list = [...list].sort((a, b) => {
-      if (sort === "newest") return a.listedHoursAgo - b.listedHoursAgo;
       if (sort === "value") return a.estimatedValue.localeCompare(b.estimatedValue);
-      return b.listedHoursAgo - a.listedHoursAgo;
+      if (sort === "oldest") return a.sortKeyMs - b.sortKeyMs;
+      return b.sortKeyMs - a.sortKeyMs;
     });
 
     return list;

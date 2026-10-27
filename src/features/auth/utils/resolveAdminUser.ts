@@ -67,5 +67,5 @@ export async function resolveAdminUser(
     );
   }
 
-  return mapFirebaseUser(firebaseUser, profile.role);
+  return mapFirebaseUser(firebaseUser, profile.role, profile.photoUrl);
 }

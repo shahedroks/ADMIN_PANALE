@@ -1,11 +1,15 @@
+export type PanelRoleId = "admin" | "manager" | "viewer";
+
 export type AdminMember = {
   id: string;
   name: string;
   email: string;
   role: string;
+  panelRole: PanelRoleId;
   roleVariant: "super" | "moderator" | "support" | "automated";
   department: string;
   lastActive: string;
+  photoUrl?: string;
 };
 
 export const adminMembers: AdminMember[] = [
@@ -14,6 +18,7 @@ export const adminMembers: AdminMember[] = [
     name: "Sara Miller",
     email: "sara.miller@swapit.io",
     role: "Super Admin",
+    panelRole: "admin",
     roleVariant: "super",
     department: "Executive Leadership",
     lastActive: "Just now",
@@ -23,6 +28,7 @@ export const adminMembers: AdminMember[] = [
     name: "Elena Rostova",
     email: "elena.r@swapit.io",
     role: "Moderator",
+    panelRole: "manager",
     roleVariant: "moderator",
     department: "Review & Safety",
     lastActive: "4h ago",
@@ -32,6 +38,7 @@ export const adminMembers: AdminMember[] = [
     name: "James Okonkwo",
     email: "j.okonkwo@swapit.io",
     role: "Support Lead",
+    panelRole: "viewer",
     roleVariant: "support",
     department: "Member Success",
     lastActive: "1d ago",
@@ -41,6 +48,7 @@ export const adminMembers: AdminMember[] = [
     name: "Priya Shah",
     email: "priya.shah@swapit.io",
     role: "Moderator",
+    panelRole: "manager",
     roleVariant: "moderator",
     department: "Content Review",
     lastActive: "2d ago",
@@ -50,6 +58,7 @@ export const adminMembers: AdminMember[] = [
     name: "Daniel Wu",
     email: "d.wu@swapit.io",
     role: "Support Lead",
+    panelRole: "viewer",
     roleVariant: "support",
     department: "Trust Operations",
     lastActive: "3d ago",
@@ -59,6 +68,7 @@ export const adminMembers: AdminMember[] = [
     name: "Bot Moderator",
     email: "bot.moderator@swapit.io",
     role: "Automated Engine",
+    panelRole: "viewer",
     roleVariant: "automated",
     department: "Review Automation",
     lastActive: "Always on",

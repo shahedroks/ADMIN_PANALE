@@ -161,7 +161,7 @@ service cloud.firestore {
       return isAdminOrManager()
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'status', 'moderationNote', 'flagKind', 'flagTitle', 'flagMessage',
-          'updatedAt', 'moderatedBy', 'moderatedAt'
+          'updatedAt', 'moderatedBy', 'moderatedAt', 'approvedAt'
         ])
         && request.resource.data.status in [
           'approved', 'hidden', 'rejected', 'pending'
@@ -173,6 +173,14 @@ service cloud.firestore {
         && request.resource.data.title is string
         && request.resource.data.title.size() > 0
         && request.resource.data.status in ['approved', 'pending'];
+    }
+
+    function adminReportPatchValid() {
+      return isAdminOrManager()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'status', 'priority', 'updatedAt', 'reviewedBy'
+        ])
+        && request.resource.data.status in ['open', 'under_review', 'closed'];
     }
 
     match /categories/{categoryId} {
@@ -240,7 +248,8 @@ service cloud.firestore {
       allow create: if isSignedIn() && notBanned()
         && request.resource.data.reporterId == uid()
         && request.resource.data.status == 'open';
-      allow update, delete: if false;
+      allow update: if isSignedIn() && adminReportPatchValid();
+      allow delete: if false;
     }
 
     match /settings/{docId} {

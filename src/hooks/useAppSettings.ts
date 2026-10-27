@@ -49,19 +49,18 @@ export function useAdminTeam() {
   const [members, setMembers] = useState<AdminMember[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    let cancelled = false;
-    void fetchAdminTeamMembers()
-      .then((team) => {
-        if (!cancelled) setMembers(team);
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
+  const reload = useCallback(async () => {
+    setLoading(true);
+    try {
+      setMembers(await fetchAdminTeamMembers());
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  return { members, loading };
+  useEffect(() => {
+    void reload();
+  }, [reload]);
+
+  return { members, loading, reload };
 }

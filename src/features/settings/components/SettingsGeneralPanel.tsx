@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import type { AppSettings } from "@/services/firestore/appSettingsFirestoreService";
-import { useAppSettings } from "@/hooks/useAppSettings";
 import {
   isAdminNotificationSoundEnabled,
   setAdminNotificationSoundEnabled,
@@ -11,13 +9,8 @@ import { playAdminNotificationSound } from "@/lib/playAdminNotificationSound";
 import { useI18n } from "@/i18n";
 import { useToast } from "@/store/toastStore";
 
-type SettingsGeneralPanelProps = {
-  settings: AppSettings | null;
-};
-
-export function SettingsGeneralPanel({ settings }: SettingsGeneralPanelProps) {
+export function SettingsGeneralPanel() {
   const { t } = useI18n();
-  const { save } = useAppSettings();
   const { pushToast } = useToast();
   const [alertSound, setAlertSound] = useState(true);
 
@@ -39,21 +32,6 @@ export function SettingsGeneralPanel({ settings }: SettingsGeneralPanelProps) {
       </div>
 
       <div className="settings-general-grid">
-        <label className="settings-general-grid__wide">
-          {t("settings.general.platformName")}
-          <input
-            type="text"
-            defaultValue={settings?.platformDisplayName ?? t("brand.name")}
-            key={settings?.platformDisplayName ?? "default"}
-            onBlur={(e) => {
-              const value = e.target.value.trim() || t("brand.name");
-              void save({ platformDisplayName: value }).then(() =>
-                pushToast(t("settings.general.nameSaved")),
-              );
-            }}
-          />
-        </label>
-
         <div className="settings-language-block settings-general-grid__wide">
           <div>
             <strong>{t("language.panelTitle")}</strong>

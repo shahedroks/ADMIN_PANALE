@@ -7,7 +7,8 @@ import { useI18n } from "@/i18n";
 import type { AdminLiveNotification } from "@/services/firestore/adminLiveNotificationsService";
 import { useAppStore } from "@/store";
 
-const DEFAULT_AVATAR = "https://i.pravatar.cc/96?u=sara-miller-swap-admin";
+import { AdminProfileEditModal } from "@/layouts/AdminProfileEditModal";
+import { resolveUserAvatarUrl } from "@/lib/userAvatar";
 
 function notificationTitle(
   item: AdminLiveNotification,
@@ -27,12 +28,15 @@ export function DashboardTopBar() {
   const { user } = useAppStore();
   const { notifications, unreadCount, markAllRead, markRead } = useAdminLiveNotifications();
   const [open, setOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
   const displayName = user?.name ?? "Sara Miller";
   const roleLabel =
     user?.role === "admin" ? t("role.superAdmin") : user?.role ?? t("role.admin");
-  const avatarSrc = user?.avatarUrl ?? DEFAULT_AVATAR;
+  const avatarSrc =
+    user?.avatarUrl ??
+    resolveUserAvatarUrl({ seed: "guest", displayName: "Admin" });
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
@@ -107,7 +111,12 @@ export function DashboardTopBar() {
             </div>
           )}
         </div>
-        <div className="dash-topbar__profile">
+        <button
+          type="button"
+          className="dash-topbar__profile"
+          aria-label={t("topbar.editProfile")}
+          onClick={() => setProfileOpen(true)}
+        >
           <div className="dash-topbar__profile-text">
             <strong className="dash-topbar__profile-name">{displayName}</strong>
             <span className="dash-topbar__profile-role">{roleLabel}</span>
@@ -119,8 +128,9 @@ export function DashboardTopBar() {
             width={32}
             height={32}
           />
-        </div>
+        </button>
       </div>
+      {profileOpen && <AdminProfileEditModal onClose={() => setProfileOpen(false)} />}
     </header>
   );
 }

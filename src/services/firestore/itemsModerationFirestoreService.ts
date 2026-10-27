@@ -21,6 +21,7 @@ export async function moderateItemFirestore(
     status: statusMap[action],
     updatedAt: serverTimestamp(),
     moderatedAt: serverTimestamp(),
+    ...(action === "approve" ? { approvedAt: serverTimestamp() } : {}),
     ...(moderatorUid ? { moderatedBy: moderatorUid } : {}),
     ...(note ? { moderationNote: note } : {}),
     ...(action === "request_edit"
@@ -43,6 +44,7 @@ export async function moderateItemBatchFirestore(
       status: statusMap[action],
       updatedAt: serverTimestamp(),
       moderatedAt: serverTimestamp(),
+      ...(action === "approve" ? { approvedAt: serverTimestamp() } : {}),
       ...(moderatorUid ? { moderatedBy: moderatorUid } : {}),
     });
   }

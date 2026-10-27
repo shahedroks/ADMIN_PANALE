@@ -1,15 +1,25 @@
+import { useState } from "react";
+
+import { UserAvatar } from "@/components/UserAvatar";
+import { AdminPermissionsModal } from "@/features/settings/components/AdminPermissionsModal";
 import { SettingsInviteIcon } from "@/features/settings/components/SettingsNavIcon";
 import type { AdminMember } from "@/features/settings/data/settingsData";
 import { useI18n } from "@/i18n";
+import { useAppStore } from "@/store";
 import { useToast } from "@/store/toastStore";
 
 type SettingsTeamTableProps = {
   members: AdminMember[];
+  onTeamChanged: () => void;
 };
 
-export function SettingsTeamTable({ members }: SettingsTeamTableProps) {
+export function SettingsTeamTable({ members, onTeamChanged }: SettingsTeamTableProps) {
   const { t } = useI18n();
   const { pushToast } = useToast();
+  const { user } = useAppStore();
+  const [editingMember, setEditingMember] = useState<AdminMember | null>(null);
+
+  const canManageTeam = user?.role === "admin";
 
   return (
     <section className="settings-panel" id="settings-team">
@@ -54,10 +64,11 @@ export function SettingsTeamTable({ members }: SettingsTeamTableProps) {
                         </svg>
                       </span>
                     ) : (
-                      <img
+                      <UserAvatar
                         className="settings-table__avatar"
-                        src={`https://i.pravatar.cc/72?u=${encodeURIComponent(member.email)}`}
-                        alt=""
+                        photoUrl={member.photoUrl}
+                        seed={member.id}
+                        displayName={member.name}
                         width={36}
                         height={36}
                       />
@@ -76,21 +87,35 @@ export function SettingsTeamTable({ members }: SettingsTeamTableProps) {
                 <td>{member.department}</td>
                 <td className="settings-table__muted">{member.lastActive}</td>
                 <td>
-                  <button
-                    type="button"
-                    className="settings-link-btn"
-                    onClick={() =>
-                      pushToast(t("settings.team.toastEdit", { name: member.name }), "info")
-                    }
-                  >
-                    {t("settings.team.edit")}
-                  </button>
+                  {canManageTeam && member.roleVariant !== "automated" ? (
+                    <button
+                      type="button"
+                      className="settings-link-btn"
+                      onClick={() => setEditingMember(member)}
+                    >
+                      {t("settings.team.edit")}
+                    </button>
+                  ) : (
+                    <span className="settings-table__muted">—</span>
+                  )}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {editingMember && user && (
+        <AdminPermissionsModal
+          member={editingMember}
+          currentUserId={user.id}
+          onClose={() => setEditingMember(null)}
+          onSaved={() => {
+            pushToast(t("settings.permissions.saved", { name: editingMember.name }), "success");
+            onTeamChanged();
+          }}
+        />
+      )}
     </section>
   );
 }
